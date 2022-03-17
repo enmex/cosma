@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attribute name="animation_speed">5</attribute>
+    <string name="animation_duration">3f</string>
+    <integer name="frames_amount">4</integer>
+    <string name="panel_to_screen_ration">0.3</string>
+    <string name="panel_offset">0.03</string>
+    <integer name="board_size">8</integer>
+    <integer name="spaceship_rows">2</integer>
+
+    <string name="background_path">background.png</string>
+    <string name="grid_path">grid.png</string>
+    <string name="spaceships_path">spaceships.png</string>
+    <string name="information_panel_path">spaceship_panel.png</string>
+    <string name="font_path">font\font.fnt</string>
+    <string name="selected_cell_path">selected.png</string>
+</resources>
