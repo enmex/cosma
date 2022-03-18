@@ -1,14 +1,13 @@
 package com.imit.cosma.gui.animation.compound;
 
+import static com.imit.cosma.config.Config.getInstance;
+
 import com.imit.cosma.gui.animation.AnimationType;
 import com.imit.cosma.gui.animation.simple.Movement;
 import com.imit.cosma.gui.animation.simple.Rotation;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.Point;
-
-import static com.imit.cosma.config.Config.*;
 
 public class MovementAnimation extends AnimationType {
 
@@ -55,6 +54,11 @@ public class MovementAnimation extends AnimationType {
     @Override
     public boolean isAnimated() {
         return shipRotation.isAnimated() || shipMovement.isAnimated() || shipRotationToDefault.isAnimated();
+    }
+
+    @Override
+    public boolean hasSeveralAnimatedObjects() {
+        return false;
     }
 
     @Override

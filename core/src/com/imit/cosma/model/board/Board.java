@@ -1,23 +1,22 @@
 package com.imit.cosma.model.board;
 
+import static com.imit.cosma.config.Config.getInstance;
 import static com.imit.cosma.model.board.BoardState.IDLE;
 
-import com.imit.cosma.util.Point;
 import com.imit.cosma.ai.AI;
-import com.imit.cosma.util.Path;
 import com.imit.cosma.model.rules.Attack;
+import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
+import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Randomiser;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class Board {
-    public static final int BOARD_SIZE = 8;
-    public final int SPACESHIP_ROWS = 2;
     private final Set<Point> emptySet;
 
     private final Cell[][] cells;
@@ -37,15 +36,15 @@ public class Board {
     private Path currentPath;
 
     public Board() {
-        cells = new Cell[BOARD_SIZE][BOARD_SIZE];
+        cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
         emptySet = new HashSet<>();
         selected = new Cell(new Space());
         boardState = IDLE;
 
         SpaceshipBuilder spaceshipBuilder = new SpaceshipBuilder();
         //initialise player ships
-        for (int y = 0; y < SPACESHIP_ROWS; y++) {
-            for (int x = 0; x < BOARD_SIZE; x++) {
+        for (int y = 0; y < getInstance().SPACESHIP_ROWS; y++) {
+            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(Side.PLAYER)
                         .addSkeleton()
                         .addWeapon(Randomiser.getRandomAmount())
@@ -55,15 +54,15 @@ public class Board {
         }
 
         //initialise space cells
-        for (int y = SPACESHIP_ROWS; y < BOARD_SIZE; y++) {
-            for (int x = 0; x < BOARD_SIZE; x++) {
+        for (int y = getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
             }
         }
 
         //initialise enemy ships
-        for (int y = BOARD_SIZE - SPACESHIP_ROWS; y < BOARD_SIZE; y++) {
-            for (int x = 0; x < BOARD_SIZE; x++) {
+        for (int y = getInstance().BOARD_SIZE - getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(Side.ENEMY)
                         .addSkeleton()
                         .addWeapon(Randomiser.getRandomAmount())

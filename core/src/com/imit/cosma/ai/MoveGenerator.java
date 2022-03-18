@@ -1,5 +1,6 @@
 package com.imit.cosma.ai;
 
+import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.Side;
@@ -22,8 +23,8 @@ public class MoveGenerator {
 
     public void update(Board board){
         paths.clear();
-        for(int y = 0; y < Board.BOARD_SIZE; y++){
-            for(int x = 0; x < Board.BOARD_SIZE; x++){
+        for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
+            for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && board.getSide(x, y) == Side.ENEMY){
                     for(Point point : board.getAvailableCellsForMove(x, y)){
                         paths.add(new Path(x, y, point.x, point.y));

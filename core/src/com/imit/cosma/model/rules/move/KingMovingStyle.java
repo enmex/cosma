@@ -1,5 +1,6 @@
 package com.imit.cosma.model.rules.move;
 
+import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.Direction;
@@ -29,8 +30,8 @@ public final class KingMovingStyle implements MovingStyle {
     }
 
     private boolean inBoard(int x, int y) {
-        return x >= 0 && x < Board.BOARD_SIZE
-                && y >= 0 && y < Board.BOARD_SIZE;
+        return x >= 0 && x < Config.getInstance().BOARD_SIZE
+                && y >= 0 && y < Config.getInstance().BOARD_SIZE;
     }
 
     @Override

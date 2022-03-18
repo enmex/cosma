@@ -1,13 +1,16 @@
 package com.imit.cosma.gui.animation.simple;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 //just frames of sprite
 public class Idle implements SimpleAnimation{
-    private float duration = 7;
+    private int duration;
     private float current = 0;
+
+    private float rotation;
 
     private Point sprite;
     private int spriteSize;
@@ -17,14 +20,20 @@ public class Idle implements SimpleAnimation{
     private boolean isAnimated;
 
     public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY){
+        this(sprite, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
+    }
+
+    public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
         this.sprite = sprite;
         this.spriteSize = spriteSize;
         offset = new Vector(targetOffsetX, targetOffsetY);
+        this.duration = duration;
     }
+
 
     @Override
     public void init(int fromX, int fromY, int toX, int toY, float rotation) {
-
+        this.rotation = rotation;
     }
 
     @Override
@@ -38,7 +47,7 @@ public class Idle implements SimpleAnimation{
     }
 
     @Override
-    public Point getSprite() {
+    public Point getSprites() {
         return sprite;
     }
 
@@ -74,5 +83,10 @@ public class Idle implements SimpleAnimation{
     @Override
     public void setAnimated() {
         isAnimated = true;
+    }
+
+    @Override
+    public void setNotAnimated() {
+        isAnimated = false;
     }
 }

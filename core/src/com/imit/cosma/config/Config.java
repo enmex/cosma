@@ -1,17 +1,16 @@
 package com.imit.cosma.config;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.XmlReader;
+import static com.badlogic.gdx.utils.XmlReader.Element;
 
-import static com.badlogic.gdx.utils.XmlReader.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.XmlReader;
 
 public class Config {
     private static Config instance;
 
     public int ANIMATION_SPEED;
     public float ANIMATION_DURATION = 30;
+    public int INFINITY_ANIMATION_DURATION = 9999;
     public int FRAMES_AMOUNT;
     public float ROTATION_VELOCITY = 2f;
     public int SHIP_SPRITE_SIZE = 128;

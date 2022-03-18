@@ -16,9 +16,6 @@ import java.util.List;
 
 public class InfoPanel {
 
-    private final double PANEL_TO_SCREEN_RATIO = 0.3;
-    private final double PANEL_OFFSET = 0.03;
-
     private TextureRegion panel;
     private SelectedCellDetails selectedCellDetails;
     private List<Button> weaponButtons;
@@ -34,8 +31,6 @@ public class InfoPanel {
     private BitmapFont font;
 
     private ShapeRenderer healthBar;
-    private final double HEALTH_BAR_WIDTH_TO_PANEL_RATIO = 0.6;
-    private final double HEALTH_BAR_HEIGHT_TO_PANEL_RATIO = 0.1;
     private double healthToBarRatio;
     private int healthBarWidth, healthBarHeight;
 
@@ -61,22 +56,21 @@ public class InfoPanel {
         batch.begin();
         batch.draw(panel, panelLeft, panelBottom, panelWidth, panelHeight);
         batch.end();
-
-       // selectedCellDetails.show();
     }
 
     public void updateContent(Content content){
         selectedCellDetails.update(content);
         selectedCellDetails.init(panelLeft, panelBottom, panelWidth, panelHeight);
+        selectedCellDetails.show();
     }
 
     public void resize(int width, int height){
         panelLeft = 0;
-        panelBottom = (int) (height * PANEL_OFFSET);
+        panelBottom = (int) (height * Config.getInstance().PANEL_OFFSET);
         panelWidth = width;
-        panelHeight = (int) (height * PANEL_TO_SCREEN_RATIO);
-        healthBarWidth = (int) (panelWidth * HEALTH_BAR_WIDTH_TO_PANEL_RATIO);
-        healthBarHeight = (int) (panelHeight * HEALTH_BAR_HEIGHT_TO_PANEL_RATIO);
+        panelHeight = (int) (height * Config.getInstance().PANEL_TO_SCREEN_RATIO);
+        healthBarWidth = (int) (panelWidth * Config.getInstance().HEALTH_BAR_WIDTH_TO_PANEL_RATIO);
+        healthBarHeight = (int) (panelHeight * Config.getInstance().HEALTH_BAR_HEIGHT_TO_PANEL_RATIO);
 
         selectedCellDetails.init(panelLeft, panelBottom, panelWidth, panelHeight);
     }

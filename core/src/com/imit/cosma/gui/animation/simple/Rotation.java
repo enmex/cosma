@@ -54,7 +54,7 @@ public class Rotation implements SimpleAnimation{
     }
 
     @Override
-    public Point getSprite() {
+    public Point getSprites() {
         return sprite;
     }
 
@@ -89,6 +89,11 @@ public class Rotation implements SimpleAnimation{
 
     public void setAnimated(){
         isAnimated = true;
+    }
+
+    @Override
+    public void setNotAnimated() {
+        isAnimated = false;
     }
 
     private boolean isArrived(){

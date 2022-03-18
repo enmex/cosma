@@ -1,5 +1,7 @@
 package com.imit.cosma.gui.animation.compound;
 
+import static com.imit.cosma.config.Config.*;
+
 import com.imit.cosma.gui.animation.AnimationType;
 import com.imit.cosma.gui.animation.simple.Idle;
 import com.imit.cosma.gui.animation.simple.Movement;
@@ -12,13 +14,12 @@ import com.imit.cosma.util.Point;
 
 import java.util.List;
 
-import static com.imit.cosma.config.Config.*;
-
 public class AttackAnimation extends AnimationType {
     private List<Weapon> weaponList;
     private Point shipAtlas;
 
     private SimpleAnimation shipRotation, shipRotationToDefault;
+    private SimpleAnimation shipStatic;
 
     private Point sourceBoardCell;
 
@@ -26,6 +27,7 @@ public class AttackAnimation extends AnimationType {
         super(((Spaceship)content).getWeapons().size() + 2, content.getSide().getDefaultRotation());
         this.weaponList = ((Spaceship)content).getWeapons();
         shipAtlas = content.getSprite();
+        shipStatic = new Idle(shipAtlas, getInstance().SHIP_SPRITE_SIZE, 0, 0, getInstance().INFINITY_ANIMATION_DURATION);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class AttackAnimation extends AnimationType {
 
         shipRotation = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation, defaultRotation + rotation * Math.signum(fromX - toX));
         shipRotationToDefault = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE,  defaultRotation + rotation * Math.signum(fromX - toX), defaultRotation);
-
+        shipStatic.init(fromX, fromY, toX, toY, defaultRotation + rotation * Math.signum(fromX - toX));
         shipRotation.init(fromX, fromY, toX, toY, rotation);
         shipRotationToDefault.init(fromX, fromY, toX, toY, rotation);
 
@@ -64,11 +66,23 @@ public class AttackAnimation extends AnimationType {
         super.render();
         if(currentPhase < phase.size()) {
             offset = phase.get(currentPhase).getOffset();
+
+            if(currentPhase > 0){
+                shipStatic.render();
+            }
+        }
+        else{
+            shipStatic.setNotAnimated();
         }
     }
 
     @Override
     public boolean isAnimated(int x, int y) {
         return sourceBoardCell.x == x && sourceBoardCell.y == y;
+    }
+
+    @Override
+    public boolean hasSeveralAnimatedObjects() {
+        return true;
     }
 }

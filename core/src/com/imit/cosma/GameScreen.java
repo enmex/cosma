@@ -1,5 +1,7 @@
 package com.imit.cosma;
 
+import static com.imit.cosma.config.Config.getInstance;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -9,8 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.imit.cosma.gui.infopanel.InfoPanel;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.rules.Side;
-
-import static com.imit.cosma.config.Config.*;
 
 public class GameScreen implements Screen {
 

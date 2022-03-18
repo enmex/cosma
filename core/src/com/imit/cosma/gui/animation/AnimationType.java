@@ -60,7 +60,7 @@ public abstract class AnimationType {
         return phase.get(currentPhase).getRotation();
     }
     public Point getAtlas(){
-        return phase.get(currentPhase).getSprite();
+        return phase.get(currentPhase).getSprites();
     }
     public int getSpriteSize(){
         return phase.get(currentPhase).getSpriteSize();
@@ -82,4 +82,6 @@ public abstract class AnimationType {
         destinationPoint.set(-1, -1);
         destinationVector.set(0 ,0);
     }
+
+    public abstract boolean hasSeveralAnimatedObjects();
 }

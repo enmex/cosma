@@ -111,8 +111,8 @@ public class PlayingField {
     private void drawBoardObjects(){
         //draw idle objs
         batch.begin();
-        for(int y = 0; y < Board.BOARD_SIZE; y++){
-            for(int x = 0; x < Board.BOARD_SIZE; x++){
+        for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
+            for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && !contentAnimation.isAnimatedObject(x, y)) {
                     Point atlas = board.getSprite(x, y);
                     sprite.setRegion(atlas.x, atlas.y, 128, 128);

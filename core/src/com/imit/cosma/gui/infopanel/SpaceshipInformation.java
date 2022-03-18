@@ -2,20 +2,19 @@ package com.imit.cosma.gui.infopanel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.imit.cosma.model.board.Content;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.model.spaceship.Spaceship;
 
 public class SpaceshipInformation extends ContentInformation{
 
-    private SelectedCellDetails parent;
-
     private SpriteBatch batch;
 
+    private Button moveModeButton, attackModeButton;
     //healthBar
     private ShapeRenderer healthBar;
     private int healthBarX, healthBarY, healthBarWidth, healthBarHeight;
@@ -31,7 +30,7 @@ public class SpaceshipInformation extends ContentInformation{
     private int fontX, fontY;
 
     public SpaceshipInformation(SelectedCellDetails parent, Spaceship spaceship){
-        this.parent = parent;
+        super(parent);
         this.spaceship = spaceship;
     }
 
@@ -51,7 +50,7 @@ public class SpaceshipInformation extends ContentInformation{
         spaceshipWidth = (int) (0.4 * panelWidth);
         spaceshipHeight = (int) (0.7 * panelHeight);
 
-        font = new BitmapFont(Gdx.files.internal("font\\font.fnt"), false);
+        font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         fontX = healthBarX;
         fontY = (int) (healthBarY + 0.75*healthBarHeight);
         font.getData().setScale(2);
@@ -80,12 +79,5 @@ public class SpaceshipInformation extends ContentInformation{
         batch.end();
     }
 
-    @Override
-    public void update(Content content) {
-        if (content.isShip()) {
-            spaceship = (Spaceship) content;
-        } else {
-            parent.setContentInformation(new SpaceInformation(parent));
-        }
-    }
+
 }

@@ -8,11 +8,12 @@ public interface SimpleAnimation {
 
     void init(int fromX, int fromY, int toX, int toY, float rotation);
     void render();
-    Point getSprite();
+    Point getSprites();
     int getSpriteSize();
     float getRotation();
     boolean isAnimated();
     void setAnimated();
+    void setNotAnimated();
     Vector getOffset();
 
     PlayMode getPlayMode();

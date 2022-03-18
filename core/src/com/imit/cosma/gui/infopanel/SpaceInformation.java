@@ -1,14 +1,11 @@
 package com.imit.cosma.gui.infopanel;
 
 import com.imit.cosma.model.board.Content;
-import com.imit.cosma.model.spaceship.Spaceship;
 
 public class SpaceInformation extends ContentInformation{
 
-    private SelectedCellDetails parent;
-
     public SpaceInformation(SelectedCellDetails parent){
-        this.parent = parent;
+        super(parent);
     }
 
     @Override
@@ -19,8 +16,6 @@ public class SpaceInformation extends ContentInformation{
 
     @Override
     public void update(Content content) {
-        if(content.isShip()){
-            parent.setContentInformation(new SpaceshipInformation(parent, (Spaceship) content));
-        }
+
     }
 }
