@@ -14,6 +14,11 @@ public class Vector {
         this.y = y;
     }
 
+    public Vector(Point source, Point target){
+        this.x = target.x - source.x;
+        this.y = target.y - source.y;
+    }
+
     public void add(Vector vector){
         this.x += vector.x;
         this.y += vector.y;

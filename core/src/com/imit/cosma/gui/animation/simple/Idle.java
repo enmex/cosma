@@ -17,17 +17,29 @@ public class Idle implements SimpleAnimation{
 
     private final Vector offset;
 
+    private int frames;
+
     private boolean isAnimated;
+
+    public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, int duration, float rotation, int frames){
+        this.sprite = sprite;
+        this.spriteSize = spriteSize;
+        offset = new Vector(targetOffsetX, targetOffsetY);
+        this.duration = duration;
+        this.rotation = rotation;
+        this.frames = frames;
+    }
 
     public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY){
         this(sprite, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
     }
 
     public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
-        this.sprite = sprite;
-        this.spriteSize = spriteSize;
-        offset = new Vector(targetOffsetX, targetOffsetY);
-        this.duration = duration;
+        this(sprite, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 7); //TODO set in config
+    }
+
+    public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
+        this(sprite, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION,rotation, frames);
     }
 
 
@@ -58,7 +70,7 @@ public class Idle implements SimpleAnimation{
 
     @Override
     public float getRotation() {
-        return 0;
+        return rotation;
     }
 
     @Override
@@ -78,8 +90,9 @@ public class Idle implements SimpleAnimation{
 
     @Override
     public int getFramesAmount() {
-        return 7;
+        return frames;
     }
+
     @Override
     public void setAnimated() {
         isAnimated = true;

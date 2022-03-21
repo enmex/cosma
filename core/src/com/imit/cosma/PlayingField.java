@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.AnimationType;
+import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.gui.animation.compound.AttackAnimation;
 import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.gui.animation.compound.MovementAnimation;

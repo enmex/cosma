@@ -8,9 +8,7 @@ import com.imit.cosma.util.Vector;
 public class Rotation implements SimpleAnimation{
 
     private float rotationVelocity;
-    private float rotation;
     private float currentRotation;
-    private float initialRotation;
     private float targetRotation;
 
     private Point sprite;
@@ -23,15 +21,12 @@ public class Rotation implements SimpleAnimation{
     //initialRotation - текущий поворот
     //targetRotation - конечный поворот
     public Rotation(Point sprite, int spriteSize, float initialRotation, float targetRotation){
-        rotation = targetRotation - initialRotation;
         currentRotation = initialRotation;
         rotationVelocity = Config.getInstance().ROTATION_VELOCITY; //скорость поворота
 
         if(targetRotation != initialRotation){
             rotationVelocity *= Math.signum(targetRotation - initialRotation); //задаем ориентацию
         }
-
-        this.initialRotation = initialRotation;
         this.targetRotation = targetRotation;
 
         this.sprite = sprite;
@@ -39,9 +34,7 @@ public class Rotation implements SimpleAnimation{
     }
 
     @Override
-    public void init(int fromX, int fromY, int toX, int toY, float rotation) {
-
-    }
+    public void init(int fromX, int fromY, int toX, int toY, float rotation) {}
 
     @Override
     public void render() {

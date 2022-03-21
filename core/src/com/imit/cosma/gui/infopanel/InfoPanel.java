@@ -56,12 +56,14 @@ public class InfoPanel {
         batch.begin();
         batch.draw(panel, panelLeft, panelBottom, panelWidth, panelHeight);
         batch.end();
+        //selectedCellDetails.show();
     }
 
     public void updateContent(Content content){
-        selectedCellDetails.update(content);
+        //selectedCellDetails.setContentInformation();
+        //selectedCellDetails.update(content);
         selectedCellDetails.init(panelLeft, panelBottom, panelWidth, panelHeight);
-        selectedCellDetails.show();
+        //selectedCellDetails.show();
     }
 
     public void resize(int width, int height){

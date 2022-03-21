@@ -8,9 +8,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.gui.animation.compound.AnimationData;
+import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.gui.animation.compound.AttackAnimation;
 import com.imit.cosma.util.Path;
-//может анимировать что-то одно
+import com.imit.cosma.util.Point;
+
 public class ContentAnimation {
     private final float ANIMATION_DURATION = 0.1f;
     private final TextureRegion SPACESHIP_ATLAS = new TextureRegion(new Texture(Config.getInstance().SPACESHIP_PATH));
@@ -36,35 +39,44 @@ public class ContentAnimation {
     }
 
     private void setRegion(AnimationType animationType){
-        int framesAmount = animationType.getFramesAmount();
-        this.frames = new Array<>(framesAmount);
-        for(int i = 0; i < framesAmount; i++){
-            this.frames.add(new TextureRegion(SPACESHIP_ATLAS,
-                    animationType.getAtlas().x + animationType.getSpriteSize() * (i+1), animationType.getAtlas().y, animationType.getSpriteSize(), animationType.getSpriteSize()));
-        }
-        spriteAnimation = new Animation<>(ANIMATION_DURATION, this.frames);
-        spriteAnimation.setPlayMode(animationType.getPlayMode());
         this.animationType = animationType;
     }
 
-    public void init(AnimationType animationType, Path path, int cellWidth, int cellHeight, int boardY){
-        animationType.init(path.getDestination().x, path.getDestination().y, path.getDeparture().x * cellWidth,
-                path.getDeparture().y * cellHeight + boardY
-                , path.getDestination().x * cellWidth, path.getDestination().y * cellHeight + boardY);
+    public void init(AnimationType animationType, Path boardPath, int cellWidth, int cellHeight, int boardY){
+        Path screenPath = new Path(new Point(boardPath.getDeparture().x * cellWidth, boardPath.getDeparture().y * cellHeight + boardY), new Point(boardPath.getDestination().x * cellWidth, boardPath.getDestination().y * cellHeight + boardY));
+        animationType.init(boardPath, screenPath);
         setRegion(animationType);
+    }
+
+    private void updateSpriteAnimation(AnimationData data){
+        int framesAmount = data.getFramesAmount();
+        this.frames = new Array<>(framesAmount);
+        for(int i = 0; i < framesAmount; i++){
+            this.frames.add(new TextureRegion(SPACESHIP_ATLAS,
+                    data.getAtlas().x + data.getSpriteSize() * (i+1), data.getAtlas().y, data.getSpriteSize(), data.getSpriteSize()));
+        }
+        spriteAnimation = new Animation<>(ANIMATION_DURATION, this.frames);
+        spriteAnimation.setPlayMode(data.getPlayMode());
     }
 
     public void render(int cellWidth, int cellHeight){
         elapsedTime += Gdx.graphics.getDeltaTime();
 
-        batch.begin();
-        sprite.setRegion(spriteAnimation.getKeyFrame(elapsedTime, true));
-        sprite.setBounds(animationType.path.getDeparture().x + animationType.offset.getX(),
-                animationType.path.getDeparture().y + animationType.offset.getY(), cellWidth, cellHeight);
-        sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
-        sprite.setRotation(animationType.getCurrentRotation());
-        sprite.draw(batch);
-        batch.end();
+        for(AnimationData data : animationType.getDatas()) {
+            if(data.getCurrentPhase().isAnimated()) {
+                updateSpriteAnimation(data);
+                batch.begin();
+
+                sprite.setRegion(spriteAnimation.getKeyFrame(elapsedTime, true));
+                sprite.setBounds(data.getPath().getDeparture().x + data.getOffset().getX(),
+                        data.getPath().getDeparture().y + data.getOffset().getY(), cellWidth, cellHeight);
+                sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
+                sprite.setRotation(data.getCurrentRotation());
+                sprite.draw(batch);
+
+                batch.end();
+            }
+        }
 
         setRegion(animationType);
         animationType.render();

@@ -2,7 +2,7 @@ package com.imit.cosma.gui.animation.compound;
 
 import static com.imit.cosma.config.Config.*;
 
-import com.imit.cosma.gui.animation.AnimationType;
+import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.Idle;
 import com.imit.cosma.gui.animation.simple.Movement;
 import com.imit.cosma.gui.animation.simple.Rotation;
@@ -10,16 +10,17 @@ import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
+import com.imit.cosma.util.Vector;
 
 import java.util.List;
 
 public class AttackAnimation extends AnimationType {
-    private List<Weapon> weaponList;
-    private Point shipAtlas;
-
-    private SimpleAnimation shipRotation, shipRotationToDefault;
-    private SimpleAnimation shipStatic;
+    private final List<Weapon> weaponList;
+    private final Point shipAtlas;
+    private final int mainAnimationIndex;
+    private final int standingShipAnimationIndex;
 
     private Point sourceBoardCell;
 
@@ -27,62 +28,85 @@ public class AttackAnimation extends AnimationType {
         super(((Spaceship)content).getWeapons().size() + 2, content.getSide().getDefaultRotation());
         this.weaponList = ((Spaceship)content).getWeapons();
         shipAtlas = content.getSprite();
-        shipStatic = new Idle(shipAtlas, getInstance().SHIP_SPRITE_SIZE, 0, 0, getInstance().INFINITY_ANIMATION_DURATION);
+        mainAnimationIndex = 0;
+        standingShipAnimationIndex = 1;
     }
 
     @Override
-    public void init(int selectedBoardX, int selectedBoardY, int fromX, int fromY, int toX, int toY) {
-        super.init(selectedBoardX, selectedBoardY, fromX, fromY, toX, toY);
+    public void init(Path boardPath, Path screenPath) {
+        super.init(boardPath, screenPath);
 
-        sourceBoardCell = new Point(selectedBoardX * fromX / toX, selectedBoardY * fromY / toY);
+        this.sourceBoardCell = boardPath.getDeparture();
 
-        rotation *= Math.signum(rotation - defaultRotation);
+        //init main animation
+        datas.get(mainAnimationIndex).rotation *= Math.signum(datas.get(0).rotation - defaultRotation);
 
-        shipRotation = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation, defaultRotation + rotation * Math.signum(fromX - toX));
-        shipRotationToDefault = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE,  defaultRotation + rotation * Math.signum(fromX - toX), defaultRotation);
-        shipStatic.init(fromX, fromY, toX, toY, defaultRotation + rotation * Math.signum(fromX - toX));
-        shipRotation.init(fromX, fromY, toX, toY, rotation);
-        shipRotationToDefault.init(fromX, fromY, toX, toY, rotation);
+        SimpleAnimation shipRotation = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x));
+        SimpleAnimation shipRotationToDefault = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x), defaultRotation);
+        shipRotation.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, datas.get(mainAnimationIndex).rotation);
+        shipRotationToDefault.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, datas.get(mainAnimationIndex).rotation);
 
-        phase.add(shipRotation);
+        datas.get(mainAnimationIndex).phase.add(shipRotation);
 
         for(Weapon weapon : weaponList){
             Movement movement = new Movement(weapon.getShotSprite(), getInstance().SHOT_SPRITE_SIZE);
-            Idle idle = new Idle(weapon.getExplosionSprite(), getInstance().SHOT_SPRITE_SIZE, toX - fromX, toY - fromY);
+            Idle idle = new Idle(weapon.getExplosionSprite(), getInstance().SHOT_SPRITE_SIZE, screenPath.getDestination().x - screenPath.getDeparture().x, screenPath.getDestination().y - screenPath.getDeparture().y);
 
-            movement.init(fromX, fromY, toX, toY, defaultRotation + rotation * Math.signum(fromX - toX));
+            movement.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x));
 
             phase.add(movement);
             phase.add(idle);
         }
 
-        phase.add(shipRotationToDefault);
-        currentPhase = 0;
-        phase.get(0).setAnimated();
+        datas.get(mainAnimationIndex).phase.add(shipRotationToDefault);
+        datas.get(mainAnimationIndex).phase.get(0).setAnimated();
+
+        //init staticShip
+        AnimationData staticShip = new AnimationData();
+        Idle standing = new Idle(shipAtlas, getInstance().SHIP_SPRITE_SIZE, 0, 0,
+                defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x), getInstance().FRAMES_AMOUNT_SHIPS);
+        staticShip.phase = new Array<>(1);
+        staticShip.phase.add(standing);
+        staticShip.offset = new Vector();
+        staticShip.path = new Path(screenPath.getDeparture(), screenPath.getDeparture());
+        staticShip.currentPhase = 0;
+
+        datas.add(staticShip);
     }
 
     @Override
     public void render() {
-        super.render();
-        if(currentPhase < phase.size()) {
-            offset = phase.get(currentPhase).getOffset();
+        AnimationData data = datas.get(mainAnimationIndex);
+        int currentPhase = data.currentPhase;
 
-            if(currentPhase > 0){
-                shipStatic.render();
-            }
+        //render standing ship between first and last phases
+        AnimationData standingShipData = datas.get(standingShipAnimationIndex);
+
+        if(currentPhase > 0 && currentPhase < data.phase.size - 1){
+            standingShipData.getCurrentPhase().setAnimated();
         }
         else{
-            shipStatic.setNotAnimated();
+            standingShipData.getCurrentPhase().setNotAnimated();
+        }
+
+        datas.get(mainAnimationIndex).offset = datas.get(mainAnimationIndex).phase.get(currentPhase).getOffset();
+
+        //render shots from second to last-1 phases
+        data.phase.get(data.currentPhase).render();
+
+        if (!data.phase.get(data.currentPhase).isAnimated()) {
+            data.currentPhase++;
+            if(data.currentPhase >= data.phase.size){
+                clear();
+            }
+            else {
+                data.phase.get(data.currentPhase).setAnimated();
+            }
         }
     }
 
     @Override
     public boolean isAnimated(int x, int y) {
         return sourceBoardCell.x == x && sourceBoardCell.y == y;
-    }
-
-    @Override
-    public boolean hasSeveralAnimatedObjects() {
-        return true;
     }
 }

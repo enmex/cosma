@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.spaceship.Spaceship;
 
 public class SpaceshipInformation extends ContentInformation{
@@ -58,6 +59,7 @@ public class SpaceshipInformation extends ContentInformation{
 
     @Override
     public void show() {
+        System.out.println("showed");
         //showing ship
         batch.begin();
         spaceshipSprite.setBounds(spaceshipX, spaceshipY, spaceshipWidth, spaceshipHeight);
@@ -79,5 +81,10 @@ public class SpaceshipInformation extends ContentInformation{
         batch.end();
     }
 
-
+    @Override
+    public void update(Content content) {
+        if(content.isShip()){
+            spaceship = (Spaceship) content;
+        }
+    }
 }

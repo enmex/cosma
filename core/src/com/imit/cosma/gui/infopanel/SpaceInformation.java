@@ -12,10 +12,13 @@ public class SpaceInformation extends ContentInformation{
     public void init(int panelLeft, int panelBottom, int panelWidth, int panelHeight) { }
 
     @Override
-    public void show() {}
+    public void show() {
+    }
 
     @Override
     public void update(Content content) {
-
+        if(!content.isShip()){
+            parent.update(content);
+        }
     }
 }

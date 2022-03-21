@@ -1,6 +1,6 @@
 package com.imit.cosma.fabric;
 
-import com.imit.cosma.gui.animation.AnimationType;
+import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.gui.animation.compound.AttackAnimation;
 import com.imit.cosma.gui.animation.compound.MovementAnimation;
 import com.imit.cosma.model.board.BoardState;

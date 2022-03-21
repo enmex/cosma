@@ -11,7 +11,7 @@ public class Config {
     public int ANIMATION_SPEED;
     public float ANIMATION_DURATION = 30;
     public int INFINITY_ANIMATION_DURATION = 9999;
-    public int FRAMES_AMOUNT;
+    public int FRAMES_AMOUNT_SHIPS = 4;
     public float ROTATION_VELOCITY = 2f;
     public int SHIP_SPRITE_SIZE = 128;
     public int SHOT_SPRITE_SIZE = 64;
