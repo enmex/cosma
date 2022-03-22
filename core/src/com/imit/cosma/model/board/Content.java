@@ -1,5 +1,6 @@
 package com.imit.cosma.model.board;
 
+import com.imit.cosma.gui.infopanel.ContentInformation;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.rules.StepMode;

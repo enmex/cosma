@@ -66,6 +66,7 @@ public class Cell {
     }
 
     public int getDamageAmount(){
+        System.out.println(content);
         return content.isShip() ? ((Spaceship)content).getDamage() : 0;
     }
 

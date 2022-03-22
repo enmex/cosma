@@ -28,9 +28,10 @@ public class Spaceship implements Content {
     public Spaceship(Side side) {
         this.side = side;
         stepMode = StepMode.MOVING;
-        weaponRange = 3; //TODO
+        weaponRange = 3; //TODO refactor
         weapons = new ArrayList<>();
         selectedWeapons = new ArrayList<>();
+        damagePoints = 0;
     }
 
     @Override
@@ -78,7 +79,9 @@ public class Spaceship implements Content {
     }
 
     public void addWeapon(){
-        weapons.add(Randomiser.getRandomWeapon());
+        Weapon weapon = Randomiser.getRandomWeapon();
+        damagePoints += weapon.getDamage();
+        weapons.add(weapon);
     }
 
     public void setMoves(MovingStyle moves){

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.imit.cosma.config.Config;
@@ -16,14 +17,15 @@ public class SpaceshipInformation extends ContentInformation{
     private SpriteBatch batch;
 
     private Button moveModeButton, attackModeButton;
+
     //healthBar
     private ShapeRenderer healthBar;
     private int healthBarX, healthBarY, healthBarWidth, healthBarHeight;
-    private int healthToBarRatio;
+    private float healthToBarRatio;
 
     //spaceship
     private Spaceship spaceship;
-    private Sprite spaceshipSprite;
+    private Sprite sprite;
     private int spaceshipX, spaceshipY, spaceshipWidth, spaceshipHeight;
 
     //hp points
@@ -33,10 +35,13 @@ public class SpaceshipInformation extends ContentInformation{
     public SpaceshipInformation(SelectedCellDetails parent, Spaceship spaceship){
         super(parent);
         this.spaceship = spaceship;
+        this.sprite = new Sprite(contentTexture);
     }
 
     @Override
     public void init(int panelLeft, int panelBottom, int panelWidth, int panelHeight) {
+        super.init(panelLeft, panelBottom, panelWidth, panelHeight);
+
         batch = new SpriteBatch();
         healthBar = new ShapeRenderer();
 
@@ -58,33 +63,45 @@ public class SpaceshipInformation extends ContentInformation{
     }
 
     @Override
-    public void show() {
-        System.out.println("showed");
+    public void render() {
+        //showing background
+        //TODO перенести в родителя
+        batch.begin();
+        sprite.setRegion(256, 0, 151, 112); //TODO config
+        sprite.setBounds(backgroundLeft, backgroundBottom, backgroundWidth, backgroundHeight);
+        sprite.draw(batch);
+        batch.end();
+
         //showing ship
         batch.begin();
-        spaceshipSprite.setBounds(spaceshipX, spaceshipY, spaceshipWidth, spaceshipHeight);
-        spaceshipSprite.setRotation(270);
-        spaceshipSprite.draw(batch);
+        sprite.setRegion(256, 112 + 112 * spaceship.getSkeleton().getId(), 151, 112);
+        sprite.setBounds(backgroundLeft, backgroundBottom, backgroundWidth, backgroundHeight);
+        sprite.draw(batch);
         batch.end();
 
         //showing healthBar
         healthBar.begin(ShapeRenderer.ShapeType.Filled);
         healthBar.setColor(Color.RED);
-        healthBar.rect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+        healthBar.rect(healthBarX, healthBarY, healthBarWidth * healthToBarRatio, healthBarHeight);
         healthBar.end();
 
         //showing hp points
         batch.begin();
-        font.draw(batch, spaceship.getHealthPoints() + "/" + spaceship.getMaxHealthPoints() + "HP",
+        font.draw(batch, spaceship.getHealthPoints() + " OF " + spaceship.getMaxHealthPoints() + "HP",
                 fontX, fontY,
                 healthBarWidth, 1, true);
         batch.end();
+
+        healthToBarRatio = (float)spaceship.getHealthPoints() / spaceship.getMaxHealthPoints();
     }
 
     @Override
     public void update(Content content) {
         if(content.isShip()){
             spaceship = (Spaceship) content;
+        }
+        else{
+            parent.setContentInformation(new SpaceInformation(parent));
         }
     }
 }

@@ -18,8 +18,8 @@ public class SelectedCellDetails {
         contentInformation.init(panelLeft, panelBottom, panelWidth, panelHeight);
     }
 
-    public void show(){
-        contentInformation.show();
+    public void render(){
+        contentInformation.render();
     }
 
     public void update(Content content){

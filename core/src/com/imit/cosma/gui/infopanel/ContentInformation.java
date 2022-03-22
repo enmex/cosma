@@ -8,6 +8,8 @@ import com.imit.cosma.model.board.Content;
 public abstract class ContentInformation {
 
     protected TextureRegion contentTexture;
+    protected int panelLeft, panelBottom, panelWidth, panelHeight;
+    protected int backgroundLeft, backgroundBottom, backgroundWidth, backgroundHeight;
 
     protected SelectedCellDetails parent;
 
@@ -16,10 +18,18 @@ public abstract class ContentInformation {
         contentTexture = new TextureRegion(new Texture(Config.getInstance().INFORMATION_PANEL_PATH));
     }
 
-    public abstract void init(int panelLeft, int panelBottom, int panelWidth, int panelHeight);
-    public abstract void show();
+    public void init(int panelLeft, int panelBottom, int panelWidth, int panelHeight){
+        this.panelLeft = panelLeft;
+        this.panelBottom = panelBottom;
+        this.panelWidth = panelWidth;
+        this.panelHeight = panelHeight;
 
-    public void update(Content content){
-        parent.update(content);
+        backgroundLeft = panelLeft;
+        backgroundBottom = (int) (2.2 * panelBottom);
+        backgroundWidth = (int) (0.59 * panelWidth); //TODO config
+        backgroundHeight = (int) (0.88 * panelHeight);
     }
+    public abstract void render();
+
+    public abstract void update(Content content);
 }

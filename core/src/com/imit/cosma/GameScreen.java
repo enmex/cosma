@@ -66,12 +66,12 @@ public class GameScreen implements Screen {
 
         playingField.render(touchedX, touchedY);
         infoPanel.render();
-        if(current != playingField.getSelectedContent()) {
+        if(current != playingField.getSelectedContent() && playingField.getTurn() == Side.PLAYER) {
             current = playingField.getSelectedContent();
             infoPanel.updateContent(current);
         }
 
-        drawTurn(playingField.getTurn());
+        //drawTurn(playingField.getTurn());
     }
 
     private void drawTurn(Side side){
