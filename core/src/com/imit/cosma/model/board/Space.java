@@ -67,4 +67,9 @@ public class Space implements Content{
     public int getDamage() {
         return 0;
     }
+
+    @Override
+    public int getHealthPoints() {
+        return 0;
+    }
 }

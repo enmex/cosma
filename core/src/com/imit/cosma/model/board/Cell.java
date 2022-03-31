@@ -66,8 +66,11 @@ public class Cell {
     }
 
     public int getDamageAmount(){
-        System.out.println(content);
         return content.isShip() ? ((Spaceship)content).getDamage() : 0;
+    }
+
+    public int getHealthPoints(){
+        return content.getHealthPoints();
     }
 
     public void setDamage(int damage){

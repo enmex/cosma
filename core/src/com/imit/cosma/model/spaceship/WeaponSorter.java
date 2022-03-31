@@ -1,4 +1,4 @@
-package com.imit.cosma.util;
+package com.imit.cosma.model.spaceship;
 
 import com.imit.cosma.model.spaceship.Weapon;
 
@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class Sorter {
+public class WeaponSorter {
 
     public static List<Weapon> sortByRange(List<Weapon> weapons){
         Arrays.sort(weapons.toArray(), new Comparator<Object>() {

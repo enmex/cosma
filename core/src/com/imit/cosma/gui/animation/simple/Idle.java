@@ -42,7 +42,6 @@ public class Idle implements SimpleAnimation{
         this(sprite, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION,rotation, frames);
     }
 
-
     @Override
     public void init(int fromX, int fromY, int toX, int toY, float rotation) {
         this.rotation = rotation;

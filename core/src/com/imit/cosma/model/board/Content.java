@@ -26,4 +26,6 @@ public interface Content {
     void setDamage(int damage);
 
     int getDamage();
+
+    int getHealthPoints();
 }

@@ -21,6 +21,14 @@ public class MoveGenerator {
         return paths.get((int) (Math.random() * paths.size()));
     }
 
+    public int getPathsSize(){
+        return paths.size();
+    }
+
+    public List<Path> getPaths(){
+        return paths;
+    }
+
     public void update(Board board){
         paths.clear();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){

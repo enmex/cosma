@@ -66,4 +66,9 @@ public class BlackHole implements Content {
         //TODO
         return 0;
     }
+
+    @Override
+    public int getHealthPoints() {
+        return 0;
+    }
 }

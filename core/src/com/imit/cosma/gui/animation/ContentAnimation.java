@@ -53,7 +53,7 @@ public class ContentAnimation {
         this.frames = new Array<>(framesAmount);
         for(int i = 0; i < framesAmount; i++){
             this.frames.add(new TextureRegion(SPACESHIP_ATLAS,
-                    data.getAtlas().x + data.getSpriteSize() * (i+1), data.getAtlas().y, data.getSpriteSize(), data.getSpriteSize()));
+                    data.getAtlas().x + data.getSpriteSize() * i, data.getAtlas().y, data.getSpriteSize(), data.getSpriteSize()));
         }
         spriteAnimation = new Animation<>(ANIMATION_DURATION, this.frames);
         spriteAnimation.setPlayMode(data.getPlayMode());

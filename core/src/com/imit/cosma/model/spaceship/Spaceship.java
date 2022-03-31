@@ -5,7 +5,6 @@ import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.Side;
-import com.imit.cosma.util.Randomiser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class Spaceship implements Content {
 
     public Spaceship(Side side) {
         this.side = side;
-        stepMode = StepMode.MOVING;
+        stepMode = StepMode.MOVE;
         weaponRange = 3; //TODO refactor
         weapons = new ArrayList<>();
         selectedWeapons = new ArrayList<>();
@@ -65,7 +64,7 @@ public class Spaceship implements Content {
     }
 
     public void setSkeleton() {
-        this.skeleton = Randomiser.getRandomSkeleton();
+        this.skeleton = ShipRandomizer.getRandomSkeleton();
         healthPoints = skeleton.getHealthPoints();
         this.weaponAmount = skeleton.getWeaponCapacity();
     }
@@ -79,7 +78,7 @@ public class Spaceship implements Content {
     }
 
     public void addWeapon(){
-        Weapon weapon = Randomiser.getRandomWeapon();
+        Weapon weapon = ShipRandomizer.getRandomWeapon();
         damagePoints += weapon.getDamage();
         weapons.add(weapon);
     }
@@ -118,6 +117,7 @@ public class Spaceship implements Content {
         return damagePoints;
     }
 
+    @Override
     public int getHealthPoints() {
         return healthPoints;
     }

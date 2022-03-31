@@ -107,6 +107,6 @@ public class AttackAnimation extends AnimationType {
 
     @Override
     public boolean isAnimated(int x, int y) {
-        return sourceBoardCell.x == x && sourceBoardCell.y == y;
+        return sourceBoardCell.x == x && sourceBoardCell.y == y && datas.size != 0;
     }
 }

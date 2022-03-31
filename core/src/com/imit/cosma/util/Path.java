@@ -1,5 +1,7 @@
 package com.imit.cosma.util;
 
+import com.imit.cosma.util.Point;
+
 public class Path {
 
     private Point from, to;

@@ -2,6 +2,8 @@ package com.imit.cosma.model.board;
 
 import static com.imit.cosma.config.Config.getInstance;
 import static com.imit.cosma.model.board.BoardState.IDLE;
+import static com.imit.cosma.model.board.BoardState.SHIP_ATTACKING;
+import static com.imit.cosma.model.board.BoardState.SHIP_MOVING;
 
 import com.imit.cosma.ai.AI;
 import com.imit.cosma.model.rules.Attack;
@@ -11,7 +13,7 @@ import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
-import com.imit.cosma.util.Randomiser;
+import com.imit.cosma.model.spaceship.ShipRandomizer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +49,7 @@ public class Board {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(Side.PLAYER)
                         .addSkeleton()
-                        .addWeapon(Randomiser.getRandomAmount())
+                        .addWeapon(ShipRandomizer.getRandomAmount())
                         .addMoves().build();
                 cells[y][x] = new Cell(spaceship);
             }
@@ -65,7 +67,7 @@ public class Board {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(Side.ENEMY)
                         .addSkeleton()
-                        .addWeapon(Randomiser.getRandomAmount())
+                        .addWeapon(ShipRandomizer.getRandomAmount())
                         .addMoves().build();
                 cells[y][x] = new Cell(spaceship);
             }
@@ -91,18 +93,18 @@ public class Board {
             if (selectedCanMoveTo(selectedX, selectedY)) {
                 setSelectedPosition(selectedX, selectedY);
                 sideTurns++;
-                boardState = BoardState.SHIP_MOVING;
+                boardState = SHIP_MOVING;
             } else if (selectedCanFireTo(selectedX, selectedY)) {
                 damageShip(selectedX, selectedY, selected.getDamageAmount());
                 sideTurns++;
-                boardState = BoardState.SHIP_ATTACKING;
+                boardState = SHIP_ATTACKING;
             }
             else{
                 boardState = IDLE;
             }
         }
         else{
-            boardState = BoardState.IDLE;
+            boardState = IDLE;
         }
         return boardState;
     }
@@ -121,33 +123,27 @@ public class Board {
         selectedX = departure.x;
         selectedY = departure.y;
 
-        if(isShip(destination.x, destination.y)){
-            selected.setStepMode(StepMode.FIRING);
+        if (isShip(destination.x, destination.y)) {
+            selected.setStepMode(StepMode.ATTACK);
         }
 
-        if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn){
+        if (selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
             if (selectedCanMoveTo(destination.x, destination.y)) {
                 setSelectedPosition(destination.x, destination.y);
                 sideTurns++;
-                boardState = BoardState.SHIP_MOVING;
+                boardState = SHIP_MOVING;
 
                 selected = cells[destination.y][destination.x];
                 selectedX = destination.x;
                 selectedY = destination.y;
-            }
-            /*
-            else if (selectedCanFireTo(selectedX, selectedY)) {
-                damageShip(selectedX, selectedY, selected.getDamageAmount());
+            } else if (selectedCanFireTo(destination.x, destination.y)) {
+                damageShip(destination.x, destination.y, selected.getDamageAmount());
                 sideTurns++;
-                boardState = BoardState.SHIP_ATTACKING;
-            }
-
-             */
-            else{
+                boardState = SHIP_ATTACKING;
+            } else {
                 boardState = IDLE;
             }
-        }
-        else{
+        } else {
             boardState = IDLE;
         }
         return boardState;
@@ -160,7 +156,7 @@ public class Board {
             turn = turn.nextTurn();
 
             for(Point point : interacted){
-                cells[point.y][point.x].setStepMode(StepMode.MOVING);
+                cells[point.y][point.x].setStepMode(StepMode.MOVE);
             }
             interacted.clear();
         }
@@ -183,7 +179,7 @@ public class Board {
         selected.setStepMode(StepMode.COMPLETED);
         interacted.add(new Point(selectedX, selectedY));
 
-        if(((Spaceship)cells[shipY][shipX].getContent()).getHealthPoints() <= 0){
+        if(cells[shipY][shipX].getContent().getHealthPoints() <= 0){
             destroyShip(shipX, shipY);
         }
     }
@@ -202,12 +198,12 @@ public class Board {
 
     public boolean selectedCanMoveTo(int x, int y){
         return selected.isShip() && cells[y][x] != selected && selected.canMoveTo(selectedX, selectedY, x, y)
-                && selected.getStepMode() == StepMode.MOVING && isPassable(x, y);
+                && selected.getStepMode() == StepMode.MOVE && isPassable(x, y);
     }
 
     public boolean selectedCanFireTo(int x, int y){
         return selected != null && isShipSelected() && isShip(x, y)
-                && selected.getSide() != cells[y][x].getSide() && selected.getStepMode() == StepMode.FIRING;
+                && selected.getSide() != cells[y][x].getSide() && selected.getStepMode() == StepMode.ATTACK;
     }
 
     public Content getSelectedContent() {
@@ -219,23 +215,23 @@ public class Board {
     }
 
     public Set<Point> getAvailableCellsForMove() {
-        return selected.isShip() && selected.getStepMode() == StepMode.MOVING && selected.getSide() == turn ? selected.getMoves().getAvailableCells(this, selectedX, selectedY) : emptySet;
+        return selected.isShip() && selected.getStepMode() == StepMode.MOVE && selected.getSide() == turn ? selected.getMoves().getAvailableCells(this, selectedX, selectedY) : emptySet;
     }
     public Set<Point> getAvailableCellsForMove(int x, int y){
-        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.MOVING ? cells[y][x].getMoves().getAvailableCells(this, x, y) : emptySet;
+        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.MOVE ? cells[y][x].getMoves().getAvailableCells(this, x, y) : emptySet;
     }
 
     public Set<Point> getAvailableCellsForFire(){
-        return selected.isShip() && selected.getStepMode() == StepMode.FIRING ? Attack.getAvailableCells(this) : emptySet;
+        return selected.isShip() && selected.getStepMode() == StepMode.ATTACK ? Attack.getAvailableCells(this) : emptySet;
     }
 
     public Set<Point> getAvailableCellsForFire(int x, int y){
-        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.FIRING ? Attack.getAvailableCells(this) : emptySet;
+        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.ATTACK ? Attack.getAvailableCells(this) : emptySet;
     }
 
     private void setSelectedPosition(int toX, int toY) {
         selected.swapContents(cells[toY][toX]);
-        cells[toY][toX].setStepMode(StepMode.FIRING);
+        cells[toY][toX].setStepMode(StepMode.ATTACK);
         interacted.add(new Point(toX, toY));
     }
 
@@ -277,6 +273,18 @@ public class Board {
                 availableForMove = selected.getMoves().getAvailableCells(this, selectedX, selectedY);
             }
         }
+    }
+
+    public boolean isShip(Point target){
+        return isShip(target.x, target.y);
+    }
+
+    public int getDamagePoints(Point target){
+        return cells[target.y][target.x].getDamageAmount();
+    }
+
+    public int getHealthPoints(Point target){
+        return cells[target.y][target.x].getHealthPoints();
     }
 }
 

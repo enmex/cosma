@@ -2,8 +2,8 @@ package com.imit.cosma.model.rules;
 
 public enum StepMode {
 
-    MOVING(0),
-    FIRING(1),
+    MOVE(0),
+    ATTACK(1),
     COMPLETED(2);
 
     private int id;

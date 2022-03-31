@@ -1,11 +1,11 @@
-package com.imit.cosma.util;
+package com.imit.cosma.model.spaceship;
 
 import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Weapon;
 import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.move.MoveType;
 
-public class Randomiser {
+public class ShipRandomizer {
 
     public static Skeleton getRandomSkeleton(){
         return Skeleton.values()[(int)(Math.random()*Skeleton.values().length)];
