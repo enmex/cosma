@@ -20,4 +20,8 @@ public enum Side {
     public Side nextTurn(){
         return Side.values()[this == PLAYER ? 1 : 0];
     }
+
+    public int getId() {
+        return id;
+    }
 }

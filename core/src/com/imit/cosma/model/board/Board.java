@@ -19,15 +19,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Board {
-    private final Set<Point> emptySet;
+    private Set<Point> emptySet;
 
-    private final Cell[][] cells;
+    private Cell[][] cells;
     private Cell selected;
     private Set<Point> interacted;
-    private Set<Point> availableForAttack;
-    private Set<Point> availableForMove;
 
-    private int turns;
     private Side turn;
     private int sideTurns;
 
@@ -75,18 +72,20 @@ public class Board {
         turn = Side.PLAYER;
         interacted = new HashSet<>();
 
-        enemy = new AI(this);
-
-        turns = 0;
         sideTurns = 0;
     }
+
+    public void initAI(){
+        enemy = new AI(clone());
+    }
+
     public BoardState getCurrentState(int selectedX, int selectedY){
         if(inBoard(selectedX, selectedY)){
             return turn == Side.PLAYER ? calculateCurrentPlayerState(selectedX, selectedY) : calculateCurrentEnemyState();
         }
         return IDLE;
     }
-//REFACTOR TODO
+//TODO refactor
     public BoardState calculateCurrentPlayerState(int selectedX, int selectedY){
         currentPath = new Path(this.selectedX, this.selectedY, selectedX, selectedY);
         if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
@@ -114,30 +113,30 @@ public class Board {
     }
 
     public BoardState calculateCurrentEnemyState(){
-        enemy.update(this);
+        enemy.update(clone());
         currentPath = enemy.getPath();
-        Point departure = currentPath.getDeparture();
-        Point destination = currentPath.getDestination();
+        Point source = currentPath.getSource();
+        Point target = currentPath.getTarget();
 
-        selected = cells[departure.y][departure.x];
-        selectedX = departure.x;
-        selectedY = departure.y;
+        selected = cells[source.y][source.x];
+        selectedX = source.x;
+        selectedY = source.y;
 
-        if (isShip(destination.x, destination.y)) {
+        if (isShip(target.x, target.y)) {
             selected.setStepMode(StepMode.ATTACK);
         }
 
         if (selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
-            if (selectedCanMoveTo(destination.x, destination.y)) {
-                setSelectedPosition(destination.x, destination.y);
+            if (selectedCanMoveTo(target.x, target.y)) {
+                setSelectedPosition(target.x, target.y);
                 sideTurns++;
                 boardState = SHIP_MOVING;
 
-                selected = cells[destination.y][destination.x];
-                selectedX = destination.x;
-                selectedY = destination.y;
-            } else if (selectedCanFireTo(destination.x, destination.y)) {
-                damageShip(destination.x, destination.y, selected.getDamageAmount());
+                selected = cells[target.y][target.x];
+                selectedX = target.x;
+                selectedY = target.y;
+            } else if (selectedCanFireTo(target.x, target.y)) {
+                damageShip(target.x, target.y, selected.getDamageAmount());
                 sideTurns++;
                 boardState = SHIP_ATTACKING;
             } else {
@@ -226,7 +225,7 @@ public class Board {
     }
 
     public Set<Point> getAvailableCellsForFire(int x, int y){
-        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.ATTACK ? Attack.getAvailableCells(this) : emptySet;
+        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.ATTACK ? Attack.getAvailableCells(this, x, y) : emptySet;
     }
 
     private void setSelectedPosition(int toX, int toY) {
@@ -269,10 +268,14 @@ public class Board {
             selectedY = y;
 
             if(selected.isShip()) {
-                availableForAttack = Attack.getAvailableCells(this);
-                availableForMove = selected.getMoves().getAvailableCells(this, selectedX, selectedY);
+                //availableForAttack = Attack.getAvailableCells(this);
+                //availableForMove = selected.getMoves().getAvailableCells(this, selectedX, selectedY);
             }
         }
+    }
+
+    public void setSelected(Point target){
+        setSelected(target.x, target.y);
     }
 
     public boolean isShip(Point target){
@@ -280,11 +283,81 @@ public class Board {
     }
 
     public int getDamagePoints(Point target){
-        return cells[target.y][target.x].getDamageAmount();
+        return getDamagePoints(target.x, target.y);
     }
 
-    public int getHealthPoints(Point target){
-        return cells[target.y][target.x].getHealthPoints();
+    public int getDamagePoints(int x, int y){
+        return cells[y][x].getDamageAmount();
     }
+
+
+    public int getHealthPoints(Point target){
+        return getHealthPoints(target.x, target.y);
+    }
+
+    public int getHealthPoints(int x, int y){
+        return cells[y][x].getHealthPoints();
+    }
+
+    public void makeArtificialTurn(Path path){
+        Point source = path.getSource();
+        Point target = path.getTarget();
+
+        selected = cells[source.y][source.x];
+        selectedX = source.x;
+        selectedY = source.y;
+
+        if(selectedCanMoveTo(target.x, target.y)){
+            setSelectedPosition(target.x, target.y);
+
+            selected = cells[target.y][target.x];
+            selectedX = target.x;
+            selectedY = target.y;
+        }
+        else if(selectedCanFireTo(target.x, target.y)){
+            damageShip(target.x, target.y, selected.getDamageAmount());
+        }
+    }
+
+    public void set(Board board){
+        this.cells = board.cells;
+        this.selected = board.selected;
+        this.interacted = board.interacted;
+        this.turn = board.turn;
+        this.sideTurns = board.sideTurns;
+        this.selectedX = board.selectedX;
+        this.selectedY = board.selectedY;
+        this.boardState = board.boardState;
+        this.enemy = board.enemy;
+        this.currentPath = board.currentPath;
+    }
+
+
+    public Board clone(){
+        Board board = new Board();
+        board.interacted = interacted;
+        board.boardState = boardState;
+        board.enemy = enemy;
+        board.selected = selected;
+        board.cells = cells;
+        board.selectedX = selectedX;
+        board.selectedY = selectedY;
+        board.sideTurns = sideTurns;
+        board.turn = turn;
+        board.currentPath = currentPath;
+        board.emptySet = emptySet;
+        return board;
+    }
+
+    public void print(){
+        for(int y = 7; y >= 0; y--){
+            System.out.print("|");
+            for(int x = 0; x < 8; x++){
+                System.out.print(cells[y][x].getContent().getSide().getId() + " ");
+            }
+            System.out.println("|");
+        }
+    }
+
 }
 

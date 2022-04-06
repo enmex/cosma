@@ -48,6 +48,7 @@ public class PlayingField {
 
     public PlayingField(){
         board = new Board();
+        board.initAI();
         contentAnimation = new ContentAnimation();
 
         grid = new Texture(Config.getInstance().GRID_PATH);

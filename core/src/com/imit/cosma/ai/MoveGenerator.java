@@ -10,35 +10,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoveGenerator {
-    private List<Path> paths;
+    private List<Path> pathsAI, pathsPlayer;
 
     public MoveGenerator(Board board){
-        paths = new ArrayList<>();
+        pathsAI = new ArrayList<>();
+        pathsPlayer = new ArrayList<>();
         update(board);
     }
 
-    public Path getRandomPath(){
-        return paths.get((int) (Math.random() * paths.size()));
+    public List<Path> getEnemyPaths(){
+        return pathsAI;
     }
 
-    public int getPathsSize(){
-        return paths.size();
-    }
-
-    public List<Path> getPaths(){
-        return paths;
+    public List<Path> getPlayerPaths() {
+        return pathsPlayer;
     }
 
     public void update(Board board){
-        paths.clear();
+        pathsAI.clear();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && board.getSide(x, y) == Side.ENEMY){
                     for(Point point : board.getAvailableCellsForMove(x, y)){
-                        paths.add(new Path(x, y, point.x, point.y));
+                        pathsAI.add(new Path(x, y, point.x, point.y));
                     }
                     for(Point point : board.getAvailableCellsForFire(x, y)){
-                        paths.add(new Path(x, y, point.x, point.y));
+                        pathsAI.add(new Path(x, y, point.x, point.y));
+                    }
+                }
+            }
+        }
+
+        pathsPlayer.clear();
+        for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
+            for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
+                if(board.isShip(x, y) && board.getSide(x, y) == Side.PLAYER){
+                    for(Point point : board.getAvailableCellsForMove(x, y)){
+                        pathsPlayer.add(new Path(x, y, point.x, point.y));
+                    }
+                    for(Point point : board.getAvailableCellsForFire(x, y)){
+                        pathsPlayer.add(new Path(x, y, point.x, point.y));
                     }
                 }
             }

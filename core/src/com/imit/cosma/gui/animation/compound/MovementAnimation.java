@@ -35,9 +35,9 @@ public class MovementAnimation extends AnimationType {
         shipRotation = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE, defaultRotation, defaultRotation + animationData.rotation*getOrientation());
         shipRotationToDefault = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE, defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
 
-        shipRotation.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, animationData.rotation);
-        shipMovement.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, defaultRotation + animationData.rotation * getOrientation());
-        shipRotationToDefault.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, animationData.rotation);
+        shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
+        shipMovement.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, defaultRotation + animationData.rotation * getOrientation());
+        shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
 
         animationData.phase.add(shipRotation);
         animationData.phase.add(shipMovement);
@@ -76,6 +76,6 @@ public class MovementAnimation extends AnimationType {
     }
 
     private int getOrientation(){
-        return (int) Math.signum(datas.get(mainAnimatedObject).path.getDeparture().x - datas.get(mainAnimatedObject).path.getDestination().x);
+        return (int) Math.signum(datas.get(mainAnimatedObject).path.getSource().x - datas.get(mainAnimatedObject).path.getTarget().x);
     }
 }

@@ -36,23 +36,23 @@ public class AttackAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath) {
         super.init(boardPath, screenPath);
 
-        this.sourceBoardCell = boardPath.getDeparture();
+        this.sourceBoardCell = boardPath.getSource();
 
         //init main animation
         datas.get(mainAnimationIndex).rotation *= Math.signum(datas.get(0).rotation - defaultRotation);
 
-        SimpleAnimation shipRotation = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x));
-        SimpleAnimation shipRotationToDefault = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x), defaultRotation);
-        shipRotation.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, datas.get(mainAnimationIndex).rotation);
-        shipRotationToDefault.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, datas.get(mainAnimationIndex).rotation);
+        SimpleAnimation shipRotation = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
+        SimpleAnimation shipRotationToDefault = new Rotation(shipAtlas, getInstance().SHIP_SPRITE_SIZE, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation);
+        shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, datas.get(mainAnimationIndex).rotation);
+        shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, datas.get(mainAnimationIndex).rotation);
 
         datas.get(mainAnimationIndex).phase.add(shipRotation);
 
         for(Weapon weapon : weaponList){
             Movement movement = new Movement(weapon.getShotSprite(), getInstance().SHOT_SPRITE_SIZE);
-            Idle idle = new Idle(weapon.getExplosionSprite(), getInstance().SHOT_SPRITE_SIZE, screenPath.getDestination().x - screenPath.getDeparture().x, screenPath.getDestination().y - screenPath.getDeparture().y);
+            Idle idle = new Idle(weapon.getExplosionSprite(), getInstance().SHOT_SPRITE_SIZE, screenPath.getTarget().x - screenPath.getSource().x, screenPath.getTarget().y - screenPath.getSource().y);
 
-            movement.init(screenPath.getDeparture().x, screenPath.getDeparture().y, screenPath.getDestination().x, screenPath.getDestination().y, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x));
+            movement.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
 
             phase.add(movement);
             phase.add(idle);
@@ -64,11 +64,11 @@ public class AttackAnimation extends AnimationType {
         //init staticShip
         AnimationData staticShip = new AnimationData();
         Idle standing = new Idle(shipAtlas, getInstance().SHIP_SPRITE_SIZE, 0, 0,
-                defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getDeparture().x - screenPath.getDestination().x), getInstance().FRAMES_AMOUNT_SHIPS);
+                defaultRotation + datas.get(mainAnimationIndex).rotation * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), getInstance().FRAMES_AMOUNT_SHIPS);
         staticShip.phase = new Array<>(1);
         staticShip.phase.add(standing);
         staticShip.offset = new Vector();
-        staticShip.path = new Path(screenPath.getDeparture(), screenPath.getDeparture());
+        staticShip.path = new Path(screenPath.getSource(), screenPath.getSource());
         staticShip.currentPhase = 0;
 
         datas.add(staticShip);

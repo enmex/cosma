@@ -25,9 +25,9 @@ public abstract class AnimationType {
     }
 
     public void init(Path boardPath, Path screenPath){
-        selectedBoardPoint = boardPath.getDestination();
+        selectedBoardPoint = boardPath.getTarget();
 
-        Vector destinationVector = new Vector(screenPath.getDeparture(), screenPath.getDestination());
+        Vector destinationVector = new Vector(screenPath.getSource(), screenPath.getTarget());
 
         AnimationData data = new AnimationData();//main animated object
         data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector)));

@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationData;
 import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.AttackAnimation;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
@@ -43,7 +42,7 @@ public class ContentAnimation {
     }
 
     public void init(AnimationType animationType, Path boardPath, int cellWidth, int cellHeight, int boardY){
-        Path screenPath = new Path(new Point(boardPath.getDeparture().x * cellWidth, boardPath.getDeparture().y * cellHeight + boardY), new Point(boardPath.getDestination().x * cellWidth, boardPath.getDestination().y * cellHeight + boardY));
+        Path screenPath = new Path(new Point(boardPath.getSource().x * cellWidth, boardPath.getSource().y * cellHeight + boardY), new Point(boardPath.getTarget().x * cellWidth, boardPath.getTarget().y * cellHeight + boardY));
         animationType.init(boardPath, screenPath);
         setRegion(animationType);
     }
@@ -68,8 +67,8 @@ public class ContentAnimation {
                 batch.begin();
 
                 sprite.setRegion(spriteAnimation.getKeyFrame(elapsedTime, true));
-                sprite.setBounds(data.getPath().getDeparture().x + data.getOffset().getX(),
-                        data.getPath().getDeparture().y + data.getOffset().getY(), cellWidth, cellHeight);
+                sprite.setBounds(data.getPath().getSource().x + data.getOffset().getX(),
+                        data.getPath().getSource().y + data.getOffset().getY(), cellWidth, cellHeight);
                 sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
                 sprite.setRotation(data.getCurrentRotation());
                 sprite.draw(batch);

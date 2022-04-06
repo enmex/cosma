@@ -1,7 +1,5 @@
 package com.imit.cosma.util;
 
-import com.imit.cosma.util.Point;
-
 public class Path {
 
     private Point from, to;
@@ -14,16 +12,20 @@ public class Path {
         this.from = from;
         this.to = to;
     }
+    public Path(){
+        from = new Point();
+        to = new Point();
+    }
 
     public void setLocation(Point from){
         this.from = from;
     }
 
-    public Point getDestination(){
+    public Point getTarget(){
         return to;
     }
 
-    public Point getDeparture() {
+    public Point getSource() {
         return from;
     }
 
