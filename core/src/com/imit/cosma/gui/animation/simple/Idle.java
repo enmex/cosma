@@ -1,5 +1,6 @@
 package com.imit.cosma.gui.animation.simple;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
@@ -7,6 +8,8 @@ import com.imit.cosma.util.Vector;
 
 //just frames of sprite
 public class Idle implements SimpleAnimation{
+    private float elapsedTime = 0f;
+
     private int duration;
     private float current = 0;
 
@@ -35,7 +38,7 @@ public class Idle implements SimpleAnimation{
     }
 
     public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
-        this(sprite, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 7); //TODO set in config
+        this(sprite, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 6); //TODO set in config
     }
 
     public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
@@ -90,6 +93,11 @@ public class Idle implements SimpleAnimation{
     @Override
     public int getFramesAmount() {
         return frames;
+    }
+
+    @Override
+    public float getElapsedTime() {
+        return elapsedTime += Gdx.graphics.getDeltaTime();
     }
 
     @Override

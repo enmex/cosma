@@ -1,4 +1,4 @@
-package com.imit.cosma;
+package com.imit.cosma.gui.screen.component;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,7 +12,9 @@ import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.gui.animation.compound.MovementAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.Content;
+import com.imit.cosma.model.board.Space;
 import com.imit.cosma.model.rules.Side;
+import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Point;
 
 public class PlayingField {
@@ -39,7 +41,7 @@ public class PlayingField {
     private int cellWidth = boardWidth/CELL_AMOUNT_WIDTH;
     private int cellHeight = boardHeight/CELL_AMOUNT_HEIGHT;
 
-    private int boardX = 0, boardY = 3*cellHeight;
+    private int boardX = 0, boardY = 3 * cellHeight;
 
     private Board board;
 
@@ -79,7 +81,8 @@ public class PlayingField {
                     break;
                 case SHIP_ATTACKING:
                     content = board.getSelectedContent();
-                    animationType = new AttackAnimation(content);
+                    Content targetContent = board.getInteracted().getContent();
+                    animationType = new AttackAnimation((Spaceship)content, (Spaceship) targetContent);
                     contentAnimation.init(animationType, board.getCurrentPath(), cellWidth, cellHeight, boardY);
                     break;
             }
@@ -180,11 +183,11 @@ public class PlayingField {
     }
 
     private int getBoardX(int touchX){
-        return (int) Math.floor((double) touchX/cellWidth)*cellWidth;
+        return (int) Math.floor((double) touchX/cellWidth) * cellWidth;
     }
 
     private int getBoardY(int touchY){
-        return (int) Math.floor((double) (touchY-boardY)/cellHeight)*cellHeight + boardY;
+        return (int) Math.floor((double) (touchY-boardY)/cellHeight) * cellHeight + boardY;
     }
 
     private boolean animationPlays(){
@@ -193,6 +196,14 @@ public class PlayingField {
 
     private boolean enemyTurn(){
         return board.getTurn() == Side.ENEMY;
+    }
+
+    public int getPlayerAdvantagePoints(){
+        return board.getPlayerAdvantagePoints();
+    }
+
+    public int getEnemyAdvantagePoints(){
+        return board.getEnemyAdvantagePoints();
     }
 }
 

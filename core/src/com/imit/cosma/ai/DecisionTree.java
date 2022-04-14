@@ -2,73 +2,108 @@ package com.imit.cosma.ai;
 
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.Stack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class DecisionTree {
-    private MoveGenerator generator;
+    private final MoveGenerator generator;
+
     private Path currentPath;
+
     private Board board;
-    private Stack<Board> states;
-    private int bestAdvantage;
+    private final Stack<Board> states;
+
+    private boolean playerTurn;
+
+    private int index = 0;
 
     public DecisionTree(Board board){
         generator = new MoveGenerator(board);
         currentPath = null;
-        this.board = board.clone();
+        this.board = board;
         states = new Stack<>();
-        bestAdvantage = -1;
+        playerTurn = false;
     }
 
-    public int calculateBestMove(int depth, boolean playerTurn){
-        states.push(board.clone());
-        if(currentPath != null) {
-            board.makeArtificialTurn(currentPath);
-            update(board);
-        }
-
+    public int calculateBestPath(int depth, int turns, int alpha, int beta){
         int advantage = 0;
+        index++;
+        if(turns == 2){
+            playerTurn = !playerTurn;
+            depth--;
+            turns = 0;
+        }
+        doTurn(currentPath);
 
+        //добрались до листа - заканчиваем рекурсию
         if(depth == 0){
-            board = states.pop();
-            return bestAdvantage;
+            undoTurn();
+            return beta;
         }
 
-        if(playerTurn){
-            List<Path> paths = new ArrayList<>(generator.getPlayerPaths());
-            for (Path path : paths) {
-                advantage = Math.min(board.getHealthPoints(path.getTarget()), board.getDamagePoints(path.getSource()));
-                currentPath = path;
-                System.out.println();
-                if(bestAdvantage < advantage) {
-                    System.out.print("player->[");
-                    bestAdvantage = calculateBestMove(depth - 1, false);
-                }
+        //вычисляем все ответвления от текущего узла
+        //alpha
+        List<Path> paths = new ArrayList<>(playerTurn ? generator.getPlayerPaths() : generator.getEnemyPaths());
+        for(Path path : paths){
+            currentPath = path;
+            advantage = calculateBestPath(depth, turns + 1, alpha, beta);
+
+            int currentScore = calculatePathAdvantage(currentPath);
+
+            if(playerTurn){
+                beta = Math.min(-currentScore, beta);
+            }
+            else{
+                alpha = Math.max(currentScore, alpha);
+            }
+
+            if(alpha >= beta){
+                undoTurn();
+                return alpha;
             }
         }
-        else{
-            List<Path> paths = new ArrayList<>(generator.getEnemyPaths());
-            for (Path path : paths) {
-                advantage = Math.min(board.getHealthPoints(path.getTarget()), board.getDamagePoints(path.getSource()));
-                currentPath = path;
-                if(bestAdvantage < advantage) {
-                    System.out.print("enemy->[");
-                    bestAdvantage = calculateBestMove(depth - 1, true);
-                }
-            }
-        }
-        System.out.print("]");
-        board = states.pop();
+        undoTurn();
+
         return advantage;
     }
 
-    public Path getCurrentPath() {
-        return currentPath;
+    public int getIndex() {
+        int value = index;
+        index = 0;
+        return value;
     }
 
     public void update(Board board){
+        this.board = board;
         generator.update(board);
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setRootPath(Path rootPath) {
+        this.currentPath = rootPath;
+    }
+
+    private int calculatePathAdvantage(Path path){
+        return board.getMaxHealthPoints(path.getTarget())
+                - board.getHealthPoints(path.getTarget())
+                + board.getDamagePoints(path.getTarget());
+    }
+
+    private void doTurn(Path path){
+        states.push(board.clone());
+        board.makeArtificialTurn(path);
+        update(board);
+    }
+
+    private void undoTurn(){
+        if(!states.isEmpty()) {
+            board.set(states.pop());
+            update(board);
+        }
     }
 }

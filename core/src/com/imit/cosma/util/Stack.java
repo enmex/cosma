@@ -10,7 +10,7 @@ public class Stack<T> {
     }
 
     public Stack(){
-        this(1000);
+        this(10000);
     }
 
     public void push(T element){
@@ -23,5 +23,9 @@ public class Stack<T> {
         elements[currentIndex] = null;
         currentIndex--;
         return element;
+    }
+
+    public boolean isEmpty(){
+        return currentIndex == 0;
     }
 }

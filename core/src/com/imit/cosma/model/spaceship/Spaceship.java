@@ -122,11 +122,27 @@ public class Spaceship implements Content {
         return healthPoints;
     }
 
+    @Override
     public int getMaxHealthPoints(){
         return skeleton.getHealthPoints();
     }
 
     public int getWeaponRange() {
         return weaponRange;
+    }
+
+    @Override
+    public Content clone() {
+        Spaceship spaceship = new Spaceship(side);
+        spaceship.stepMode = stepMode;
+        spaceship.damagePoints = damagePoints;
+        spaceship.healthPoints = healthPoints;
+        spaceship.moves = moves;
+        spaceship.selectedWeapons = selectedWeapons;
+        spaceship.weaponAmount = weaponAmount;
+        spaceship.weaponRange = weaponRange;
+        spaceship.weapons = weapons;
+        spaceship.skeleton = skeleton;
+        return spaceship;
     }
 }

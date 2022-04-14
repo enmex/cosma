@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationData;
 import com.imit.cosma.gui.animation.compound.AnimationType;
+import com.imit.cosma.gui.animation.simple.Rotation;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
@@ -42,7 +43,11 @@ public class ContentAnimation {
     }
 
     public void init(AnimationType animationType, Path boardPath, int cellWidth, int cellHeight, int boardY){
-        Path screenPath = new Path(new Point(boardPath.getSource().x * cellWidth, boardPath.getSource().y * cellHeight + boardY), new Point(boardPath.getTarget().x * cellWidth, boardPath.getTarget().y * cellHeight + boardY));
+        Path screenPath = new Path(new Point(boardPath.getSource().x * cellWidth,
+                boardPath.getSource().y * cellHeight + boardY),
+                new Point(boardPath.getTarget().x * cellWidth,
+                        boardPath.getTarget().y * cellHeight + boardY));
+
         animationType.init(boardPath, screenPath);
         setRegion(animationType);
     }
@@ -50,7 +55,7 @@ public class ContentAnimation {
     private void updateSpriteAnimation(AnimationData data){
         int framesAmount = data.getFramesAmount();
         this.frames = new Array<>(framesAmount);
-        for(int i = 0; i < framesAmount; i++){
+        for(int i = 1; i < framesAmount; i++){
             this.frames.add(new TextureRegion(SPACESHIP_ATLAS,
                     data.getAtlas().x + data.getSpriteSize() * i, data.getAtlas().y, data.getSpriteSize(), data.getSpriteSize()));
         }
@@ -66,7 +71,8 @@ public class ContentAnimation {
                 updateSpriteAnimation(data);
                 batch.begin();
 
-                sprite.setRegion(spriteAnimation.getKeyFrame(elapsedTime, true));
+                sprite.setRegion(spriteAnimation.getKeyFrame(data.getElapsedTime(),
+                        data.getPlayMode() != Animation.PlayMode.NORMAL));
                 sprite.setBounds(data.getPath().getSource().x + data.getOffset().getX(),
                         data.getPath().getSource().y + data.getOffset().getY(), cellWidth, cellHeight);
                 sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
@@ -79,6 +85,7 @@ public class ContentAnimation {
 
         setRegion(animationType);
         animationType.render();
+
     }
 
     public boolean isAnimated(){

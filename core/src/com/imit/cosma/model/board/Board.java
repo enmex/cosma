@@ -11,6 +11,7 @@ import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
+import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.spaceship.ShipRandomizer;
@@ -18,29 +19,38 @@ import com.imit.cosma.model.spaceship.ShipRandomizer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Board {
+public class Board implements Cloneable {
     private Set<Point> emptySet;
 
     private Cell[][] cells;
     private Cell selected;
-    private Set<Point> interacted;
+    private Cell interacted;
+    private Set<Point> interactedCells;
 
     private Side turn;
     private int sideTurns;
 
     private int selectedX, selectedY;
 
+    private int playerAdvantagePoints, enemyAdvantagePoints;
+
     private BoardState boardState;
     private AI enemy;
     private Path currentPath;
+
+    private Set<Point> availableForMove, availableForAttack;
 
     public Board() {
         cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
         emptySet = new HashSet<>();
         selected = new Cell(new Space());
+        interacted = new Cell(new Space());
         boardState = IDLE;
+        playerAdvantagePoints = 0;
+        enemyAdvantagePoints = 0;
 
         SpaceshipBuilder spaceshipBuilder = new SpaceshipBuilder();
+
         //initialise player ships
         for (int y = 0; y < getInstance().SPACESHIP_ROWS; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
@@ -49,6 +59,8 @@ public class Board {
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .addMoves().build();
                 cells[y][x] = new Cell(spaceship);
+
+
             }
         }
 
@@ -69,8 +81,12 @@ public class Board {
                 cells[y][x] = new Cell(spaceship);
             }
         }
+
         turn = Side.PLAYER;
-        interacted = new HashSet<>();
+        interactedCells = new HashSet<>();
+
+        availableForMove = new HashSet<>();
+        availableForAttack = new HashSet<>();
 
         sideTurns = 0;
     }
@@ -85,7 +101,7 @@ public class Board {
         }
         return IDLE;
     }
-//TODO refactor
+
     public BoardState calculateCurrentPlayerState(int selectedX, int selectedY){
         currentPath = new Path(this.selectedX, this.selectedY, selectedX, selectedY);
         if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
@@ -114,6 +130,7 @@ public class Board {
 
     public BoardState calculateCurrentEnemyState(){
         enemy.update(clone());
+
         currentPath = enemy.getPath();
         Point source = currentPath.getSource();
         Point target = currentPath.getTarget();
@@ -145,6 +162,7 @@ public class Board {
         } else {
             boardState = IDLE;
         }
+
         return boardState;
     }
 
@@ -154,10 +172,10 @@ public class Board {
 
             turn = turn.nextTurn();
 
-            for(Point point : interacted){
+            for(Point point : interactedCells){
                 cells[point.y][point.x].setStepMode(StepMode.MOVE);
             }
-            interacted.clear();
+            interactedCells.clear();
         }
     }
 
@@ -174,9 +192,18 @@ public class Board {
     }
 
     public void damageShip(int shipX, int shipY, int damage){
+        interacted.setContent(cells[shipY][shipX].getContent().clone());
+
         cells[shipY][shipX].setDamage(damage);
         selected.setStepMode(StepMode.COMPLETED);
-        interacted.add(new Point(selectedX, selectedY));
+        interactedCells.add(new Point(selectedX, selectedY));
+
+        if(turn == Side.PLAYER){
+            playerAdvantagePoints += Math.min(damage, cells[shipY][shipX].getHealthPoints());
+        }
+        else{
+            enemyAdvantagePoints += Math.min(damage, cells[shipY][shipX].getHealthPoints());
+        }
 
         if(cells[shipY][shipX].getContent().getHealthPoints() <= 0){
             destroyShip(shipX, shipY);
@@ -214,14 +241,14 @@ public class Board {
     }
 
     public Set<Point> getAvailableCellsForMove() {
-        return selected.isShip() && selected.getStepMode() == StepMode.MOVE && selected.getSide() == turn ? selected.getMoves().getAvailableCells(this, selectedX, selectedY) : emptySet;
+        return selected.isShip() && selected.getStepMode() == StepMode.MOVE && selected.getSide() == turn ? availableForMove : emptySet;
     }
     public Set<Point> getAvailableCellsForMove(int x, int y){
         return isShip(x, y) && cells[y][x].getStepMode() == StepMode.MOVE ? cells[y][x].getMoves().getAvailableCells(this, x, y) : emptySet;
     }
 
     public Set<Point> getAvailableCellsForFire(){
-        return selected.isShip() && selected.getStepMode() == StepMode.ATTACK ? Attack.getAvailableCells(this) : emptySet;
+        return selected.isShip() && selected.getStepMode() == StepMode.ATTACK ? availableForAttack : emptySet;
     }
 
     public Set<Point> getAvailableCellsForFire(int x, int y){
@@ -229,9 +256,11 @@ public class Board {
     }
 
     private void setSelectedPosition(int toX, int toY) {
+        interacted.setContent(cells[toY][toX].getContent().clone());
+
         selected.swapContents(cells[toY][toX]);
         cells[toY][toX].setStepMode(StepMode.ATTACK);
-        interacted.add(new Point(toX, toY));
+        interactedCells.add(new Point(toX, toY));
     }
 
     public Point getSprite(int x, int y){
@@ -268,18 +297,10 @@ public class Board {
             selectedY = y;
 
             if(selected.isShip()) {
-                //availableForAttack = Attack.getAvailableCells(this);
-                //availableForMove = selected.getMoves().getAvailableCells(this, selectedX, selectedY);
+                availableForAttack = Attack.getAvailableCells(this);
+                availableForMove = selected.getMoves().getAvailableCells(this, selectedX, selectedY);
             }
         }
-    }
-
-    public void setSelected(Point target){
-        setSelected(target.x, target.y);
-    }
-
-    public boolean isShip(Point target){
-        return isShip(target.x, target.y);
     }
 
     public int getDamagePoints(Point target){
@@ -290,6 +311,13 @@ public class Board {
         return cells[y][x].getDamageAmount();
     }
 
+    public int getMaxHealthPoints(int x, int y){
+        return cells[y][x].getMaxHealthPoints();
+    }
+
+    public int getMaxHealthPoints(Point target){
+        return getMaxHealthPoints(target.x, target.y);
+    }
 
     public int getHealthPoints(Point target){
         return getHealthPoints(target.x, target.y);
@@ -320,9 +348,13 @@ public class Board {
     }
 
     public void set(Board board){
-        this.cells = board.cells;
+        for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
+                this.cells[y][x].setContent(board.cells[y][x].getContent().clone());
+            }
+        }
         this.selected = board.selected;
-        this.interacted = board.interacted;
+        this.interactedCells = board.interactedCells;
         this.turn = board.turn;
         this.sideTurns = board.sideTurns;
         this.selectedX = board.selectedX;
@@ -332,14 +364,19 @@ public class Board {
         this.currentPath = board.currentPath;
     }
 
-
+    @Override
     public Board clone(){
         Board board = new Board();
-        board.interacted = interacted;
+        board.interactedCells = interactedCells;
         board.boardState = boardState;
         board.enemy = enemy;
         board.selected = selected;
-        board.cells = cells;
+        board.cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
+        for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
+                board.cells[y][x] = new Cell(cells[y][x].getContent().clone());
+            }
+        }
         board.selectedX = selectedX;
         board.selectedY = selectedY;
         board.sideTurns = sideTurns;
@@ -349,15 +386,16 @@ public class Board {
         return board;
     }
 
-    public void print(){
-        for(int y = 7; y >= 0; y--){
-            System.out.print("|");
-            for(int x = 0; x < 8; x++){
-                System.out.print(cells[y][x].getContent().getSide().getId() + " ");
-            }
-            System.out.println("|");
-        }
+    public int getPlayerAdvantagePoints(){
+        return playerAdvantagePoints;
     }
 
+    public int getEnemyAdvantagePoints(){
+        return enemyAdvantagePoints;
+    }
+
+    public Cell getInteracted() {
+        return interacted;
+    }
 }
 

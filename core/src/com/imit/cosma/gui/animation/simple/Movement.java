@@ -2,11 +2,13 @@ package com.imit.cosma.gui.animation.simple;
 
 import static com.imit.cosma.config.Config.getInstance;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class Movement implements SimpleAnimation{
+    private float elapsedTime = 0f;
 
     private float rotation;
     private double distance;
@@ -34,7 +36,8 @@ public class Movement implements SimpleAnimation{
         distance = (int) Math.sqrt(distance);
 
         moveVelocityX = (int) (distance * Math.signum(toX - fromX) / getInstance().ANIMATION_DURATION); //x
-        moveVelocityY = (int) (coefficient != 0 ? distance * coefficient * Math.signum(toY - fromY) / getInstance().ANIMATION_DURATION : distance * Math.signum(toY - fromY) / getInstance().ANIMATION_DURATION);
+        moveVelocityY = (int) (coefficient != 0 ? distance * coefficient * Math.signum(toY - fromY) / getInstance().ANIMATION_DURATION
+                : distance * Math.signum(toY - fromY) / getInstance().ANIMATION_DURATION);
 
         departure = new Point(fromX, fromY);
         destination = new Point(toX, toY);
@@ -54,8 +57,6 @@ public class Movement implements SimpleAnimation{
     private boolean isArrived(){
         return Math.sqrt(offset.getX() * offset.getX() + offset.getY() * offset.getY()) >= distance;
     }
-
-
 
     @Override
     public Point getSprites() {
@@ -80,6 +81,11 @@ public class Movement implements SimpleAnimation{
     @Override
     public int getFramesAmount() {
         return 4;
+    }
+
+    @Override
+    public float getElapsedTime() {
+        return elapsedTime += Gdx.graphics.getDeltaTime();
     }
 
     public boolean isAnimated() {

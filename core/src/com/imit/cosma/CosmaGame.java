@@ -1,7 +1,7 @@
 package com.imit.cosma;
 
 import com.badlogic.gdx.Game;
-import com.imit.cosma.config.Config;
+import com.imit.cosma.gui.screen.GameScreen;
 
 public class CosmaGame extends Game {
 

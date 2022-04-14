@@ -1,4 +1,4 @@
-package com.imit.cosma.gui.infopanel;
+package com.imit.cosma.gui.screen.component.infopanel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,12 +9,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.gui.screen.component.Component;
 import com.imit.cosma.model.board.Content;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class InfoPanel {
+public class InfoComponent extends Component {
 
     private TextureRegion panel;
     private SelectedCellDetails selectedCellDetails;
@@ -34,7 +35,7 @@ public class InfoPanel {
     private double healthToBarRatio;
     private int healthBarWidth, healthBarHeight;
 
-    public InfoPanel(){
+    public InfoComponent(){
         selectedCellDetails = new SelectedCellDetails();
         panel = new TextureRegion(new Texture(Config.getInstance().INFORMATION_PANEL_PATH), 0, 0, 256, 128);
         spaceshipSprite = new Sprite();

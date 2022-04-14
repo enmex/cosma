@@ -47,6 +47,24 @@ public enum Direction {
         return directions;
     }
 
+    public static Set<Direction> getVertical(){
+        Set<Direction> directions = new HashSet<>(2);
+
+        directions.add(NORTH);
+        directions.add(SOUTH);
+
+        return directions;
+    }
+
+    public static Set<Direction> getHorizontal(){
+        Set<Direction> directions = new HashSet<>(2);
+
+        directions.add(EAST);
+        directions.add(WEST);
+
+        return directions;
+    }
+
     public int getOffsetX() {
         return offsetX;
     }

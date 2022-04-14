@@ -13,7 +13,7 @@ public class AnimationFabric {
             case SHIP_MOVING:
                 return new MovementAnimation(content);
             case SHIP_ATTACKING:
-                return new AttackAnimation(content);
+               // return new AttackAnimation(content);
             default:
                 return null;
         }

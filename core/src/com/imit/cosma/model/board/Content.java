@@ -1,12 +1,12 @@
 package com.imit.cosma.model.board;
 
-import com.imit.cosma.gui.infopanel.ContentInformation;
+import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MovingStyle;
 
-public interface Content {
+public interface Content extends Cloneable {
 
     String info();
 
@@ -28,4 +28,9 @@ public interface Content {
     int getDamage();
 
     int getHealthPoints();
+
+    @Override
+    Content clone();
+
+    int getMaxHealthPoints();
 }

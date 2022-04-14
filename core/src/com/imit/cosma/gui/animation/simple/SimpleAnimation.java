@@ -18,4 +18,6 @@ public interface SimpleAnimation {
 
     PlayMode getPlayMode();
     int getFramesAmount();
+
+    float getElapsedTime();
 }

@@ -1,4 +1,4 @@
-package com.imit.cosma.gui.infopanel;
+package com.imit.cosma.gui.screen.component.infopanel;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

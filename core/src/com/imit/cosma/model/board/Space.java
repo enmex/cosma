@@ -1,7 +1,5 @@
 package com.imit.cosma.model.board;
 
-import com.imit.cosma.gui.infopanel.ContentInformation;
-import com.imit.cosma.gui.infopanel.SpaceInformation;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.rules.StepMode;
@@ -70,6 +68,16 @@ public class Space implements Content{
 
     @Override
     public int getHealthPoints() {
+        return 0;
+    }
+
+    @Override
+    public Content clone() {
+        return new Space();
+    }
+
+    @Override
+    public int getMaxHealthPoints() {
         return 0;
     }
 }

@@ -1,11 +1,13 @@
 package com.imit.cosma.gui.animation.simple;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class Rotation implements SimpleAnimation{
+    private float elapsedTime = 0f;
 
     private float rotationVelocity;
     private float currentRotation;
@@ -14,7 +16,6 @@ public class Rotation implements SimpleAnimation{
     private Point sprite;
     private int spriteSize;
 
-    //bug
     private Vector offset = new Vector();
 
     private boolean isAnimated;
@@ -74,6 +75,11 @@ public class Rotation implements SimpleAnimation{
     @Override
     public int getFramesAmount() {
         return 4;
+    }
+
+    @Override
+    public float getElapsedTime() {
+        return elapsedTime += Gdx.graphics.getDeltaTime();
     }
 
     public boolean isAnimated() {

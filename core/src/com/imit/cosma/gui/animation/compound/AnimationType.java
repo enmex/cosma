@@ -14,7 +14,7 @@ public abstract class AnimationType {
 
     protected Array<AnimationData> datas;
 
-    protected Point selectedBoardPoint;
+    protected Point targetBoardPoint;
 
     protected AnimationType(int phasesAmount, float initialRotation){
         this.defaultRotation = initialRotation;
@@ -25,7 +25,7 @@ public abstract class AnimationType {
     }
 
     public void init(Path boardPath, Path screenPath){
-        selectedBoardPoint = boardPath.getTarget();
+        targetBoardPoint = boardPath.getTarget();
 
         Vector destinationVector = new Vector(screenPath.getSource(), screenPath.getTarget());
 
@@ -54,7 +54,7 @@ public abstract class AnimationType {
     }
     public abstract boolean isAnimated(int x, int y);
     public boolean isAnimated(){
-        return selectedBoardPoint.x != -1 && selectedBoardPoint.y != -1;
+        return targetBoardPoint.x != -1 && targetBoardPoint.y != -1;
     }
     public Array<AnimationData> getDatas() {
         return datas;
@@ -62,7 +62,7 @@ public abstract class AnimationType {
 
     public void clear(){
         datas.clear();
-        selectedBoardPoint.set(-1, -1);
+        targetBoardPoint.set(-1, -1);
     }
 }
 

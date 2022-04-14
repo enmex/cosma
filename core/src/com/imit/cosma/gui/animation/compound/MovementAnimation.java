@@ -32,12 +32,20 @@ public class MovementAnimation extends AnimationType {
         animationData = datas.get(mainAnimatedObject);
         animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
 
-        shipRotation = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE, defaultRotation, defaultRotation + animationData.rotation*getOrientation());
-        shipRotationToDefault = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE, defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
+        shipRotation = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE,
+                defaultRotation, defaultRotation + animationData.rotation*getOrientation());
 
-        shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
-        shipMovement.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, defaultRotation + animationData.rotation * getOrientation());
-        shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
+        shipRotationToDefault = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE,
+                defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
+
+        shipRotation.init(screenPath.getSource().x, screenPath.getSource().y,
+                screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
+
+        shipMovement.init(screenPath.getSource().x, screenPath.getSource().y,
+                screenPath.getTarget().x, screenPath.getTarget().y, defaultRotation + animationData.rotation * getOrientation());
+
+        shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y,
+                screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
 
         animationData.phase.add(shipRotation);
         animationData.phase.add(shipMovement);
@@ -72,7 +80,7 @@ public class MovementAnimation extends AnimationType {
 
     @Override
     public boolean isAnimated(int x, int y) {
-        return selectedBoardPoint.x == x && selectedBoardPoint.y == y;
+        return targetBoardPoint.x == x && targetBoardPoint.y == y;
     }
 
     private int getOrientation(){

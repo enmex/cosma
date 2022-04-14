@@ -1,4 +1,4 @@
-package com.imit.cosma.gui.infopanel;
+package com.imit.cosma.gui.screen.component.infopanel;
 
 import com.imit.cosma.model.board.Content;
 

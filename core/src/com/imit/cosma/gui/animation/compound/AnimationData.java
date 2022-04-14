@@ -1,5 +1,6 @@
 package com.imit.cosma.gui.animation.compound;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
@@ -8,6 +9,7 @@ import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class AnimationData {
+    protected float elapsedTime = 0f;
     protected Vector offset;
     protected float rotation;
     protected Path path;
@@ -43,5 +45,9 @@ public class AnimationData {
     }
     public SimpleAnimation getCurrentPhase(){
         return phase.get(currentPhase);
+    }
+
+    public float getElapsedTime() {
+        return phase.get(currentPhase).getElapsedTime();
     }
 }

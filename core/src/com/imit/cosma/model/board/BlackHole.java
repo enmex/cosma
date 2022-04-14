@@ -71,4 +71,14 @@ public class BlackHole implements Content {
     public int getHealthPoints() {
         return 0;
     }
+
+    @Override
+    public Content clone() {
+        return new BlackHole();
+    }
+
+    @Override
+    public int getMaxHealthPoints() {
+        return 0;
+    }
 }
