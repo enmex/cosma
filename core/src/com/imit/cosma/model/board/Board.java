@@ -149,7 +149,6 @@ public class Board implements Cloneable {
 
                 return new ShipMovingBoardState(selected);
             } else if (selectedCanFireTo(target.x, target.y)) {
-                interacted = cells[target.y][target.x];
                 damageShip(target.x, target.y, selected.getDamageAmount());
                 sideTurns++;
 
