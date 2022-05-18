@@ -26,8 +26,8 @@ public class AttackAnimation extends AnimationType {
     public AttackAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
         super(spaceshipPlayer.getWeapons().size() + 2, spaceshipPlayer.getSide().getDefaultRotation());
         this.weaponList = spaceshipPlayer.getWeapons();
-        playerShipAtlas = spaceshipPlayer.getSprite();
-        enemyShipAtlas = spaceshipEnemy.getSprite();
+        playerShipAtlas = spaceshipPlayer.getAtlasCoord();
+        enemyShipAtlas = spaceshipEnemy.getAtlasCoord();
         mainAnimationIndex = 1;
         standingPlayerShipAnimationIndex = 2;
     }

@@ -7,16 +7,13 @@ import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MovingStyle;
 
 public interface Content extends Cloneable {
-
-    String info();
-
     boolean isShip();
     boolean isPassable();
     boolean canMoveTo(int fromX, int fromY, int x, int y);
 
-    MovingStyle getMoves();
+    MovingStyle getMovingStyle();
 
-    Point getSprite();
+    Point getAtlasCoord();
 
     Side getSide();
 

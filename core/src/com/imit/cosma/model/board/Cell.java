@@ -24,10 +24,6 @@ public class Cell {
 
     public boolean isPassable() { return content.isPassable(); }
 
-    public String info(){
-        return content.info();
-    }
-
     public Content getContent() {
         return content;
     }
@@ -41,11 +37,11 @@ public class Cell {
     }
 
     public MovingStyle getMoves(){
-        return content.getMoves();
+        return content.getMovingStyle();
     }
 
-    public Point getSprite(){
-        return content.getSprite();
+    public Point getAtlasCoord(){
+        return content.getAtlasCoord();
     }
 
     public StepMode getStepMode(){

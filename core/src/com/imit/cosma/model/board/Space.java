@@ -16,11 +16,6 @@ public class Space implements Content{
     }
 
     @Override
-    public String info() {
-        return "empty cell";
-    }
-
-    @Override
     public boolean isShip() {
         return false;
     }
@@ -31,12 +26,12 @@ public class Space implements Content{
     }
 
     @Override
-    public MovingStyle getMoves() {
+    public MovingStyle getMovingStyle() {
         return movingStyle;
     }
 
     @Override
-    public Point getSprite() {
+    public Point getAtlasCoord() {
         return atlasCoords;
     }
 

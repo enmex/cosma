@@ -12,7 +12,7 @@ import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.gui.animation.compound.MovementAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.Content;
-import com.imit.cosma.model.board.Space;
+import com.imit.cosma.model.board.state.BoardState;
 import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Point;
@@ -69,22 +69,10 @@ public class PlayingField {
         int selectedBoardX = getBoardX(touchedX)/cellWidth;
         int selectedBoardY = (getBoardY(worldHeight - touchedY) - boardY)/cellHeight;
 
-        //TODO это плохой дизайн
         if(!animationPlays()){
-            AnimationType animationType;
-            Content content;
-            switch(board.getCurrentState(selectedBoardX, selectedBoardY)){
-                case SHIP_MOVING:
-                    content = board.getTurn() == Side.PLAYER ? board.getContent(selectedBoardX, selectedBoardY) : board.getSelectedContent();
-                    animationType = new MovementAnimation(content);
-                    contentAnimation.init(animationType, board.getCurrentPath(), cellWidth, cellHeight, boardY);
-                    break;
-                case SHIP_ATTACKING:
-                    content = board.getSelectedContent();
-                    Content targetContent = board.getInteracted().getContent();
-                    animationType = new AttackAnimation((Spaceship)content, (Spaceship) targetContent);
-                    contentAnimation.init(animationType, board.getCurrentPath(), cellWidth, cellHeight, boardY);
-                    break;
+            BoardState boardState = board.getCurrentState(selectedBoardX, selectedBoardY);
+            if(!boardState.isIdle()) {
+                contentAnimation.init(boardState.getAnimationType(), board.getCurrentPath(), cellWidth, cellHeight, boardY);
             }
             board.updateSide();
         }
@@ -118,7 +106,7 @@ public class PlayingField {
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && !contentAnimation.isAnimatedObject(x, y)) {
-                    Point atlas = board.getSprite(x, y);
+                    Point atlas = board.getAtlasCoords(x, y);
                     sprite.setRegion(atlas.x, atlas.y, 128, 128);
                     sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
                     sprite.setBounds(cellWidth * x, cellHeight * y + boardY, cellWidth, cellHeight);
@@ -157,7 +145,7 @@ public class PlayingField {
     }
 
     public Content getSelectedContent(){
-        return board.getSelectedContent();
+        return board.getSelected().getContent();
     }
 
     public void dispose(){

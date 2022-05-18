@@ -1,15 +1,13 @@
 package com.imit.cosma.model.rules;
 
 public enum Side {
-    PLAYER(0, 0),
-    ENEMY(1, 180),
-    NONE(2, 0);
+    PLAYER(0),
+    ENEMY(180),
+    NONE(0);
 
-    private int id;
     private float defaultRotation;
 
-    Side(int id, float defaultRotation){
-        this.id = id;
+    Side(float defaultRotation){
         this.defaultRotation = defaultRotation;
     }
 
@@ -19,9 +17,5 @@ public enum Side {
 
     public Side nextTurn(){
         return Side.values()[this == PLAYER ? 1 : 0];
-    }
-
-    public int getId() {
-        return id;
     }
 }

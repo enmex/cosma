@@ -16,11 +16,6 @@ public class BlackHole implements Content {
     }
 
     @Override
-    public String info() {
-        return "black hole!";
-    }
-
-    @Override
     public boolean isShip() {
         return false;
     }
@@ -31,12 +26,12 @@ public class BlackHole implements Content {
     }
 
     @Override
-    public MovingStyle getMoves() {
+    public MovingStyle getMovingStyle() {
         return movingStyle;
     }
 
     @Override
-    public Point getSprite() {
+    public Point getAtlasCoord() {
         return new Point(-1,-1);
     }
 

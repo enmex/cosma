@@ -9,14 +9,8 @@ public class CosmaGame extends Game {
 
 	@Override
 	public void create() {
-		//Config.getInstance();
 		gameScreen = new GameScreen();
 		setScreen(gameScreen);
-	}
-
-	@Override
-	public void render() {
-		super.render();
 	}
 
 	@Override

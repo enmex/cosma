@@ -10,23 +10,23 @@ public enum Skeleton {
     DREADNOUGHT(3,8,4000, new Point(0, 384));
 
     private final int weaponCapacity;
-    private final Point atlas;
+    private final Point atlasCoord;
     private int healthPoints;
     private int id;
 
-    Skeleton(int id, int weaponCapacity, int healthPoints, Point atlas){
+    Skeleton(int id, int weaponCapacity, int healthPoints, Point atlasCoord){
         this.id = id;
         this.weaponCapacity = weaponCapacity;
         this.healthPoints = healthPoints;
-        this.atlas = atlas;
+        this.atlasCoord = atlasCoord;
     }
 
     public int getWeaponCapacity(){
         return weaponCapacity;
     }
 
-    public Point getAtlas() {
-        return atlas;
+    public Point getAtlasCoord() {
+        return atlasCoord;
     }
 
     public int getHealthPoints() {

@@ -22,7 +22,7 @@ public class MovementAnimation extends AnimationType {
     public MovementAnimation(Content content){
         super(getInstance().MOVEMENT_ANIMATION_PHASES, content.getSide().getDefaultRotation());
         this.skeleton = ((Spaceship)content).getSkeleton();
-        shipMovement = new Movement(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE);
+        shipMovement = new Movement(skeleton.getAtlasCoord(), getInstance().SHIP_SPRITE_SIZE);
         mainAnimatedObject = 0;
     }
 
@@ -32,10 +32,10 @@ public class MovementAnimation extends AnimationType {
         animationData = datas.get(mainAnimatedObject);
         animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
 
-        shipRotation = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE,
+        shipRotation = new Rotation(skeleton.getAtlasCoord(), getInstance().SHIP_SPRITE_SIZE,
                 defaultRotation, defaultRotation + animationData.rotation*getOrientation());
 
-        shipRotationToDefault = new Rotation(skeleton.getAtlas(), getInstance().SHIP_SPRITE_SIZE,
+        shipRotationToDefault = new Rotation(skeleton.getAtlasCoord(), getInstance().SHIP_SPRITE_SIZE,
                 defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y,

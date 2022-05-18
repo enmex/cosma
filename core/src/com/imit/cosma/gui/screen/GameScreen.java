@@ -31,8 +31,6 @@ public class GameScreen implements Screen {
 
     private int touchedX = -1, touchedY = -1;
 
-    private BitmapFont font;
-
     private Content current;
 
     public GameScreen(){
@@ -40,7 +38,6 @@ public class GameScreen implements Screen {
         playingField = new PlayingField();
         infoPanel = new InfoComponent();
         background = new Texture(getInstance().BACKGROUND_PATH);
-        font = new BitmapFont(Gdx.files.internal(getInstance().FONT_PATH), false);
 
         batch = new SpriteBatch();
 
@@ -75,14 +72,6 @@ public class GameScreen implements Screen {
         scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());
 
         scoreComponent.render();
-    }
-
-    private void drawTurn(Side side){
-        batch.begin();
-
-        font.draw(batch, "Turn: " + side,0, (float) (0.8 * worldHeight));
-
-        batch.end();
     }
 
     @Override

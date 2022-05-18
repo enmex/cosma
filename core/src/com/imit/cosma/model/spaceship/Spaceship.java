@@ -15,7 +15,7 @@ public class Spaceship implements Content {
     private List<Weapon> weapons;
     private List<Weapon> selectedWeapons;
     private Side side;
-    private MovingStyle moves;
+    private MovingStyle movingStyle;
 
     private StepMode stepMode;
 
@@ -34,12 +34,6 @@ public class Spaceship implements Content {
     }
 
     @Override
-    public String info() {
-        return side + " spaceship-" + skeleton + " with " + moves.getInfo()
-                + " with health=" + healthPoints;
-    }
-
-    @Override
     public boolean isShip() {
         return true;
     }
@@ -50,8 +44,8 @@ public class Spaceship implements Content {
     }
 
     @Override
-    public MovingStyle getMoves() {
-        return moves;
+    public MovingStyle getMovingStyle() {
+        return movingStyle;
     }
 
     @Override
@@ -83,18 +77,18 @@ public class Spaceship implements Content {
         weapons.add(weapon);
     }
 
-    public void setMoves(MovingStyle moves){
-        this.moves = moves;
+    public void setMovingStyle(MovingStyle movingStyle){
+        this.movingStyle = movingStyle;
     }
 
     @Override
     public boolean canMoveTo(int fromX, int fromY, int x, int y){
-        return moves.canMoveTo(fromX, fromY, x, y);
+        return movingStyle.canMoveTo(fromX, fromY, x, y);
     }
 
     @Override
-    public Point getSprite() {
-        return skeleton.getAtlas();
+    public Point getAtlasCoord() {
+        return skeleton.getAtlasCoord();
     }
 
     @Override
@@ -137,7 +131,7 @@ public class Spaceship implements Content {
         spaceship.stepMode = stepMode;
         spaceship.damagePoints = damagePoints;
         spaceship.healthPoints = healthPoints;
-        spaceship.moves = moves;
+        spaceship.movingStyle = movingStyle;
         spaceship.selectedWeapons = selectedWeapons;
         spaceship.weaponAmount = weaponAmount;
         spaceship.weaponRange = weaponRange;

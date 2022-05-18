@@ -1,11 +1,12 @@
 package com.imit.cosma.model.board;
 
 import static com.imit.cosma.config.Config.getInstance;
-import static com.imit.cosma.model.board.BoardState.IDLE;
-import static com.imit.cosma.model.board.BoardState.SHIP_ATTACKING;
-import static com.imit.cosma.model.board.BoardState.SHIP_MOVING;
 
 import com.imit.cosma.ai.AI;
+import com.imit.cosma.model.board.state.BoardState;
+import com.imit.cosma.model.board.state.IdleBoardState;
+import com.imit.cosma.model.board.state.ShipAttackingBoardState;
+import com.imit.cosma.model.board.state.ShipMovingBoardState;
 import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.rules.StepMode;
@@ -34,7 +35,6 @@ public class Board implements Cloneable {
 
     private int playerAdvantagePoints, enemyAdvantagePoints;
 
-    private BoardState boardState;
     private AI enemy;
     private Path currentPath;
 
@@ -45,7 +45,6 @@ public class Board implements Cloneable {
         emptySet = new HashSet<>();
         selected = new Cell(new Space());
         interacted = new Cell(new Space());
-        boardState = IDLE;
         playerAdvantagePoints = 0;
         enemyAdvantagePoints = 0;
 
@@ -99,7 +98,7 @@ public class Board implements Cloneable {
         if(inBoard(selectedX, selectedY)){
             return turn == Side.PLAYER ? calculateCurrentPlayerState(selectedX, selectedY) : calculateCurrentEnemyState();
         }
-        return IDLE;
+        return new IdleBoardState();
     }
 
     public BoardState calculateCurrentPlayerState(int selectedX, int selectedY){
@@ -108,20 +107,16 @@ public class Board implements Cloneable {
             if (selectedCanMoveTo(selectedX, selectedY)) {
                 setSelectedPosition(selectedX, selectedY);
                 sideTurns++;
-                boardState = SHIP_MOVING;
+
+                return new ShipMovingBoardState(turn == Side.PLAYER ? getCell(selectedX, selectedY) : selected);
             } else if (selectedCanFireTo(selectedX, selectedY)) {
                 damageShip(selectedX, selectedY, selected.getDamageAmount());
                 sideTurns++;
-                boardState = SHIP_ATTACKING;
-            }
-            else{
-                boardState = IDLE;
+
+                return new ShipAttackingBoardState(selected, interacted);
             }
         }
-        else{
-            boardState = IDLE;
-        }
-        return boardState;
+        return new IdleBoardState();
     }
 
     public Path getCurrentPath() {
@@ -147,23 +142,21 @@ public class Board implements Cloneable {
             if (selectedCanMoveTo(target.x, target.y)) {
                 setSelectedPosition(target.x, target.y);
                 sideTurns++;
-                boardState = SHIP_MOVING;
 
                 selected = cells[target.y][target.x];
                 selectedX = target.x;
                 selectedY = target.y;
+
+                return new ShipMovingBoardState(selected);
             } else if (selectedCanFireTo(target.x, target.y)) {
+                interacted = cells[target.y][target.x];
                 damageShip(target.x, target.y, selected.getDamageAmount());
                 sideTurns++;
-                boardState = SHIP_ATTACKING;
-            } else {
-                boardState = IDLE;
-            }
-        } else {
-            boardState = IDLE;
-        }
 
-        return boardState;
+                return new ShipAttackingBoardState(selected, interacted);
+            }
+        }
+        return new IdleBoardState();
     }
 
     public void updateSide(){
@@ -232,12 +225,8 @@ public class Board implements Cloneable {
                 && selected.getSide() != cells[y][x].getSide() && selected.getStepMode() == StepMode.ATTACK;
     }
 
-    public Content getSelectedContent() {
-        return selected.getContent();
-    }
-
-    public Content getContent(int x, int y){
-        return cells[y][x].getContent();
+    public Cell getCell(int x, int y){
+        return cells[y][x];
     }
 
     public Set<Point> getAvailableCellsForMove() {
@@ -263,8 +252,8 @@ public class Board implements Cloneable {
         interactedCells.add(new Point(toX, toY));
     }
 
-    public Point getSprite(int x, int y){
-        return cells[y][x].getSprite();
+    public Point getAtlasCoords(int x, int y){
+        return cells[y][x].getAtlasCoord();
     }
 
     public boolean inBoard(int x, int y){
@@ -359,7 +348,6 @@ public class Board implements Cloneable {
         this.sideTurns = board.sideTurns;
         this.selectedX = board.selectedX;
         this.selectedY = board.selectedY;
-        this.boardState = board.boardState;
         this.enemy = board.enemy;
         this.currentPath = board.currentPath;
     }
@@ -368,7 +356,6 @@ public class Board implements Cloneable {
     public Board clone(){
         Board board = new Board();
         board.interactedCells = interactedCells;
-        board.boardState = boardState;
         board.enemy = enemy;
         board.selected = selected;
         board.cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];

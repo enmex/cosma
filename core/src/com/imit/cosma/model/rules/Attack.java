@@ -64,12 +64,8 @@ public class Attack {
         return availableCells;
     }
 
-    public static Set<Point> getAvailableCells(Board board, Point selected){
-        return getAvailableCells(board, selected.x, selected.y);
-    }
-
     public static Set<Point> getAvailableCells(Board board, int selectedX, int selectedY){
-        int radius = ((Spaceship)board.getContent(selectedX, selectedY)).getWeaponRange();
+        int radius = ((Spaceship)board.getCell(selectedX, selectedY).getContent()).getWeaponRange();
 
         Set<Point> availableCells = new HashSet<>();
         int offsetX;
