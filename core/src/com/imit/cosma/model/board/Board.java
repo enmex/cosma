@@ -232,7 +232,7 @@ public class Board implements Cloneable {
         return selected.isShip() && selected.getStepMode() == StepMode.MOVE && selected.getSide() == turn ? availableForMove : emptySet;
     }
     public Set<Point> getAvailableCellsForMove(int x, int y){
-        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.MOVE ? cells[y][x].getMoves().getAvailableCells(this, x, y) : emptySet;
+        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.MOVE ? cells[y][x].getMoves().getAvailable(this, x, y) : emptySet;
     }
 
     public Set<Point> getAvailableCellsForFire(){
@@ -240,7 +240,7 @@ public class Board implements Cloneable {
     }
 
     public Set<Point> getAvailableCellsForFire(int x, int y){
-        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.ATTACK ? Attack.getAvailableCells(this, x, y) : emptySet;
+        return isShip(x, y) && cells[y][x].getStepMode() == StepMode.ATTACK ? Attack.getAvailable(this, x, y) : emptySet;
     }
 
     private void setSelectedPosition(int toX, int toY) {
@@ -285,8 +285,8 @@ public class Board implements Cloneable {
             selectedY = y;
 
             if(selected.isShip()) {
-                availableForAttack = Attack.getAvailableCells(this);
-                availableForMove = selected.getMoves().getAvailableCells(this, selectedX, selectedY);
+                availableForAttack = Attack.getAvailable(this);
+                availableForMove = selected.getMoves().getAvailable(this, selectedX, selectedY);
             }
         }
     }
@@ -380,8 +380,8 @@ public class Board implements Cloneable {
         return enemyAdvantagePoints;
     }
 
-    public Cell getInteracted() {
-        return interacted;
+    public StepMode getStepMode(int x, int y) {
+        return cells[y][x].getStepMode();
     }
 }
 

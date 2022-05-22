@@ -16,7 +16,7 @@ public enum Direction {
     WEST(-1, 0),
     NORTH_WEST(-1, 1);
 
-    private int offsetX, offsetY;
+    private final int offsetX, offsetY;
 
     Direction(int offsetX, int offsetY){
         this.offsetX = offsetX;
@@ -25,10 +25,6 @@ public enum Direction {
 
     public Vector getVector(){
         return new Vector(offsetX, offsetY);
-    }
-
-    public Vector getVectorDirection(Direction direction){
-        return new Vector(direction.offsetX, direction.offsetY);
     }
 
     public static Set<Direction> getDiagonal(){

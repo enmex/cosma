@@ -10,7 +10,7 @@ import java.util.Set;
 public class QueenMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailableCells(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, int x, int y) {
         Set<Point> availableCells = new HashSet<>();
 
         for(Direction direction : Direction.values()){
@@ -23,11 +23,6 @@ public class QueenMovingStyle implements MovingStyle {
             }
         }
         return availableCells;
-    }
-
-    @Override
-    public String getInfo() {
-        return "queen move";
     }
 
     @Override

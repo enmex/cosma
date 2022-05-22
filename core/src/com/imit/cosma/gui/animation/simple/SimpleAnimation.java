@@ -8,7 +8,7 @@ public interface SimpleAnimation {
 
     void init(int fromX, int fromY, int toX, int toY, float rotation);
     void render();
-    Point getSprites();
+    Point getAtlasCoords();
     int getSpriteSize();
     float getRotation();
     boolean isAnimated();

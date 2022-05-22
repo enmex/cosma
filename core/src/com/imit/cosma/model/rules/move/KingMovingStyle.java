@@ -12,7 +12,7 @@ import java.util.Set;
 public final class KingMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailableCells(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, int x, int y) {
         Set<Point> points = new HashSet<>();
 
         int neighborX, neighborY;
@@ -32,11 +32,6 @@ public final class KingMovingStyle implements MovingStyle {
     private boolean inBoard(int x, int y) {
         return x >= 0 && x < Config.getInstance().BOARD_SIZE
                 && y >= 0 && y < Config.getInstance().BOARD_SIZE;
-    }
-
-    @Override
-    public String getInfo() {
-        return "king move";
     }
 
     @Override

@@ -5,7 +5,7 @@ public enum Side {
     ENEMY(180),
     NONE(0);
 
-    private float defaultRotation;
+    private final float defaultRotation;
 
     Side(float defaultRotation){
         this.defaultRotation = defaultRotation;

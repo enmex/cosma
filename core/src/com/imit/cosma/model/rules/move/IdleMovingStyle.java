@@ -9,13 +9,8 @@ import java.util.Set;
 public final class IdleMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailableCells(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, int x, int y) {
         return new HashSet<>();
-    }
-
-    @Override
-    public String getInfo() {
-        return "idle move";
     }
 
     @Override

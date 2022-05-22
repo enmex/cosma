@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.model.board.Board;
 
 public class ScoreComponent extends Component {
 
@@ -28,21 +27,21 @@ public class ScoreComponent extends Component {
     public void render() {
         batch.begin();
         //TODO сделать норм
-        font.draw(batch, "PLAYER " + playerAdvantagePoints, panelLeft + 50, panelBottom);
-        font.draw(batch, enemyAdvantagePoints + " ENEMY", panelWidth - 100, panelBottom, panelWidth, -1, true);
+        font.draw(batch, "PLAYER " + playerAdvantagePoints, componentLeft + 50, componentBottom);
+        font.draw(batch, enemyAdvantagePoints + " ENEMY", componentWidth - 100, componentBottom, componentWidth, -1, true);
 
         batch.end();
     }
 
     @Override
     public void resize(int width, int height){
-        panelLeft = 0;
+        componentLeft = 0;
         //TODO config
-        panelHeight = (int) (0.1 * height);
-        panelBottom = (int) (0.9 * height);
-        panelWidth = width;
+        componentHeight = (int) (0.1 * height);
+        componentBottom = (int) (0.9 * height);
+        componentWidth = width;
 
-        System.out.println(panelHeight + " " + panelBottom);
+        System.out.println(componentHeight + " " + componentBottom);
     }
 
 }

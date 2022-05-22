@@ -61,7 +61,7 @@ public class Idle implements SimpleAnimation{
     }
 
     @Override
-    public Point getSprites() {
+    public Point getAtlasCoords() {
         return sprite;
     }
 
@@ -97,7 +97,11 @@ public class Idle implements SimpleAnimation{
 
     @Override
     public float getElapsedTime() {
-        return elapsedTime += Gdx.graphics.getDeltaTime();
+        elapsedTime += Gdx.graphics.getDeltaTime();
+        if(frames == 6) {
+            System.out.println(elapsedTime);
+        }
+        return elapsedTime;
     }
 
     @Override

@@ -6,15 +6,11 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.AttackAnimation;
 import com.imit.cosma.gui.animation.ContentAnimation;
-import com.imit.cosma.gui.animation.compound.MovementAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.board.state.BoardState;
 import com.imit.cosma.model.rules.Side;
-import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Point;
 
 public class PlayingField {
@@ -65,7 +61,7 @@ public class PlayingField {
         if(touchedX != 0 && touchedY != 0 && !animationPlays() && !enemyTurn()) {
             drawSelected(touchedX, worldHeight - touchedY);
         }
-        //правила игры:
+
         int selectedBoardX = getBoardX(touchedX)/cellWidth;
         int selectedBoardY = (getBoardY(worldHeight - touchedY) - boardY)/cellHeight;
 
@@ -119,7 +115,7 @@ public class PlayingField {
 
         //draw animated
         if(contentAnimation.isAnimated()) {
-            contentAnimation.render(cellWidth, cellHeight);
+            contentAnimation.render();
         }
 
     }

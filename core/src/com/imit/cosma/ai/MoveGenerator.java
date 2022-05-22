@@ -1,10 +1,6 @@
 package com.imit.cosma.ai;
 
-import static com.imit.cosma.model.rules.StepMode.ATTACK;
-import static com.imit.cosma.model.rules.StepMode.MOVE;
-
 import com.imit.cosma.config.Config;
-import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.Side;
@@ -32,6 +28,7 @@ public class MoveGenerator {
 
     public void update(Board board){
         pathsAI.clear();
+        pathsPlayer.clear();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && board.getSide(x, y) == Side.ENEMY){
@@ -45,7 +42,6 @@ public class MoveGenerator {
             }
         }
 
-        pathsPlayer.clear();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && board.getSide(x, y) == Side.PLAYER){

@@ -4,38 +4,36 @@ import static com.imit.cosma.config.Config.getInstance;
 
 import com.imit.cosma.gui.animation.simple.Movement;
 import com.imit.cosma.gui.animation.simple.Rotation;
+import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 public class MovementAnimation extends AnimationType {
-    private Rotation shipRotation, shipRotationToDefault;
-    private final Movement shipMovement;
-
-    private final Skeleton skeleton;
+    private final Point shipAtlasCoords;
 
     private final int mainAnimatedObject;
 
-    private AnimationData animationData;
-
     public MovementAnimation(Content content){
         super(getInstance().MOVEMENT_ANIMATION_PHASES, content.getSide().getDefaultRotation());
-        this.skeleton = ((Spaceship)content).getSkeleton();
-        shipMovement = new Movement(skeleton.getAtlasCoord(), getInstance().SHIP_SPRITE_SIZE);
+        shipAtlasCoords = ((Spaceship)content).getSkeleton().getAtlasCoord();
         mainAnimatedObject = 0;
     }
 
     @Override
     public void init(Path boardPath, Path screenPath){
         super.init(boardPath, screenPath);
-        animationData = datas.get(mainAnimatedObject);
+        AnimationData animationData = datas.get(mainAnimatedObject);
         animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
 
-        shipRotation = new Rotation(skeleton.getAtlasCoord(), getInstance().SHIP_SPRITE_SIZE,
+        Movement shipMovement = new Movement(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE);
+
+        Rotation shipRotation = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
                 defaultRotation, defaultRotation + animationData.rotation*getOrientation());
 
-        shipRotationToDefault = new Rotation(skeleton.getAtlasCoord(), getInstance().SHIP_SPRITE_SIZE,
+        Rotation shipRotationToDefault = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
                 defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y,
@@ -47,35 +45,47 @@ public class MovementAnimation extends AnimationType {
         shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
 
-        animationData.phase.add(shipRotation);
-        animationData.phase.add(shipMovement);
-        animationData.phase.add(shipRotationToDefault);
+        animationData.phases.add(shipRotation);
+        animationData.phases.add(shipMovement);
+        animationData.phases.add(shipRotationToDefault);
 
         animationData.currentPhase = 0;
 
-        animationData.phase.get(mainAnimatedObject).setAnimated();
+        animationData.phases.get(mainAnimatedObject).setAnimated();
     }
 
     @Override
     public void render() {
-        animationData.phase.get(animationData.currentPhase).render();
-        if (!animationData.phase.get(animationData.currentPhase).isAnimated()) {
+        AnimationData animationData = datas.get(mainAnimatedObject);
+
+        animationData.phases.get(animationData.currentPhase).render();
+        if (!animationData.phases.get(animationData.currentPhase).isAnimated()) {
             animationData.currentPhase++;
-            if(animationData.currentPhase >= animationData.phase.size){
+            if(animationData.currentPhase >= animationData.phases.size){
                 clear();
             }
             else {
-                animationData.phase.get(animationData.currentPhase).setAnimated();
+                animationData.phases.get(animationData.currentPhase).setAnimated();
             }
         }
         if(animationData.currentPhase == 1) {
-            animationData.offset = animationData.phase.get(animationData.currentPhase).getOffset();
+            animationData.offset = animationData.phases.get(animationData.currentPhase).getOffset();
         }
     }
 
     @Override
     public boolean isAnimated() {
-        return shipRotation.isAnimated() || shipMovement.isAnimated() || shipRotationToDefault.isAnimated();
+        if(datas.size == 0) {
+            return false;
+        }
+
+        AnimationData animationData = datas.get(mainAnimatedObject);
+        for(SimpleAnimation simpleAnimation : animationData.phases) {
+            if(simpleAnimation.isAnimated()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

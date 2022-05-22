@@ -10,7 +10,7 @@ import java.util.Set;
 public final class OfficerMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailableCells(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, int x, int y) {
         Set<Point> availableCells = new HashSet<>();
 
         for(Direction direction : Direction.getDiagonal()){
@@ -24,11 +24,6 @@ public final class OfficerMovingStyle implements MovingStyle {
         }
 
         return availableCells;
-    }
-
-    @Override
-    public String getInfo() {
-        return "officer move";
     }
 
     @Override

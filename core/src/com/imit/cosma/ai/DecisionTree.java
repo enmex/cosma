@@ -17,8 +17,6 @@ public class DecisionTree {
 
     private boolean playerTurn;
 
-    private int index = 0;
-
     public DecisionTree(Board board){
         generator = new MoveGenerator(board);
         currentPath = null;
@@ -29,7 +27,6 @@ public class DecisionTree {
 
     public int calculateBestPath(int depth, int turns, int alpha, int beta){
         int advantage = 0;
-        index++;
         if(turns == 2){
             playerTurn = !playerTurn;
             depth--;
@@ -44,7 +41,6 @@ public class DecisionTree {
         }
 
         //вычисляем все ответвления от текущего узла
-        //alpha
         List<Path> paths = new ArrayList<>(playerTurn ? generator.getPlayerPaths() : generator.getEnemyPaths());
         for(Path path : paths){
             currentPath = path;
@@ -69,12 +65,6 @@ public class DecisionTree {
         return advantage;
     }
 
-    public int getIndex() {
-        int value = index;
-        index = 0;
-        return value;
-    }
-
     public void update(Board board){
         this.board = board;
         generator.update(board);
@@ -93,6 +83,7 @@ public class DecisionTree {
                 - board.getHealthPoints(path.getTarget())
                 + board.getDamagePoints(path.getTarget());
     }
+
 
     private void doTurn(Path path){
         states.push(board.clone());

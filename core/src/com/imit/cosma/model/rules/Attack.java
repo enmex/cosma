@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Attack {
 
-    public static Set<Point> getAvailableCells(Board board){
+    public static Set<Point> getAvailable(Board board){
         int selectedX = board.getSelectedX();
         int selectedY = board.getSelectedY();
         int radius = ((Spaceship)board.getSelected().getContent()).getWeaponRange();
@@ -17,7 +17,7 @@ public class Attack {
         Set<Point> availableCells = new HashSet<>();
         int offsetX;
         int offsetY;
-        //TODO это говнокод
+        //TODO это не то
 
         for(Direction direction : Direction.getHorizontal()){
             for(int i = 1; i <= radius; i++){
@@ -64,7 +64,7 @@ public class Attack {
         return availableCells;
     }
 
-    public static Set<Point> getAvailableCells(Board board, int selectedX, int selectedY){
+    public static Set<Point> getAvailable(Board board, int selectedX, int selectedY){
         int radius = ((Spaceship)board.getCell(selectedX, selectedY).getContent()).getWeaponRange();
 
         Set<Point> availableCells = new HashSet<>();

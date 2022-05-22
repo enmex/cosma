@@ -15,10 +15,6 @@ public class Player {
         return input.isTouched();
     }
 
-    public boolean touchedBoard() {
-        return false;
-    }
-
     public int getX(){
         return input.getX();
     }

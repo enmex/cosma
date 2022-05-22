@@ -12,20 +12,13 @@ import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.spaceship.Spaceship;
 
 public class SpaceshipInformation extends ContentInformation{
-
-    private SpriteBatch batch;
-
-    private Button moveModeButton, attackModeButton;
-
     //healthBar
     private ShapeRenderer healthBar;
     private int healthBarX, healthBarY, healthBarWidth, healthBarHeight;
     private float healthToBarRatio;
 
     //spaceship
-    private Spaceship spaceship;
-    private Sprite sprite;
-    private int spaceshipX, spaceshipY, spaceshipWidth, spaceshipHeight;
+    private int maxHealthPoints, healthPoints, skeletonId;
 
     //hp points
     private BitmapFont font;
@@ -33,27 +26,24 @@ public class SpaceshipInformation extends ContentInformation{
 
     public SpaceshipInformation(SelectedCellDetails parent, Spaceship spaceship){
         super(parent);
-        this.spaceship = spaceship;
+        this.maxHealthPoints = spaceship.getMaxHealthPoints();
+        this.healthPoints = spaceship.getHealthPoints();
+        this.skeletonId = spaceship.getSkeleton().getId();
         this.sprite = new Sprite(contentTexture);
     }
 
     @Override
-    public void init(int panelLeft, int panelBottom, int panelWidth, int panelHeight) {
-        super.init(panelLeft, panelBottom, panelWidth, panelHeight);
+    public void init(int componentLeft, int componentBottom, int componentWidth, int componentHeight) {
+        super.init(componentLeft, componentBottom, componentWidth, componentHeight);
 
         batch = new SpriteBatch();
         healthBar = new ShapeRenderer();
 
         healthToBarRatio = 1;
-        healthBarX = panelLeft;
-        healthBarY = panelBottom;
-        healthBarWidth = (int) (0.6 * panelWidth);
-        healthBarHeight = (int) (0.1 * panelHeight);
-
-        spaceshipX = (int) (panelLeft + 0.05 * panelWidth);
-        spaceshipY = (int) (0.7 * (panelHeight) + panelBottom);
-        spaceshipWidth = (int) (0.4 * panelWidth);
-        spaceshipHeight = (int) (0.7 * panelHeight);
+        healthBarX = componentLeft;
+        healthBarY = componentBottom;
+        healthBarWidth = (int) (0.6 * componentWidth);
+        healthBarHeight = (int) (0.1 * componentHeight);
 
         font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         fontX = healthBarX;
@@ -73,7 +63,7 @@ public class SpaceshipInformation extends ContentInformation{
 
         //showing ship
         batch.begin();
-        sprite.setRegion(256, 112 + 112 * spaceship.getSkeleton().getId(), 151, 112);
+        sprite.setRegion(256, 112 + 112 * skeletonId, 151, 112);
         sprite.setBounds(backgroundLeft, backgroundBottom, backgroundWidth, backgroundHeight);
         sprite.draw(batch);
         batch.end();
@@ -86,18 +76,21 @@ public class SpaceshipInformation extends ContentInformation{
 
         //showing hp points
         batch.begin();
-        font.draw(batch, spaceship.getHealthPoints() + " OF " + spaceship.getMaxHealthPoints() + "HP",
+        font.draw(batch, healthPoints + " OF " + maxHealthPoints + "HP",
                 fontX, fontY,
                 healthBarWidth, 1, true);
         batch.end();
 
-        healthToBarRatio = (float)spaceship.getHealthPoints() / spaceship.getMaxHealthPoints();
+        healthToBarRatio = (float)healthPoints / maxHealthPoints;
     }
 
     @Override
     public void update(Content content) {
         if(content.isShip()){
-            spaceship = (Spaceship) content;
+            Spaceship spaceship = (Spaceship) content;
+            this.maxHealthPoints = spaceship.getMaxHealthPoints();
+            this.healthPoints = spaceship.getHealthPoints();
+            this.skeletonId = spaceship.getSkeleton().getId();
         }
         else{
             parent.setContentInformation(new SpaceInformation(parent));

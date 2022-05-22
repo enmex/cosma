@@ -2,15 +2,16 @@ package com.imit.cosma.gui.screen.component;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public abstract class Component implements Renderable, Resizeable{
-    protected int panelLeft, panelBottom;
-    protected int panelWidth, panelHeight;
-
+public abstract class Component{
     protected SpriteBatch batch;
+    protected int componentLeft, componentBottom;
+    protected int componentWidth, componentHeight;
 
-    @Override
+    protected Component() {
+        batch = new SpriteBatch();
+    }
+
     public void render() {}
 
-    @Override
     public void resize(int width, int height) {}
 }

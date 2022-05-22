@@ -59,7 +59,7 @@ public class Movement implements SimpleAnimation{
     }
 
     @Override
-    public Point getSprites() {
+    public Point getAtlasCoords() {
         return sprite;
     }
 
@@ -85,7 +85,8 @@ public class Movement implements SimpleAnimation{
 
     @Override
     public float getElapsedTime() {
-        return elapsedTime += Gdx.graphics.getDeltaTime();
+        elapsedTime += Gdx.graphics.getDeltaTime();
+        return elapsedTime;
     }
 
     public boolean isAnimated() {

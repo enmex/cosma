@@ -10,7 +10,7 @@ import java.util.Set;
 public class WeakRookMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailableCells(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, int x, int y) {
         Set<Point> availablePoints = new HashSet<>();
 
         for(Direction direction : Direction.getStraight()){
@@ -19,11 +19,6 @@ public class WeakRookMovingStyle implements MovingStyle {
             }
         }
         return availablePoints;
-    }
-
-    @Override
-    public String getInfo() {
-        return "weak rook move";
     }
 
     @Override

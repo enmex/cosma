@@ -31,8 +31,6 @@ public class GameScreen implements Screen {
 
     private int touchedX = -1, touchedY = -1;
 
-    private Content current;
-
     public GameScreen(){
         player = new Player();
         playingField = new PlayingField();
@@ -43,8 +41,6 @@ public class GameScreen implements Screen {
 
         worldWidth = 1080;
         worldHeight = 1920;
-
-        current = playingField.getSelectedContent();
 
         scoreComponent = new ScoreComponent();
     }
@@ -65,10 +61,7 @@ public class GameScreen implements Screen {
 
         playingField.render(touchedX, touchedY);
         infoPanel.render();
-        if(current != playingField.getSelectedContent() && playingField.getTurn() == Side.PLAYER) {
-            current = playingField.getSelectedContent();
-            infoPanel.updateContent(current);
-        }
+        infoPanel.updateContent(playingField.getSelectedContent(), playingField.getTurn());
         scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());
 
         scoreComponent.render();

@@ -7,10 +7,7 @@ import java.util.Set;
 
 public interface MovingStyle {
 //TODO refactor
-    Set<Point> getAvailableCells(Board board, int x, int y);
-
-    String getInfo();
+    Set<Point> getAvailable(Board board, int x, int y);
 
     boolean canMoveTo(int fromX, int fromY, int x, int y);
-
 }

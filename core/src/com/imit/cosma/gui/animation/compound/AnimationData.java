@@ -1,6 +1,5 @@
 package com.imit.cosma.gui.animation.compound;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
@@ -9,16 +8,11 @@ import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class AnimationData {
-    protected float elapsedTime = 0f;
     protected Vector offset;
     protected float rotation;
     protected Path path;
-    protected Array<SimpleAnimation> phase;
+    protected Array<SimpleAnimation> phases;
     protected int currentPhase;
-
-    public float getRotation() {
-        return rotation;
-    }
 
     public Vector getOffset() {
         return offset;
@@ -28,26 +22,26 @@ public class AnimationData {
         return path;
     }
 
-    public Point getAtlas(){
-        return phase.get(currentPhase).getSprites();
+    public Point getAtlasCoords(){
+        return phases.get(currentPhase).getAtlasCoords();
     }
     public int getSpriteSize(){
-        return phase.get(currentPhase).getSpriteSize();
+        return phases.get(currentPhase).getSpriteSize();
     }
     public int getFramesAmount(){
-        return phase.get(currentPhase).getFramesAmount();
+        return phases.get(currentPhase).getFramesAmount();
     }
     public PlayMode getPlayMode(){
-        return phase.get(currentPhase).getPlayMode();
+        return phases.get(currentPhase).getPlayMode();
     }
     public float getCurrentRotation(){
-        return phase.get(currentPhase).getRotation();
+        return phases.get(currentPhase).getRotation();
     }
     public SimpleAnimation getCurrentPhase(){
-        return phase.get(currentPhase);
+        return phases.get(currentPhase);
     }
 
     public float getElapsedTime() {
-        return phase.get(currentPhase).getElapsedTime();
+        return phases.get(currentPhase).getElapsedTime();
     }
 }

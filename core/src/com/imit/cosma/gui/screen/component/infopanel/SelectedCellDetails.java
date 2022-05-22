@@ -14,8 +14,8 @@ public class SelectedCellDetails {
         this.contentInformation = contentInformation;
     }
 
-    public void init(int panelLeft, int panelBottom, int panelWidth, int panelHeight){
-        contentInformation.init(panelLeft, panelBottom, panelWidth, panelHeight);
+    public void init(int componentLeft, int componentBottom, int componentWidth, int componentHeight){
+        contentInformation.init(componentLeft, componentBottom, componentWidth, componentHeight);
     }
 
     public void render(){
@@ -25,5 +25,4 @@ public class SelectedCellDetails {
     public void update(Content content){
         contentInformation.update(content);
     }
-
 }

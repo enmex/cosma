@@ -24,7 +24,7 @@ public class HorseMovingStyle implements MovingStyle {
     }
 
     @Override
-    public Set<Point> getAvailableCells(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, int x, int y) {
         Set<Point> availablePoints = new HashSet<>();
 
         for(Vector vector : offsets){
@@ -34,11 +34,6 @@ public class HorseMovingStyle implements MovingStyle {
         }
 
         return availablePoints;
-    }
-
-    @Override
-    public String getInfo() {
-        return "horse move";
     }
 
     @Override

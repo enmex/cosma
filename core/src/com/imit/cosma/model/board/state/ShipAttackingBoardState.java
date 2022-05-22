@@ -6,16 +6,16 @@ import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.spaceship.Spaceship;
 
 public class ShipAttackingBoardState implements BoardState{
-    private Spaceship source, target;
+    private Cell source, target;
 
     public ShipAttackingBoardState(Cell source, Cell target) {
-        this.source = (Spaceship) source.getContent();
-        this.target = (Spaceship) target.getContent();
+        this.source = source;
+        this.target = target;
     }
 
     @Override
     public AnimationType getAnimationType() {
-        return new AttackAnimation(source, target);
+        return new AttackAnimation((Spaceship) source.getContent(), (Spaceship) target.getContent());
     }
 
     @Override

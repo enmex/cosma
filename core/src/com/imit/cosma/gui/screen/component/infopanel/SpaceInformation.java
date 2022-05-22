@@ -7,18 +7,14 @@ import com.imit.cosma.model.spaceship.Spaceship;
 
 public class SpaceInformation extends ContentInformation{
 
-    private SpriteBatch batch;
-    private Sprite sprite;
-
     public SpaceInformation(SelectedCellDetails parent){
         super(parent);
-        batch = new SpriteBatch();
         sprite = new Sprite(contentTexture);
     }
 
     @Override
-    public void init(int panelLeft, int panelBottom, int panelWidth, int panelHeight) {
-        super.init(panelLeft, panelBottom, panelWidth, panelHeight);
+    public void init(int componentLeft, int componentBottom, int componentWidth, int componentHeight) {
+        super.init(componentLeft, componentBottom, componentWidth, componentHeight);
     }
 
     @Override
