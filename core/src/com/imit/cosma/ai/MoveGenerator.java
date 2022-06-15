@@ -3,7 +3,7 @@ package com.imit.cosma.ai;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.Board;
-import com.imit.cosma.model.rules.Side;
+import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.util.Path;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class MoveGenerator {
         pathsPlayer.clear();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
-                if(board.isShip(x, y) && board.getSide(x, y) == Side.ENEMY){
+                if(board.isShip(x, y) && !board.getSide(x, y).isPlayer()){
                     for (Point point : board.getAvailableCellsForMove(x, y)) {
                         pathsAI.add(new Path(x, y, point.x, point.y));
                     }
@@ -44,7 +44,7 @@ public class MoveGenerator {
 
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
-                if(board.isShip(x, y) && board.getSide(x, y) == Side.PLAYER){
+                if(board.isShip(x, y) && board.getSide(x, y).isPlayer()){
                     for (Point point : board.getAvailableCellsForMove(x, y)) {
                         pathsPlayer.add(new Path(x, y, point.x, point.y));
                     }

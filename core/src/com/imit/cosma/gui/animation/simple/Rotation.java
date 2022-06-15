@@ -1,6 +1,7 @@
 package com.imit.cosma.gui.animation.simple;
 
-import com.badlogic.gdx.Gdx;
+import static com.imit.cosma.config.Config.getInstance;
+
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
@@ -9,11 +10,14 @@ import com.imit.cosma.util.Vector;
 public class Rotation implements SimpleAnimation{
     private float elapsedTime = 0f;
 
+    private final int framesAmount = 4;
+    private final float deltaTime = getInstance().ANIMATION_DURATION / framesAmount;
+
     private float rotationVelocity;
     private float currentRotation;
     private float targetRotation;
 
-    private Point sprite;
+    private Point atlasCoords;
     private int spriteSize;
 
     private Vector offset = new Vector();
@@ -21,7 +25,7 @@ public class Rotation implements SimpleAnimation{
     private boolean isAnimated;
     //initialRotation - текущий поворот
     //targetRotation - конечный поворот
-    public Rotation(Point sprite, int spriteSize, float initialRotation, float targetRotation){
+    public Rotation(Point atlasCoords, int spriteSize, float initialRotation, float targetRotation){
         currentRotation = initialRotation;
         rotationVelocity = Config.getInstance().ROTATION_VELOCITY; //скорость поворота
 
@@ -30,7 +34,7 @@ public class Rotation implements SimpleAnimation{
         }
         this.targetRotation = targetRotation;
 
-        this.sprite = sprite;
+        this.atlasCoords = atlasCoords;
         this.spriteSize = spriteSize;
     }
 
@@ -49,7 +53,7 @@ public class Rotation implements SimpleAnimation{
 
     @Override
     public Point getAtlasCoords() {
-        return sprite;
+        return atlasCoords;
     }
 
     @Override
@@ -74,19 +78,20 @@ public class Rotation implements SimpleAnimation{
 
     @Override
     public int getFramesAmount() {
-        return 4;
+        return framesAmount;
     }
 
     @Override
     public float getElapsedTime() {
-        elapsedTime += Gdx.graphics.getDeltaTime();
-        return elapsedTime;
+        return elapsedTime += deltaTime;
     }
 
+    @Override
     public boolean isAnimated() {
         return isAnimated;
     }
 
+    @Override
     public void setAnimated(){
         isAnimated = true;
     }

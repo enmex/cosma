@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.XmlReader;
 
 public class Config {
+    public int DEFAULT_SHIPS_NUMBER = 16;
     private static Config instance;
 
     public int ANIMATION_SPEED;

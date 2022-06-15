@@ -1,7 +1,9 @@
 package com.imit.cosma.gui.screen.component;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,7 +12,7 @@ import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.board.state.BoardState;
-import com.imit.cosma.model.rules.Side;
+import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.util.Point;
 
 public class PlayingField {
@@ -58,14 +60,14 @@ public class PlayingField {
     }
 
     public void render(int touchedX, int touchedY){
-        if(touchedX != 0 && touchedY != 0 && !animationPlays() && !enemyTurn()) {
+        if(touchedX != 0 && touchedY != 0 && !animationPlays() && !isEnemyTurn()) {
             drawSelected(touchedX, worldHeight - touchedY);
         }
 
         int selectedBoardX = getBoardX(touchedX)/cellWidth;
         int selectedBoardY = (getBoardY(worldHeight - touchedY) - boardY)/cellHeight;
 
-        if(!animationPlays()){
+        if(!animationPlays() && !isGameOver()){
             BoardState boardState = board.getCurrentState(selectedBoardX, selectedBoardY);
             if(!boardState.isIdle()) {
                 contentAnimation.init(boardState.getAnimationType(), board.getCurrentPath(), cellWidth, cellHeight, boardY);
@@ -178,8 +180,8 @@ public class PlayingField {
         return contentAnimation.isAnimated();
     }
 
-    private boolean enemyTurn(){
-        return board.getTurn() == Side.ENEMY;
+    private boolean isEnemyTurn(){
+        return !board.getTurn().isPlayer();
     }
 
     public int getPlayerAdvantagePoints(){
@@ -188,6 +190,10 @@ public class PlayingField {
 
     public int getEnemyAdvantagePoints(){
         return board.getEnemyAdvantagePoints();
+    }
+
+    public boolean isGameOver() {
+        return board.isGameOver();
     }
 }
 

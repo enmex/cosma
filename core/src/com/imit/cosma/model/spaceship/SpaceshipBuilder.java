@@ -1,7 +1,7 @@
 package com.imit.cosma.model.spaceship;
 
-import com.imit.cosma.model.rules.Side;
 import com.imit.cosma.model.rules.move.MovingStyle;
+import com.imit.cosma.model.rules.side.Side;
 
 public class SpaceshipBuilder {
 
@@ -25,6 +25,11 @@ public class SpaceshipBuilder {
     }
     public SpaceshipBuilder addMoves() {
         spaceship.setMovingStyle(ShipRandomizer.getRandomMoves());
+        return this;
+    }
+
+    public SpaceshipBuilder addMoves(MovingStyle style) {
+        spaceship.setMovingStyle(style);
         return this;
     }
 

@@ -2,13 +2,14 @@ package com.imit.cosma.gui.animation.simple;
 
 import static com.imit.cosma.config.Config.getInstance;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class Movement implements SimpleAnimation{
     private float elapsedTime = 0f;
+    private final int framesAmount = 4;
+    private final float deltaTime = getInstance().ANIMATION_DURATION / framesAmount;
 
     private float rotation;
     private double distance;
@@ -18,12 +19,12 @@ public class Movement implements SimpleAnimation{
     private Vector offset;
     private Point departure, destination;
 
-    private Point sprite;
+    private Point atlasCoords;
     private int spriteSize;
 
-    public Movement(Point sprite, int spriteSize){
+    public Movement(Point atlasCoords, int spriteSize){
         offset = new Vector();
-        this.sprite = sprite;
+        this.atlasCoords = atlasCoords;
         this.spriteSize = spriteSize;
     }
 
@@ -60,7 +61,7 @@ public class Movement implements SimpleAnimation{
 
     @Override
     public Point getAtlasCoords() {
-        return sprite;
+        return atlasCoords;
     }
 
     @Override
@@ -80,13 +81,12 @@ public class Movement implements SimpleAnimation{
 
     @Override
     public int getFramesAmount() {
-        return 4;
+        return framesAmount;
     }
 
     @Override
     public float getElapsedTime() {
-        elapsedTime += Gdx.graphics.getDeltaTime();
-        return elapsedTime;
+        return elapsedTime += deltaTime;
     }
 
     public boolean isAnimated() {

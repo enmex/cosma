@@ -1,7 +1,8 @@
 package com.imit.cosma.model.board;
 
+import com.imit.cosma.model.rules.side.None;
 import com.imit.cosma.util.Point;
-import com.imit.cosma.model.rules.Side;
+import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.IdleMovingStyle;
 import com.imit.cosma.model.rules.move.MovingStyle;
@@ -10,9 +11,11 @@ public class BlackHole implements Content {
 
     private MovingStyle movingStyle;
     private final Point atlasCoords = new Point(-1, -1);
+    private Side side;
 
     public BlackHole(){
         movingStyle = new IdleMovingStyle();
+        side = new None();
     }
 
     @Override
@@ -37,7 +40,7 @@ public class BlackHole implements Content {
 
     @Override
     public Side getSide() {
-        return Side.NONE;
+        return side;
     }
 
     @Override

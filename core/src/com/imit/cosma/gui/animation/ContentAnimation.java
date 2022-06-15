@@ -1,5 +1,6 @@
 package com.imit.cosma.gui.animation;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -27,7 +28,6 @@ public class ContentAnimation {
     public ContentAnimation(AnimationType animationType){
         batch = new SpriteBatch();
         sprite = new Sprite(SPACESHIP_ATLAS);
-
         this.animationType = animationType;
     }
     public ContentAnimation(){
@@ -49,6 +49,7 @@ public class ContentAnimation {
 
         this.cellHeight = cellHeight;
         this.cellWidth = cellWidth;
+
     }
 
     private void updateSpriteAnimation(AnimationData data){
@@ -72,6 +73,7 @@ public class ContentAnimation {
 
                 sprite.setRegion(spriteAnimation.getKeyFrame(data.getElapsedTime(),
                         data.getPlayMode() != Animation.PlayMode.NORMAL));
+
                 sprite.setBounds(data.getPath().getSource().x + data.getOffset().getX(),
                         data.getPath().getSource().y + data.getOffset().getY(), cellWidth, cellHeight);
                 sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);

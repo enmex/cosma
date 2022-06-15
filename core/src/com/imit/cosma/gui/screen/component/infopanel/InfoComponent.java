@@ -6,7 +6,7 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.screen.component.Component;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.board.Space;
-import com.imit.cosma.model.rules.Side;
+import com.imit.cosma.model.rules.side.Side;
 
 public class InfoComponent extends Component {
 
@@ -33,7 +33,7 @@ public class InfoComponent extends Component {
     }
 
     public void updateContent(Content selected, Side turn){
-        if(currentContent != selected && turn == Side.PLAYER) {
+        if(currentContent != selected && turn.isPlayer()) {
             selectedCellDetails.update(selected);
             selectedCellDetails.init(panelLeft, panelBottom, panelWidth, panelHeight);
         }

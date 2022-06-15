@@ -8,7 +8,10 @@ import com.imit.cosma.model.board.state.IdleBoardState;
 import com.imit.cosma.model.board.state.ShipAttackingBoardState;
 import com.imit.cosma.model.board.state.ShipMovingBoardState;
 import com.imit.cosma.model.rules.Attack;
-import com.imit.cosma.model.rules.Side;
+import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
+import com.imit.cosma.model.rules.side.Enemy;
+import com.imit.cosma.model.rules.side.Player;
+import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
@@ -29,7 +32,6 @@ public class Board implements Cloneable {
     private Set<Point> interactedCells;
 
     private Side turn;
-    private int sideTurns;
 
     private int selectedX, selectedY;
 
@@ -39,6 +41,11 @@ public class Board implements Cloneable {
     private Path currentPath;
 
     private Set<Point> availableForMove, availableForAttack;
+
+    private int playerShipsNumber = 0;
+    private int enemyShipsNumber = 0;
+
+    private Side playerSide, enemySide;
 
     public Board() {
         cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
@@ -50,6 +57,10 @@ public class Board implements Cloneable {
 
         SpaceshipBuilder spaceshipBuilder = new SpaceshipBuilder();
 
+        playerSide = new Player(1);
+        enemySide = new Enemy(1);
+
+        /*
         //initialise player ships
         for (int y = 0; y < getInstance().SPACESHIP_ROWS; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
@@ -79,15 +90,33 @@ public class Board implements Cloneable {
                         .addMoves().build();
                 cells[y][x] = new Cell(spaceship);
             }
+        }*/
+
+        Spaceship spaceshipPlayer = spaceshipBuilder.setSide(playerSide)
+                .addSkeleton()
+                .addWeapon(ShipRandomizer.getRandomAmount())
+                .addMoves(new WeakRookMovingStyle()).build();
+        cells[0][0] = new Cell(spaceshipPlayer);
+
+        Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
+                .addSkeleton()
+                .addWeapon(ShipRandomizer.getRandomAmount())
+                .addMoves(new WeakRookMovingStyle()).build();
+        cells[7][0] = new Cell(spaceship);
+
+        for(int y = 0; y < getInstance().BOARD_SIZE; y++) {
+            for(int x = 0; x < getInstance().BOARD_SIZE; x++) {
+                if(cells[y][x] == null) {
+                    cells[y][x] = new Cell();
+                }
+            }
         }
 
-        turn = Side.PLAYER;
+        turn = playerSide;
         interactedCells = new HashSet<>();
 
         availableForMove = new HashSet<>();
         availableForAttack = new HashSet<>();
-
-        sideTurns = 0;
     }
 
     public void initAI(){
@@ -96,7 +125,7 @@ public class Board implements Cloneable {
 
     public BoardState getCurrentState(int selectedX, int selectedY){
         if(inBoard(selectedX, selectedY)){
-            return turn == Side.PLAYER ? calculateCurrentPlayerState(selectedX, selectedY) : calculateCurrentEnemyState();
+            return turn.isPlayer() ? calculateCurrentPlayerState(selectedX, selectedY) : calculateCurrentEnemyState();
         }
         return new IdleBoardState();
     }
@@ -106,12 +135,12 @@ public class Board implements Cloneable {
         if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
             if (selectedCanMoveTo(selectedX, selectedY)) {
                 setSelectedPosition(selectedX, selectedY);
-                sideTurns++;
+                turn.updateTurns();
 
-                return new ShipMovingBoardState(turn == Side.PLAYER ? getCell(selectedX, selectedY) : selected);
+                return new ShipMovingBoardState(turn.isPlayer() ? getCell(selectedX, selectedY) : selected);
             } else if (selectedCanFireTo(selectedX, selectedY)) {
                 damageShip(selectedX, selectedY, selected.getDamageAmount());
-                sideTurns++;
+                turn.updateTurns();
 
                 return new ShipAttackingBoardState(selected, interacted);
             }
@@ -141,7 +170,7 @@ public class Board implements Cloneable {
         if (selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
             if (selectedCanMoveTo(target.x, target.y)) {
                 setSelectedPosition(target.x, target.y);
-                sideTurns++;
+                turn.updateTurns();
 
                 selected = cells[target.y][target.x];
                 selectedX = target.x;
@@ -150,7 +179,7 @@ public class Board implements Cloneable {
                 return new ShipMovingBoardState(selected);
             } else if (selectedCanFireTo(target.x, target.y)) {
                 damageShip(target.x, target.y, selected.getDamageAmount());
-                sideTurns++;
+                turn.updateTurns();
 
                 return new ShipAttackingBoardState(selected, interacted);
             }
@@ -159,10 +188,8 @@ public class Board implements Cloneable {
     }
 
     public void updateSide(){
-        if(sideTurns == 2){
-            sideTurns = 0;
-
-            turn = turn.nextTurn();
+        if(sideCompletedTurn()){
+            changeTurn();
 
             for(Point point : interactedCells){
                 cells[point.y][point.x].setStepMode(StepMode.MOVE);
@@ -190,7 +217,7 @@ public class Board implements Cloneable {
         selected.setStepMode(StepMode.COMPLETED);
         interactedCells.add(new Point(selectedX, selectedY));
 
-        if(turn == Side.PLAYER){
+        if(turn.isPlayer()){
             playerAdvantagePoints += Math.min(damage, cells[shipY][shipX].getHealthPoints());
         }
         else{
@@ -204,6 +231,12 @@ public class Board implements Cloneable {
 
     private void destroyShip(int shipX, int shipY){
         cells[shipY][shipX].setContent(new Space());
+        if(turn.isPlayer()) {
+            enemySide.removeShip();
+        }
+        else {
+            playerSide.removeShip();
+        }
     }
 
     public boolean isPassable(int x, int y) {
@@ -279,7 +312,7 @@ public class Board implements Cloneable {
     }
 
     public void setSelected(int x, int y){
-        if(inBoard(x, y) && turn == Side.PLAYER){
+        if(inBoard(x, y) && turn.isPlayer()){
             selected = cells[y][x];
             selectedX = x;
             selectedY = y;
@@ -329,9 +362,11 @@ public class Board implements Cloneable {
             selected = cells[target.y][target.x];
             selectedX = target.x;
             selectedY = target.y;
+            turn.updateTurns();
         }
         else if(selectedCanFireTo(target.x, target.y)){
             damageShip(target.x, target.y, selected.getDamageAmount());
+            turn.updateTurns();
         }
     }
 
@@ -344,7 +379,6 @@ public class Board implements Cloneable {
         this.selected = board.selected;
         this.interactedCells = board.interactedCells;
         this.turn = board.turn;
-        this.sideTurns = board.sideTurns;
         this.selectedX = board.selectedX;
         this.selectedY = board.selectedY;
         this.enemy = board.enemy;
@@ -365,7 +399,6 @@ public class Board implements Cloneable {
         }
         board.selectedX = selectedX;
         board.selectedY = selectedY;
-        board.sideTurns = sideTurns;
         board.turn = turn;
         board.currentPath = currentPath;
         board.emptySet = emptySet;
@@ -382,6 +415,19 @@ public class Board implements Cloneable {
 
     public StepMode getStepMode(int x, int y) {
         return cells[y][x].getStepMode();
+    }
+
+    private void changeTurn() {
+        turn.resetTurns();
+        turn = turn.isPlayer() ? enemySide : playerSide;
+    }
+
+    public boolean sideCompletedTurn() {
+        return turn.getTurns() == 2 || turn.getTurns() == 1 && turn.getShipsNumber() == 1 && availableForAttack.isEmpty();
+    }
+
+    public boolean isGameOver() {
+        return playerSide.getShipsNumber() == 0 || enemySide.getShipsNumber() == 0;
     }
 }
 

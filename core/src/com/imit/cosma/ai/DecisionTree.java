@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class DecisionTree {
+public class DecisionTree implements Cloneable{
     private final MoveGenerator generator;
 
     private Path currentPath;
@@ -26,43 +26,44 @@ public class DecisionTree {
     }
 
     public int calculateBestPath(int depth, int turns, int alpha, int beta){
-        int advantage = 0;
-        if(turns == 2){
+        int advantage;
+        doTurn(currentPath);
+
+        if(turns == 2 || board.sideCompletedTurn()){
             playerTurn = !playerTurn;
             depth--;
             turns = 0;
+            board.updateSide();
         }
-        doTurn(currentPath);
 
-        //добрались до листа - заканчиваем рекурсию
         if(depth == 0){
             undoTurn();
-            return beta;
+            return calculatePathAdvantage(currentPath);
         }
 
-        //вычисляем все ответвления от текущего узла
         List<Path> paths = new ArrayList<>(playerTurn ? generator.getPlayerPaths() : generator.getEnemyPaths());
+        int minMaxEval = playerTurn ? Integer.MAX_VALUE : -Integer.MAX_VALUE;
         for(Path path : paths){
             currentPath = path;
+
             advantage = calculateBestPath(depth, turns + 1, alpha, beta);
 
-            int currentScore = calculatePathAdvantage(currentPath);
-
             if(playerTurn){
-                beta = Math.min(-currentScore, beta);
+                minMaxEval = Math.min(minMaxEval, advantage);
+                beta = Math.min(advantage, beta);
             }
             else{
-                alpha = Math.max(currentScore, alpha);
+                minMaxEval = Math.max(minMaxEval, advantage);
+                alpha = Math.max(advantage, alpha);
             }
-
-            if(alpha >= beta){
+            if(beta <= alpha){
                 undoTurn();
-                return alpha;
+                break;
             }
         }
         undoTurn();
 
-        return advantage;
+        return minMaxEval;
     }
 
     public void update(Board board){
@@ -96,5 +97,14 @@ public class DecisionTree {
             board.set(states.pop());
             update(board);
         }
+    }
+
+    @Override
+    public DecisionTree clone() {
+        DecisionTree decisionTree = new DecisionTree(board);
+        decisionTree.currentPath = currentPath;
+        decisionTree.playerTurn = playerTurn;
+
+        return decisionTree;
     }
 }

@@ -1,6 +1,5 @@
 package com.imit.cosma.gui.animation.simple;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
@@ -9,13 +8,14 @@ import com.imit.cosma.util.Vector;
 //just frames of sprite
 public class Idle implements SimpleAnimation{
     private float elapsedTime = 0f;
+    private float deltaTime;
 
     private int duration;
     private float current = 0;
 
     private float rotation;
 
-    private Point sprite;
+    private Point atlasCoords;
     private int spriteSize;
 
     private final Vector offset;
@@ -24,25 +24,26 @@ public class Idle implements SimpleAnimation{
 
     private boolean isAnimated;
 
-    public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, int duration, float rotation, int frames){
-        this.sprite = sprite;
+    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY, int duration, float rotation, int frames){
+        this.atlasCoords = atlasCoords;
         this.spriteSize = spriteSize;
         offset = new Vector(targetOffsetX, targetOffsetY);
         this.duration = duration;
         this.rotation = rotation;
         this.frames = frames;
+        this.deltaTime = Config.getInstance().ANIMATION_DURATION / frames;
     }
 
-    public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY){
-        this(sprite, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
+    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY){
+        this(atlasCoords, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
     }
 
-    public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
-        this(sprite, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 6); //TODO set in config
+    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
+        this(atlasCoords, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 6); //TODO set in config
     }
 
-    public Idle(Point sprite, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
-        this(sprite, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION,rotation, frames);
+    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
+        this(atlasCoords, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION,rotation, frames);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class Idle implements SimpleAnimation{
 
     @Override
     public Point getAtlasCoords() {
-        return sprite;
+        return atlasCoords;
     }
 
     @Override
@@ -97,11 +98,7 @@ public class Idle implements SimpleAnimation{
 
     @Override
     public float getElapsedTime() {
-        elapsedTime += Gdx.graphics.getDeltaTime();
-        if(frames == 6) {
-            System.out.println(elapsedTime);
-        }
-        return elapsedTime;
+        return elapsedTime += deltaTime;
     }
 
     @Override
