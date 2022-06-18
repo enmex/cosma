@@ -16,6 +16,12 @@ public class SpaceshipBuilder {
         spaceship.setSkeleton();
         return this;
     }
+
+    public SpaceshipBuilder addSkeleton(Skeleton skeleton) {
+        spaceship.setSkeleton(skeleton);
+        return this;
+    }
+
     public SpaceshipBuilder addWeapon(int amount){
         amount = Math.min(amount, spaceship.getWeaponAmount());
         for(int i = 0; i < amount; i++){
@@ -23,6 +29,12 @@ public class SpaceshipBuilder {
         }
         return this;
     }
+
+    public SpaceshipBuilder addWeapon(Weapon weapon){
+        spaceship.addWeapon(weapon);
+        return this;
+    }
+
     public SpaceshipBuilder addMoves() {
         spaceship.setMovingStyle(ShipRandomizer.getRandomMoves());
         return this;

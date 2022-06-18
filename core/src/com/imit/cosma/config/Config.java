@@ -21,7 +21,7 @@ public class Config {
     public double HEALTH_BAR_WIDTH_TO_PANEL_RATIO = 0.6;
     public double HEALTH_BAR_HEIGHT_TO_PANEL_RATIO = 0.1;
     public int BOARD_SIZE = 8;
-    public int SPACESHIP_ROWS = 2;
+    public int SPACESHIP_ROWS = 1;
     public int MOVEMENT_ANIMATION_PHASES = 3;
     public String BACKGROUND_PATH = "background.png";
     public String GRID_PATH = "grid.png";

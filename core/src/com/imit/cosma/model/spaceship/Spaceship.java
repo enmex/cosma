@@ -63,6 +63,12 @@ public class Spaceship implements Content {
         this.weaponAmount = skeleton.getWeaponCapacity();
     }
 
+    public void setSkeleton(Skeleton skeleton) {
+        this.skeleton = skeleton;
+        healthPoints = skeleton.getHealthPoints();
+        this.weaponAmount = skeleton.getWeaponCapacity();
+    }
+
     public Skeleton getSkeleton(){
         return skeleton;
     }
@@ -73,6 +79,11 @@ public class Spaceship implements Content {
 
     public void addWeapon(){
         Weapon weapon = ShipRandomizer.getRandomWeapon();
+        damagePoints += weapon.getDamage();
+        weapons.add(weapon);
+    }
+
+    public void addWeapon(Weapon weapon) {
         damagePoints += weapon.getDamage();
         weapons.add(weapon);
     }

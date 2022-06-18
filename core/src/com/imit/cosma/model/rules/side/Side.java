@@ -2,7 +2,7 @@ package com.imit.cosma.model.rules.side;
 
 import com.imit.cosma.config.Config;
 
-public abstract class Side {
+public abstract class Side implements Cloneable{
     protected final float defaultRotation;
     protected int shipsNumber;
     protected int turns;
@@ -41,4 +41,7 @@ public abstract class Side {
     public void resetTurns() {
         turns = 0;
     }
+
+    @Override
+    public abstract Side clone();
 }

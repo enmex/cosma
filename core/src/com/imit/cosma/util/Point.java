@@ -1,5 +1,7 @@
 package com.imit.cosma.util;
 
+import java.util.Objects;
+
 public class Point {
 
     public int x, y;
@@ -24,12 +26,21 @@ public class Point {
         this.y = y;
     }
 
+    public boolean hasZero() {
+        return x == 0 || y == 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Point point = (Point) o;
         return x == point.x && y == point.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     @Override

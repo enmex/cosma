@@ -13,6 +13,7 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.screen.component.ScoreComponent;
 import com.imit.cosma.gui.screen.component.infopanel.InfoComponent;
 import com.imit.cosma.gui.screen.component.PlayingField;
+import com.imit.cosma.util.Point;
 
 public class GameScreen implements Screen {
 
@@ -29,12 +30,13 @@ public class GameScreen implements Screen {
     private int worldWidth;
     private int worldHeight;
 
-    private int touchedX = -1, touchedY = -1;
+    private Point lastTouch;
 
     private BitmapFont font;
 
     public GameScreen(){
         player = new Player();
+        lastTouch = new Point(-1, -1);
         playingField = new PlayingField();
         infoPanel = new InfoComponent();
         background = new Texture(getInstance().BACKGROUND_PATH);
@@ -60,15 +62,15 @@ public class GameScreen implements Screen {
         batch.draw(background, 0, 0, worldWidth, worldHeight);
         batch.end();
 
-        if(player.touchedScreen()){
-            touchedX = player.getX();
-            touchedY = player.getY();
+        if(player.touchedScreen() || playingField.isEnemyTurn()){
+            playingField.updateField(player.getTouchPoint());
+            infoPanel.updateContent(playingField.getSelectedContent(), playingField.getTurn());
         }
 
-        playingField.render(touchedX, touchedY);
+        playingField.render(player.getTouchPoint());
+
         infoPanel.render();
-        infoPanel.updateContent(playingField.getSelectedContent(), playingField.getTurn());
-        scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());
+        //scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());
 
         if(playingField.isGameOver()) {
             drawFont();

@@ -1,9 +1,7 @@
 package com.imit.cosma.gui.screen.component;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -43,6 +41,8 @@ public class PlayingField {
 
     private Board board;
 
+    private Point lastTouch;
+
     private ContentAnimation contentAnimation;
     private Sprite sprite;
 
@@ -57,26 +57,34 @@ public class PlayingField {
 
         batch = new SpriteBatch();
         sprite = new Sprite(spaceships);
+
+        lastTouch = new Point();
     }
 
-    public void render(int touchedX, int touchedY){
-        if(touchedX != 0 && touchedY != 0 && !animationPlays() && !isEnemyTurn()) {
-            drawSelected(touchedX, worldHeight - touchedY);
+    public void render(Point touchPoint){
+        if(!touchPoint.hasZero() && !animationPlays() && !isEnemyTurn()) {
+            drawSelected(touchPoint);
         }
+        drawGrid();
+        drawBoardObjects();
+    }
 
-        int selectedBoardX = getBoardX(touchedX)/cellWidth;
-        int selectedBoardY = (getBoardY(worldHeight - touchedY) - boardY)/cellHeight;
+    public void updateField(Point touchPoint) {
+        Point selected = getSelectedBoardPoint(touchPoint);
 
-        if(!animationPlays() && !isGameOver()){
-            BoardState boardState = board.getCurrentState(selectedBoardX, selectedBoardY);
+        if(!animationPlays() && !isGameOver() && !board.isLoading()){ //вызывать когда чел жмет на кнопку
+            BoardState boardState = board.getCurrentState(selected);
             if(!boardState.isIdle()) {
                 contentAnimation.init(boardState.getAnimationType(), board.getCurrentPath(), cellWidth, cellHeight, boardY);
             }
             board.updateSide();
         }
-        board.setSelected(selectedBoardX, selectedBoardY);
-        drawGrid();
-        drawBoardObjects();
+        board.setSelectedPlayerTurn(selected);
+    }
+
+    private Point getSelectedBoardPoint(Point touchPoint) {
+        return new Point(getBoardX(touchPoint.x)/cellWidth,
+                (getBoardY(worldHeight - touchPoint.y) - boardY)/cellHeight);
     }
 
     public Side getTurn(){
@@ -89,10 +97,10 @@ public class PlayingField {
         batch.end();
     }
 
-    private void drawSelected(int touchX, int touchY){
-        if(inBoard(touchX, touchY)) {
+    private void drawSelected(Point touchPoint){
+        if(inBoard(touchPoint)) {
             batch.begin();
-            batch.draw(selectedCell, getBoardX(touchX), getBoardY(touchY), cellWidth, cellHeight);
+            batch.draw(selectedCell, getBoardX(touchPoint.x), getBoardY(worldHeight - touchPoint.y), cellWidth, cellHeight);
             batch.end();
             drawAvailableCells();
         }
@@ -164,8 +172,8 @@ public class PlayingField {
         boardY = (int) (height*SCREEN_OFFSET);
     }
 
-    private boolean inBoard(int touchX, int touchY){
-        return touchX >= 0 && touchX <= boardWidth && touchY >= boardY && touchY <= boardY + boardHeight;
+    private boolean inBoard(Point touchPoint){
+        return touchPoint.x >= 0 && touchPoint.x <= boardWidth && touchPoint.y >= boardY && touchPoint.y <= boardY + boardHeight;
     }
 
     private int getBoardX(int touchX){
@@ -180,7 +188,7 @@ public class PlayingField {
         return contentAnimation.isAnimated();
     }
 
-    private boolean isEnemyTurn(){
+    public boolean isEnemyTurn(){
         return !board.getTurn().isPlayer();
     }
 

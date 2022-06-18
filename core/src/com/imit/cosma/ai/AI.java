@@ -3,8 +3,9 @@ package com.imit.cosma.ai;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.util.Path;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class AI {
     private final MoveGenerator generator;
@@ -12,31 +13,56 @@ public class AI {
 
     private DecisionTree cachedTree;
 
+    private Set<Path> playerTurns;
+
     public AI(Board board){
-        cachedTree = new DecisionTree(board);
+        playerTurns = new HashSet<>();
+        cachedTree = new DecisionTree(board, depth);
         generator = new MoveGenerator(board);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cachedTree.cacheTree();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     public Path getPath(){
-        int maxAdvantage = -1;
+        int maxAdvantage = -Integer.MAX_VALUE;
         Path bestPath = null;
 
-        for(Path rootPath : generator.getEnemyPaths()) {
-            cachedTree.setRootPath(rootPath);
+        for(Path playerTurn : playerTurns) {
+            cachedTree.climbDown(playerTurn);
+        }
+        System.out.println("Ходы игрока учтены");
 
-            int advantage = cachedTree.calculateBestPath(depth, 1, -Integer.MAX_VALUE, Integer.MAX_VALUE);
-
-            if(maxAdvantage < advantage) {
-                maxAdvantage = advantage;
-                bestPath = rootPath;
+        for(Map.Entry<Path, Integer> entry : cachedTree.getRootChildren().entrySet()) {
+            if(entry.getValue() >= maxAdvantage) {
+                maxAdvantage = entry.getValue();
+                bestPath = entry.getKey();
             }
         }
-        System.out.println(maxAdvantage);
+        System.out.println("Просчитан лучший ход");
+
+        cachedTree.climbDown(bestPath);
+        System.out.println("Достроено дерево");
         return bestPath;
     }
 
     public void update(Board board){
         cachedTree.update(board);
         generator.update(board);
+    }
+
+    public boolean isLoading() {
+        return cachedTree.isCaching();
+    }
+
+    public void rememberPlayerTurn(Path playerTurn) {
+        playerTurns.add(playerTurn);
     }
 }

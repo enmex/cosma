@@ -10,4 +10,9 @@ public class None extends Side{
     public boolean isPlayer() {
         return false;
     }
+
+    @Override
+    public Side clone() {
+        return new None();
+    }
 }
