@@ -10,38 +10,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class DecisionTree{
-    private final MoveGenerator generator;
-
     private TreeNode root;
     private int depth;
 
-    private Board board;
-    private final Stack<Board> states;
-
     private boolean isCaching;
 
-    public DecisionTree(Board board, int depth){
-        generator = new MoveGenerator(board);
-        this.board = board.clone();
-        states = new Stack<>();
-
+    public DecisionTree(int depth){
         root = new TreeNode();
-
         this.depth = depth;
-
         isCaching = true;
     }
 
-    private int buildTree(int depth, int alpha, int beta, boolean playerTurn, TreeNode parent){
+    private int buildTree(Board board, MoveGenerator generator, int depth, int alpha, int beta, boolean playerTurn, TreeNode parent){
         int advantage;
-        doTurn(parent.path);
+
+        board.makeArtificialTurn(parent.path);
 
         if(board.sideCompletedTurn()){
             playerTurn = !playerTurn;
@@ -51,9 +39,7 @@ public class DecisionTree{
         }
 
         if(depth == 0 || board.isGameOver()){
-            undoTurn();
-
-            int nodeAdvantage = calculatePathAdvantage(parent.path, !playerTurn);
+            int nodeAdvantage = calculatePathAdvantage(board, parent.path, !playerTurn);
             parent.advantage = nodeAdvantage;
 
             return nodeAdvantage;
@@ -63,9 +49,9 @@ public class DecisionTree{
         int minMaxEval = playerTurn ? Integer.MAX_VALUE : -Integer.MAX_VALUE;
 
         for(Path path : paths){
-            TreeNode currentNode = new TreeNode(parent, path, playerTurn);
+            TreeNode currentNode = new TreeNode(board, parent, path, playerTurn);
 
-            advantage = buildTree(depth, alpha, beta, playerTurn, currentNode);
+            advantage = buildTree(board.clone(), generator.clone(), depth, alpha, beta, playerTurn, currentNode);
 
             if(playerTurn){
                 minMaxEval = Math.min(minMaxEval, advantage);
@@ -79,22 +65,12 @@ public class DecisionTree{
                 break;
             }
         }
-        undoTurn();
 
         parent.advantage = minMaxEval;
         return minMaxEval;
     }
 
-    public void update(Board board){
-        this.board = board.clone();
-        generator.update(board);
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
-    private int calculatePathAdvantage(Path path, boolean playerTurn){
+    private int calculatePathAdvantage(Board board, Path path, boolean playerTurn){
         int advantage = board.getMaxHealthPoints(path.getTarget())
                 - board.getHealthPoints(path.getTarget())
                 + board.getDamagePoints(path.getTarget());
@@ -102,47 +78,25 @@ public class DecisionTree{
         return playerTurn ? -advantage : advantage;
     }
 
-
-    private void doTurn(Path path){
-        states.push(board.clone());
-        board.makeArtificialTurn(path);
-        update(board);
-    }
-
-    private void undoTurn(){
-        if(!states.isEmpty()) {
-            board.set(states.pop());
-            update(board);
-        }
-    }
-
-    public void cacheTree() throws InterruptedException {
+    public void cacheTree(final Board board) throws InterruptedException {
+        final MoveGenerator generator = new MoveGenerator(board);
         List<Path> availablePaths = new ArrayList<>(generator.getEnemyPaths());
 
-        ExecutorService threadPool = Executors.newCachedThreadPool();
-
-        System.out.println("Подождите...");
-        double donePercents = 0;
-        double part = 1. / availablePaths.size();
-        for(Path availablePath : availablePaths) {
-            TreeNode child = new TreeNode(root, availablePath, false);
+        for(Path path : availablePaths) {
+            TreeNode child = new TreeNode(board, root, path, false);
             root.addChild(child);
-            System.out.printf("Загрузка...%.2f%%\n", (donePercents * 100));
-            buildTree(depth, -Integer.MAX_VALUE, Integer.MAX_VALUE, false, child);
-            donePercents += part;
+            buildTree(board.clone(), generator.clone(), depth, -Integer.MAX_VALUE, Integer.MAX_VALUE, false, child);
         }
-        threadPool.awaitTermination(1, TimeUnit.MINUTES);
-        threadPool.shutdown();
+
         isCaching = false;
-        System.out.println("Загрузка завершена");
     }
 
-    public void climbDown(Path target) {
+    public void climbDown(Board board, MoveGenerator generator, Path target) {
         TreeNode node = root.getChild(target);
         root.clear();
         root = node;
 
-        climbDownAndAddLevel(root, depth);
+        climbDownAndAddLevel(board.clone(), generator.clone(), root, depth);
     }
 
     public Map<Path, Integer> getRootChildren() {
@@ -155,13 +109,13 @@ public class DecisionTree{
         return pathToAdvantageMap;
     }
 
-    private void climbDownAndAddLevel(TreeNode currentNode, int depth) {
+    private void climbDownAndAddLevel(Board board, MoveGenerator generator, TreeNode currentNode, int depth) {
         if(depth == 0) {
-            buildTree(1, -Integer.MAX_VALUE, Integer.MAX_VALUE, currentNode.playerTurn, currentNode);
+            buildTree(board.clone(), generator.clone(),1, -Integer.MAX_VALUE, Integer.MAX_VALUE, currentNode.playerTurn, currentNode);
         }
 
         for(TreeNode child : currentNode.children) {
-            climbDownAndAddLevel(child, depth - 1);
+            climbDownAndAddLevel(board.clone(), generator.clone(), child, depth - 1);
         }
     }
 
@@ -171,6 +125,7 @@ public class DecisionTree{
 }
 
 class TreeNode {
+    protected Board board;
     protected Path path;
     protected int advantage;
     protected boolean playerTurn;
@@ -184,12 +139,13 @@ class TreeNode {
         playerTurn = false;
     }
 
-    public TreeNode(TreeNode parent, Path path, boolean playerTurn) {
+    public TreeNode(Board board, TreeNode parent, Path path, boolean playerTurn) {
         this.parent = parent;
         this.path = path;
         children = new HashSet<>();
         parent.addChild(this);
         this.playerTurn = playerTurn;
+        this.board = board;
     }
 
     public void addChild(TreeNode child) {
@@ -219,6 +175,16 @@ class TreeNode {
         }
 
         return node;
+    }
+
+    public int size() {
+        int size = 1;
+
+        for(TreeNode child : children) {
+            size += child.size();
+        }
+
+        return size;
     }
 
     @Override

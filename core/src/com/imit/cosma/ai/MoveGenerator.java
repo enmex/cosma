@@ -18,6 +18,11 @@ public class MoveGenerator {
         update(board);
     }
 
+    public MoveGenerator(List<Path> pathsAI, List<Path> pathsPlayer) {
+        this.pathsAI = pathsAI;
+        this.pathsPlayer = pathsPlayer;
+    }
+
     public List<Path> getEnemyPaths(){
         return pathsAI;
     }
@@ -54,5 +59,12 @@ public class MoveGenerator {
                 }
             }
         }
+    }
+
+    public MoveGenerator clone() {
+        List<Path> pathsAIClone = new ArrayList<>(pathsAI);
+        List<Path> pathsPlayerClone = new ArrayList<>(pathsPlayer);
+
+        return new MoveGenerator(pathsAIClone, pathsPlayerClone);
     }
 }

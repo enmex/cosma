@@ -15,15 +15,18 @@ public class AI {
 
     private Set<Path> playerTurns;
 
-    public AI(Board board){
+    private Board board;
+
+    public AI(final Board board){
+        this.board = board.clone();
         playerTurns = new HashSet<>();
-        cachedTree = new DecisionTree(board, depth);
+        cachedTree = new DecisionTree(depth);
         generator = new MoveGenerator(board);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    cachedTree.cacheTree();
+                    cachedTree.cacheTree(board.clone());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -36,7 +39,7 @@ public class AI {
         Path bestPath = null;
 
         for(Path playerTurn : playerTurns) {
-            cachedTree.climbDown(playerTurn);
+            cachedTree.climbDown(board, generator, playerTurn);
         }
         System.out.println("Ходы игрока учтены");
 
@@ -48,13 +51,12 @@ public class AI {
         }
         System.out.println("Просчитан лучший ход");
 
-        cachedTree.climbDown(bestPath);
+        cachedTree.climbDown(board, generator, bestPath);
         System.out.println("Достроено дерево");
         return bestPath;
     }
 
     public void update(Board board){
-        cachedTree.update(board);
         generator.update(board);
     }
 
