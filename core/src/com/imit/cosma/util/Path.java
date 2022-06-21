@@ -29,10 +29,14 @@ public class Path {
 
     public Path clone() {
         Path path = new Path();
-        path.to = to;
-        path.from = from;
+        path.to = to.clone();
+        path.from = from.clone();
 
         return path;
+    }
+
+    public boolean isNull() {
+        return to.equals(from);
     }
 
     @Override

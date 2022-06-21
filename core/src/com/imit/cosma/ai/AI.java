@@ -1,11 +1,14 @@
 package com.imit.cosma.ai;
 
+import static com.imit.cosma.model.rules.StepMode.ATTACK;
+import static com.imit.cosma.model.rules.StepMode.MOVE;
+
 import com.imit.cosma.model.board.Board;
+import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.Path;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class AI {
     private final MoveGenerator generator;
@@ -13,50 +16,63 @@ public class AI {
 
     private DecisionTree cachedTree;
 
-    private Set<Path> playerTurns;
+    private MutualLinkedMap<Path, StepMode> playerTurns;
 
     private Board board;
 
+    private MutualLinkedMap<Path, StepMode> currentPaths;
+
     public AI(final Board board){
         this.board = board.clone();
-        playerTurns = new HashSet<>();
+        playerTurns = new MutualLinkedMap<>();
         cachedTree = new DecisionTree(depth);
         generator = new MoveGenerator(board);
+        currentPaths = new MutualLinkedMap<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    cachedTree.cacheTree(board.clone());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                cachedTree.cacheTree(board.clone());
             }
         }).start();
     }
 
-    public Path getPath(){
+    private void updatePaths(){
         int maxAdvantage = -Integer.MAX_VALUE;
-        Path bestPath = null;
 
-        for(Path playerTurn : playerTurns) {
-            cachedTree.climbDown(board, generator, playerTurn);
-        }
-        System.out.println("Ходы игрока учтены");
+        cachedTree.climbDown(board, playerTurns); //корень = ход игрока
 
-        for(Map.Entry<Path, Integer> entry : cachedTree.getRootChildren().entrySet()) {
+        //получение лучшего дочернего узла
+        for(Map.Entry<MutualLinkedMap<Path, StepMode>, Integer> entry : cachedTree.getRootChildren().entrySet()) {
             if(entry.getValue() >= maxAdvantage) {
                 maxAdvantage = entry.getValue();
-                bestPath = entry.getKey();
+                currentPaths.clear();
+                currentPaths.putAll(entry.getKey());
             }
         }
-        System.out.println("Просчитан лучший ход");
+        System.out.println(maxAdvantage);
+        cachedTree.climbDown(board, currentPaths); //корень = ход ИИ
 
-        cachedTree.climbDown(board, generator, bestPath);
-        System.out.println("Достроено дерево");
-        return bestPath;
+        playerTurns.clear();
+    }
+
+    //сначала MOVE затем ATTACK
+    public Path getPath() {
+        if(currentPaths.size() == 0) {
+            updatePaths();
+        }
+
+        Path path = currentPaths.getKey(MOVE) == null ? null : currentPaths.getKey(MOVE).clone();
+
+        if(path == null) {
+            path = currentPaths.getKey(ATTACK) == null ? null : currentPaths.getKey(ATTACK).clone();
+        }
+
+        currentPaths.removeKey(path);
+        return path;
     }
 
     public void update(Board board){
+        this.board = board;
         generator.update(board);
     }
 
@@ -64,7 +80,7 @@ public class AI {
         return cachedTree.isCaching();
     }
 
-    public void rememberPlayerTurn(Path playerTurn) {
-        playerTurns.add(playerTurn);
+    public void savePlayerTurn(Path playerTurn, StepMode turnType) {
+        playerTurns.put(playerTurn.clone(), turnType);
     }
 }

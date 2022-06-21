@@ -35,12 +35,12 @@ public class SpaceshipBuilder {
         return this;
     }
 
-    public SpaceshipBuilder addMoves() {
+    public SpaceshipBuilder setMovingStyle() {
         spaceship.setMovingStyle(ShipRandomizer.getRandomMoves());
         return this;
     }
 
-    public SpaceshipBuilder addMoves(MovingStyle style) {
+    public SpaceshipBuilder setMovingStyle(MovingStyle style) {
         spaceship.setMovingStyle(style);
         return this;
     }
