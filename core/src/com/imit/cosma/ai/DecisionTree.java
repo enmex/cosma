@@ -30,7 +30,7 @@ public class DecisionTree{
         isCaching = true;
         treeSize = 0;
     }
-
+/*
     private int buildTree(Board board, int depth, int alpha, int beta, TreeNode parent) {
         if(depth == 0) {
             return calculateAdvantage(board, parent);
@@ -89,14 +89,14 @@ public class DecisionTree{
 
                     node = initNode(parent, pathToTypeMap);
 
-                    node.advantage = buildTree(firstTurnBoard.clone(), depth - 1, alpha, beta, node);
+                    int advantage = buildTree(firstTurnBoard.clone(), depth - 1, alpha, beta, node);
 
                     if(parent.playerTurn){
-                        minMaxEval = Math.min(minMaxEval, node.advantage);
+                        minMaxEval = Math.min(minMaxEval, advantage);
                         beta = Math.min(node.advantage, beta);
                     }
                     else{
-                        minMaxEval = Math.max(minMaxEval, node.advantage);
+                        minMaxEval = Math.max(minMaxEval, advantage);
                         alpha = Math.max(node.advantage, alpha);
                     }
 
@@ -113,7 +113,29 @@ public class DecisionTree{
 
         parent.updateAdvantage(minMaxEval);
 
+        cache.put();
+
         return minMaxEval;
+    }
+*/
+
+    private void selection() {
+        TreeNode current = root;
+        for(TreeNode child : current.children) {
+            if(child.wins > current.wins) {
+                current = child;
+            }
+        }
+    }
+
+    private void expansion(TreeNode bestNode) {
+        TreeNode newNode = new TreeNode();
+        newNode.parent = bestNode;
+        bestNode.children.add(newNode);
+    }
+
+    private void simulation() {
+
     }
 
     private int calculateAdvantage(Board board, TreeNode node){
@@ -132,11 +154,6 @@ public class DecisionTree{
 
     public void cacheTree(final Board board) {
         buildTree(board, depth, -Integer.MAX_VALUE, Integer.MAX_VALUE, root);
-
-        cache.put(1, root.clone());
-
-        root.clear();
-
         isCaching = false;
     }
 
@@ -179,12 +196,17 @@ public class DecisionTree{
     public boolean isCaching() {
         return isCaching;
     }
+
 }
+
+//Cached TreeNode: 1|0011|2123|MA|P|NNNN
 
 class TreeNode {
     protected MutualLinkedMap<Path, StepMode> pathToTypeMap;
     protected int advantage;
     protected boolean playerTurn;
+    protected int wins;
+    protected TreeNode parent;
     protected Set<TreeNode> children;
 
     public TreeNode() {

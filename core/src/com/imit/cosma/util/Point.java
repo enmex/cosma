@@ -30,6 +30,7 @@ public class Point {
         return x == 0 || y == 0;
     }
 
+
     public Point clone() {
         return new Point(x, y);
     }

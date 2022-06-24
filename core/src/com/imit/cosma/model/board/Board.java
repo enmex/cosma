@@ -64,38 +64,6 @@ public class Board implements Cloneable {
             }
         }
 
-/*
-        cells[0][0].setContent(spaceshipBuilder.setSide(playerSide)
-                .addSkeleton()
-                .addWeapon(Weapon.LASER)
-                .setMovingStyle(new WeakRookMovingStyle()).build());
-
-        cells[0][2].setContent(spaceshipBuilder.setSide(playerSide)
-                .addSkeleton()
-                .addWeapon(Weapon.LASER)
-                .setMovingStyle(new WeakRookMovingStyle()).build());
-
-        cells[0][4].setContent(spaceshipBuilder.setSide(playerSide)
-                .addSkeleton()
-                .addWeapon(Weapon.LASER)
-                .addMoves().build());
-
-        cells[7][0].setContent(spaceshipBuilder.setSide(enemySide)
-                .addSkeleton()
-                .addWeapon(Weapon.LASER)
-                .addMoves().build());
-
-        cells[7][2].setContent(spaceshipBuilder.setSide(enemySide)
-                .addSkeleton()
-                .addWeapon(Weapon.LASER)
-                .setMovingStyle(new WeakRookMovingStyle()).build());
-
-        cells[7][4].setContent(spaceshipBuilder.setSide(enemySide)
-                .addSkeleton()
-                .addWeapon(Weapon.LASER)
-                .setMovingStyle(new WeakRookMovingStyle()).build());
-*/
-
         //initialise player ships
         for (int y = 0; y < getInstance().SPACESHIP_ROWS; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
