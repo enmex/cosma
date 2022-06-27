@@ -8,13 +8,16 @@ import com.imit.cosma.model.board.state.IdleBoardState;
 import com.imit.cosma.model.board.state.ShipAttackingBoardState;
 import com.imit.cosma.model.board.state.ShipMovingBoardState;
 import com.imit.cosma.model.rules.Attack;
+import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
 import com.imit.cosma.model.rules.side.Enemy;
 import com.imit.cosma.model.rules.side.Player;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.spaceship.ShipRandomizer;
+import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
+import com.imit.cosma.model.spaceship.Weapon;
 import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
@@ -58,12 +61,14 @@ public class Board implements Cloneable {
         playerSide = new Player(8);
         enemySide = new Enemy(8);
 
+        /*
         for(int y = 0; y < getInstance().BOARD_SIZE; y++) {
             for(int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
             }
         }
 
+         */
         //initialise player ships
         for (int y = 0; y < getInstance().SPACESHIP_ROWS; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
@@ -94,6 +99,25 @@ public class Board implements Cloneable {
                 cells[y][x] = new Cell(spaceship);
             }
         }
+        /*
+        for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
+                cells[y][x] = new Cell();
+            }
+        }
+
+
+        cells[0][0] = new Cell(spaceshipBuilder.setSide(playerSide)
+                .addSkeleton(Skeleton.DESTROYER)
+                .addWeapon(Weapon.ION_CANNON)
+                .setMovingStyle(new WeakRookMovingStyle()).build());
+
+        cells[7][0] = new Cell(spaceshipBuilder.setSide(enemySide)
+                .addSkeleton(Skeleton.DESTROYER)
+                .addWeapon(Weapon.ION_CANNON)
+                .setMovingStyle(new WeakRookMovingStyle()).build());
+
+         */
 
         turn = playerSide;
         interactedCells = new HashSet<>();

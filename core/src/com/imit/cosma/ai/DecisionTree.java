@@ -1,5 +1,6 @@
 package com.imit.cosma.ai;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.util.MutualLinkedMap;
@@ -16,8 +17,6 @@ import sun.security.util.Cache;
 public class DecisionTree{
     private TreeNode root;
 
-    private Cache<Integer, TreeNode> cache;
-
     private final int SEARCH_LIMIT = 100;
 
     private boolean isCaching;
@@ -28,8 +27,6 @@ public class DecisionTree{
     }
 
     public MutualLinkedMap<Path, StepMode> treeSearch(Board board) {
-        root = new TreeNode();
-
         for(int i = 0; i < SEARCH_LIMIT; i++) {
             TreeNode node = selectNode(board, root);
             int reward = node.stateReward;
@@ -92,6 +89,17 @@ public class DecisionTree{
         }
     }
 
+    public void climbDown(MutualLinkedMap<Path, StepMode> paths) {
+        TreeNode node = root.getChild(paths.keySet());
+
+        if(node == null) {
+            node = new TreeNode(paths, !root.playerTurn);
+        }
+
+        root.clear();
+        root = node;
+    }
+
     private void backpropogate(TreeNode current, int reward) {
         while(current != null) {
             current.visits++;
@@ -149,12 +157,14 @@ class TreeNode {
     protected int stateReward;
     protected int visits;
     protected TreeNode parent;
+    protected boolean isInitiated;
     protected Set<TreeNode> children;
 
     public TreeNode() {
         pathToTypeMap = new MutualLinkedMap<>();
         children = new HashSet<>();
         playerTurn = false;
+        isInitiated = false;
     }
 
     public TreeNode(TreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
@@ -162,6 +172,13 @@ class TreeNode {
         children = new HashSet<>();
         this.playerTurn = !parent.playerTurn;
         this.parent = parent;
+    }
+
+    public TreeNode(MutualLinkedMap<Path, StepMode> pathToTypeMap, boolean playerTurn) {
+        this.pathToTypeMap = pathToTypeMap;
+        this.playerTurn = playerTurn;
+        children = new HashSet<>();
+
     }
 
     public void addChild(TreeNode child) {
@@ -186,9 +203,7 @@ class TreeNode {
             return Double.MAX_VALUE;
         }
 
-        double UCB = totalReward + Math.sqrt(Math.log(parent.visits) / visits);
-
-        return UCB;
+        return totalReward + Math.sqrt(Math.log(parent.visits) / visits);
     }
 
     public void setAdvantage(Board board) {
@@ -197,6 +212,7 @@ class TreeNode {
         if(path == null) {
             totalReward = 0;
         } else {
+
             this.stateReward = board.getMaxHealthPoints(path.getTarget())
                     - board.getHealthPoints(path.getTarget())
                     + board.getDamagePoints(path.getTarget());
@@ -208,6 +224,11 @@ class TreeNode {
     }
 
     public void clear() {
+        parent = null;
+        for(TreeNode child : children) {
+            child.parent = null;
+        }
+
         children.clear();
         pathToTypeMap.clear();
     }

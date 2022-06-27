@@ -8,8 +8,6 @@ import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.Path;
 
-import java.util.Map;
-
 public class AI {
     private final MoveGenerator generator;
     private final int depth = 3; //TODO config
@@ -31,13 +29,12 @@ public class AI {
     }
 
     private void updatePaths(){
-        //cachedTree.climbDown(playerTurns); //корень = ход игрока
+        cachedTree.climbDown(playerTurns); //корень = ход игрока
 
         //получение лучшего дочернего узла
         currentPaths = cachedTree.treeSearch(board);
 
-        //cachedTree.climbDown(currentPaths); //корень = ход ИИ
-
+        cachedTree.climbDown(currentPaths); //корень = ход ИИ
         playerTurns.clear();
     }
 
