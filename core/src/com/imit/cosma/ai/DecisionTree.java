@@ -7,75 +7,65 @@ import com.imit.cosma.util.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import sun.security.util.Cache;
 
 public class DecisionTree{
     private TreeNode root;
-    private int depth;
 
     private Cache<Integer, TreeNode> cache;
-    private int treeSize;
+
+    private final int SEARCH_LIMIT = 100;
 
     private boolean isCaching;
 
-    public DecisionTree(int depth){
+    public DecisionTree(){
         root = new TreeNode();
-        this.depth = depth;
-        isCaching = true;
-        treeSize = 0;
+        isCaching = false;
     }
-/*
-    private int buildTree(Board board, int depth, int alpha, int beta, TreeNode parent) {
-        if(depth == 0) {
-            return calculateAdvantage(board, parent);
+
+    public MutualLinkedMap<Path, StepMode> treeSearch(Board board) {
+        root = new TreeNode();
+
+        for(int i = 0; i < SEARCH_LIMIT; i++) {
+            TreeNode node = selectNode(board, root);
+            int reward = node.stateReward;
+            backpropogate(node, reward);
         }
 
-        treeSize++;
+        TreeNode bestChild = selectBestNode(root);
 
+        return bestChild.pathToTypeMap;
+    }
+
+    private void expandNode(Board board, TreeNode current) {
+        int childrenNumber = 0;
         MoveGenerator generator = new MoveGenerator(board);
 
-        List<Path> pathsForFirstTurn = parent.playerTurn
+        List<Path> firstPaths = current.playerTurn
                 ? new ArrayList<>(generator.getEnemyPaths())
                 : new ArrayList<>(generator.getPlayerPaths());
 
-        int minMaxEval = parent.playerTurn ? Integer.MAX_VALUE : -Integer.MAX_VALUE;
-
-        for(Path firstPath : pathsForFirstTurn) {
+        for(Path firstPath : firstPaths) {
             Board firstTurnBoard = board.clone();
 
             StepMode firstTurnMode = firstTurnBoard.doArtificialTurn(firstPath);
             generator.update(firstTurnBoard);
             firstTurnBoard.updateSide();
 
-            List<Path> pathsForSecondTurn = parent.playerTurn
+            List<Path> pathsForSecondTurn = current.playerTurn
                     ? new ArrayList<>(generator.getEnemyPaths())
                     : new ArrayList<>(generator.getPlayerPaths());
-
-            TreeNode node;
 
             if(pathsForSecondTurn.isEmpty()) {
                 MutualLinkedMap<Path, StepMode> pathToTypeMap = new MutualLinkedMap<>();
                 pathToTypeMap.put(firstPath, firstTurnMode);
 
-                node = initNode(parent, pathToTypeMap);
-
-                node.advantage = buildTree(firstTurnBoard.clone(), depth - 1, alpha, beta, node);
-
-                if(parent.playerTurn){
-                    minMaxEval = Math.min(minMaxEval, node.advantage);
-                    beta = Math.min(node.advantage, beta);
-                }
-                else{
-                    minMaxEval = Math.max(minMaxEval, node.advantage);
-                    alpha = Math.max(node.advantage, alpha);
-                }
-
+                initNode(firstTurnBoard, current, pathToTypeMap);
+                childrenNumber++;
             } else {
                 for(Path secondPath : pathsForSecondTurn) {
 
@@ -87,110 +77,63 @@ public class DecisionTree{
                     pathToTypeMap.put(secondPath, secondMode);
                     pathToTypeMap.put(firstPath, firstTurnMode);
 
-                    node = initNode(parent, pathToTypeMap);
+                    initNode(secondTurnBoard, current, pathToTypeMap);
+                    childrenNumber++;
 
-                    int advantage = buildTree(firstTurnBoard.clone(), depth - 1, alpha, beta, node);
-
-                    if(parent.playerTurn){
-                        minMaxEval = Math.min(minMaxEval, advantage);
-                        beta = Math.min(node.advantage, beta);
-                    }
-                    else{
-                        minMaxEval = Math.max(minMaxEval, advantage);
-                        alpha = Math.max(node.advantage, alpha);
-                    }
-
-                    if(beta <= alpha){
+                    if(childrenNumber >= SEARCH_LIMIT) {
                         break;
                     }
                 }
             }
 
-            if(beta <= alpha){
+            if(childrenNumber >= SEARCH_LIMIT) {
                 break;
             }
         }
-
-        parent.updateAdvantage(minMaxEval);
-
-        cache.put();
-
-        return minMaxEval;
     }
-*/
 
-    private void selection() {
-        TreeNode current = root;
-        for(TreeNode child : current.children) {
-            if(child.wins > current.wins) {
+    private void backpropogate(TreeNode current, int reward) {
+        while(current != null) {
+            current.visits++;
+            current.totalReward += reward;
+            current = current.parent;
+        }
+    }
+
+    private TreeNode selectNode(Board board, TreeNode current) {
+        if(current.children.isEmpty()) {
+            expandNode(board, current);
+        }
+
+        return selectBestNode(current);
+    }
+
+    private TreeNode selectBestNode(TreeNode parentNode) {
+        if(parentNode.children.isEmpty()) {
+            return parentNode;
+        }
+
+        TreeNode current = parentNode;
+        for(TreeNode child : parentNode.children) {
+            if(child.visits == 0 && child.totalReward == 0) {
+                return child;
+            }
+            if(child.getUCB() > current.getUCB()) {
                 current = child;
             }
         }
+
+        return selectBestNode(current);
     }
 
-    private void expansion(TreeNode bestNode) {
-        TreeNode newNode = new TreeNode();
-        newNode.parent = bestNode;
-        bestNode.children.add(newNode);
-    }
-
-    private void simulation() {
-
-    }
-
-    private int calculateAdvantage(Board board, TreeNode node){
-        Path path = node.getByStepMode(StepMode.ATTACK);
-
-        if(path == null) {
-            return 0;
-        }
-
-        int advantage = board.getMaxHealthPoints(path.getTarget())
-                - board.getHealthPoints(path.getTarget())
-                + board.getDamagePoints(path.getTarget());
-
-        return node.playerTurn ? -advantage : advantage;
-    }
-
-    public void cacheTree(final Board board) {
-        buildTree(board, depth, -Integer.MAX_VALUE, Integer.MAX_VALUE, root);
-        isCaching = false;
-    }
-
-    public void climbDown(Board board, MutualLinkedMap<Path, StepMode> targets) {
-        root = cache.get(1);
-
-        TreeNode node = root.getChild(targets.keySet());
-
-        if(node == null) {
-            node = new TreeNode(targets, !root.playerTurn);
-        }
-
-        root.clear();
-        root = node;
-
-        buildTree(board.clone(), depth, -Integer.MAX_VALUE, Integer.MAX_VALUE, root);
-    }
-
-    public Map<MutualLinkedMap<Path, StepMode>, Integer> getRootChildren() {
-        Map<MutualLinkedMap<Path, StepMode>, Integer> pathToAdvantageMap = new HashMap<>();
-
-        for(TreeNode child : root.children) {
-            pathToAdvantageMap.put(child.pathToTypeMap, child.advantage);
-        }
-
-        return pathToAdvantageMap;
-    }
-
-    private TreeNode initNode(TreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
+    private void initNode(Board board, TreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
         TreeNode node = parent.getChild(pathToTypeMap.keySet());
 
         if(node == null) {
-            node = new TreeNode(pathToTypeMap, !parent.playerTurn);
+            node = new TreeNode(parent, pathToTypeMap);
+            node.setAdvantage(board);
+            parent.addChild(node);
         }
-
-        parent.addChild(node);
-        return node;
     }
 
     public boolean isCaching() {
@@ -199,13 +142,12 @@ public class DecisionTree{
 
 }
 
-//Cached TreeNode: 1|0011|2123|MA|P|NNNN
-
 class TreeNode {
     protected MutualLinkedMap<Path, StepMode> pathToTypeMap;
-    protected int advantage;
     protected boolean playerTurn;
-    protected int wins;
+    protected int totalReward;
+    protected int stateReward;
+    protected int visits;
     protected TreeNode parent;
     protected Set<TreeNode> children;
 
@@ -215,10 +157,11 @@ class TreeNode {
         playerTurn = false;
     }
 
-    public TreeNode(MutualLinkedMap<Path, StepMode> pathToTypeMap, boolean playerTurn) {
+    public TreeNode(TreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
         this.pathToTypeMap = pathToTypeMap;
         children = new HashSet<>();
-        this.playerTurn = playerTurn;
+        this.playerTurn = !parent.playerTurn;
+        this.parent = parent;
     }
 
     public void addChild(TreeNode child) {
@@ -234,14 +177,29 @@ class TreeNode {
         return null;
     }
 
-    public void updateAdvantage(int minMaxValue) {
-        if(children.isEmpty()) {
-            advantage = playerTurn ? Math.min(advantage, minMaxValue) : Math.max(advantage, minMaxValue);
+    public double getUCB() {
+        if(parent == null) {
+            return 0;
         }
-        else {
-            for(TreeNode child : children) {
-                advantage = playerTurn ? Math.min(advantage, child.advantage) : Math.max(advantage, child.advantage);
-            }
+
+        if(parent.visits == 0 || visits == 0) {
+            return Double.MAX_VALUE;
+        }
+
+        double UCB = totalReward + Math.sqrt(Math.log(parent.visits) / visits);
+
+        return UCB;
+    }
+
+    public void setAdvantage(Board board) {
+        Path path = getByStepMode(StepMode.ATTACK);
+
+        if(path == null) {
+            totalReward = 0;
+        } else {
+            this.stateReward = board.getMaxHealthPoints(path.getTarget())
+                    - board.getHealthPoints(path.getTarget())
+                    + board.getDamagePoints(path.getTarget());
         }
     }
 
@@ -256,7 +214,7 @@ class TreeNode {
 
     public TreeNode clone() {
         TreeNode node = new TreeNode();
-        node.advantage = advantage;
+        node.totalReward = totalReward;
         node.playerTurn = playerTurn;
 
         node.pathToTypeMap.putAll(pathToTypeMap);
@@ -266,5 +224,10 @@ class TreeNode {
         }
 
         return node;
+    }
+
+    @Override
+    public String toString() {
+        return totalReward + "/" + visits;
     }
 }

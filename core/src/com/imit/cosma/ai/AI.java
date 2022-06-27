@@ -25,32 +25,18 @@ public class AI {
     public AI(final Board board){
         this.board = board.clone();
         playerTurns = new MutualLinkedMap<>();
-        cachedTree = new DecisionTree(depth);
+        cachedTree = new DecisionTree();
         generator = new MoveGenerator(board);
         currentPaths = new MutualLinkedMap<>();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                cachedTree.cacheTree(board.clone());
-            }
-        }).start();
     }
 
     private void updatePaths(){
-        int maxAdvantage = -Integer.MAX_VALUE;
-
-        cachedTree.climbDown(board, playerTurns); //корень = ход игрока
+        //cachedTree.climbDown(playerTurns); //корень = ход игрока
 
         //получение лучшего дочернего узла
-        for(Map.Entry<MutualLinkedMap<Path, StepMode>, Integer> entry : cachedTree.getRootChildren().entrySet()) {
-            if(entry.getValue() >= maxAdvantage) {
-                maxAdvantage = entry.getValue();
-                currentPaths.clear();
-                currentPaths.putAll(entry.getKey());
-            }
-        }
-        System.out.println(maxAdvantage);
-        cachedTree.climbDown(board, currentPaths); //корень = ход ИИ
+        currentPaths = cachedTree.treeSearch(board);
+
+        //cachedTree.climbDown(currentPaths); //корень = ход ИИ
 
         playerTurns.clear();
     }
