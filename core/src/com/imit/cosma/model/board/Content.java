@@ -1,5 +1,6 @@
 package com.imit.cosma.model.board;
 
+import com.imit.cosma.pkg.SoundType;
 import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
@@ -30,4 +31,6 @@ public interface Content extends Cloneable {
     Content clone();
 
     int getMaxHealthPoints();
+
+    SoundType getSoundType();
 }

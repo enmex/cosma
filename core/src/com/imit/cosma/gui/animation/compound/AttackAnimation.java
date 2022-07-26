@@ -9,6 +9,7 @@ import com.imit.cosma.gui.animation.simple.Rotation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
+import com.imit.cosma.pkg.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
@@ -16,6 +17,8 @@ import com.imit.cosma.util.Vector;
 import java.util.List;
 
 public class AttackAnimation extends AnimationType {
+    private SoundType playerShipSoundType, enemyShipSoundType;
+
     private final List<Weapon> weaponList;
     private final Point playerShipAtlasCoords, enemyShipAtlasCoords;
     private final int mainAnimationIndex;
@@ -30,6 +33,9 @@ public class AttackAnimation extends AnimationType {
         enemyShipAtlasCoords = spaceshipEnemy.getAtlasCoord();
         mainAnimationIndex = 1;
         standingPlayerShipAnimationIndex = 2;
+
+        playerShipSoundType = spaceshipPlayer.getSoundType();
+        enemyShipSoundType = spaceshipEnemy.getSoundType();
     }
 
     @Override
@@ -60,11 +66,11 @@ public class AttackAnimation extends AnimationType {
         SimpleAnimation shipRotation = new Rotation(playerShipAtlasCoords,
                 getInstance().SHIP_SPRITE_SIZE, defaultRotation,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
+                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), playerShipSoundType);
 
         SimpleAnimation shipRotationToDefault = new Rotation(playerShipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation);
+                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation, playerShipSoundType);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
                 screenPath.getTarget().y, datas.get(mainAnimationIndex).rotation);
@@ -75,7 +81,7 @@ public class AttackAnimation extends AnimationType {
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
         for(Weapon weapon : weaponList){
-            Movement movement = new Movement(weapon.getShotSprite(), getInstance().SHOT_SPRITE_SIZE);
+            Movement movement = new Movement(weapon.getShotSprite(), getInstance().SHOT_SPRITE_SIZE, weapon.getSound());
             Idle explosion = new Idle(weapon.getExplosionSprite(), getInstance().SHOT_SPRITE_SIZE,
                     screenPath.getTarget().x - screenPath.getSource().x,
                     screenPath.getTarget().y - screenPath.getSource().y);

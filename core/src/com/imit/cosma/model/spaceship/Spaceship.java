@@ -1,5 +1,6 @@
 package com.imit.cosma.model.spaceship;
 
+import com.imit.cosma.pkg.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.rules.StepMode;
@@ -130,6 +131,11 @@ public class Spaceship implements Content {
     @Override
     public int getMaxHealthPoints(){
         return skeleton.getHealthPoints();
+    }
+
+    @Override
+    public SoundType getSoundType() {
+        return skeleton.getSound();
     }
 
     public int getWeaponRange() {

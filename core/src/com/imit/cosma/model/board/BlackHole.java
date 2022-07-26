@@ -1,6 +1,7 @@
 package com.imit.cosma.model.board;
 
 import com.imit.cosma.model.rules.side.None;
+import com.imit.cosma.pkg.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
@@ -78,5 +79,10 @@ public class BlackHole implements Content {
     @Override
     public int getMaxHealthPoints() {
         return 0;
+    }
+
+    @Override
+    public SoundType getSoundType() {
+        return null;
     }
 }

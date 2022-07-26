@@ -8,10 +8,13 @@ import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.board.Content;
 import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
+import com.imit.cosma.pkg.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 public class MovementAnimation extends AnimationType {
+    private SoundType contentSoundType;
+
     private final Point shipAtlasCoords;
 
     private final int mainAnimatedObject;
@@ -20,6 +23,7 @@ public class MovementAnimation extends AnimationType {
         super(getInstance().MOVEMENT_ANIMATION_PHASES, content.getSide().getDefaultRotation());
         shipAtlasCoords = ((Spaceship)content).getSkeleton().getAtlasCoord();
         mainAnimatedObject = 0;
+        contentSoundType = content.getSoundType();
     }
 
     @Override
@@ -28,13 +32,13 @@ public class MovementAnimation extends AnimationType {
         AnimationData animationData = datas.get(mainAnimatedObject);
         animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
 
-        Movement shipMovement = new Movement(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE);
+        Movement shipMovement = new Movement(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE, contentSoundType);
 
         Rotation shipRotation = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
-                defaultRotation, defaultRotation + animationData.rotation*getOrientation());
+                defaultRotation, defaultRotation + animationData.rotation*getOrientation(), contentSoundType);
 
         Rotation shipRotationToDefault = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
-                defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
+                defaultRotation + animationData.rotation * getOrientation(), defaultRotation, contentSoundType);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);

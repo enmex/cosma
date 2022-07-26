@@ -4,6 +4,7 @@ import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -30,13 +31,10 @@ public class GameScreen implements Screen {
     private int worldWidth;
     private int worldHeight;
 
-    private Point lastTouch;
-
     private BitmapFont font;
 
     public GameScreen(){
         player = new Player();
-        lastTouch = new Point(-1, -1);
         playingField = new PlayingField();
         infoPanel = new InfoComponent();
         background = new Texture(getInstance().BACKGROUND_PATH);
@@ -58,6 +56,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
         batch.begin();
         batch.draw(background, 0, 0, worldWidth, worldHeight);
         batch.end();

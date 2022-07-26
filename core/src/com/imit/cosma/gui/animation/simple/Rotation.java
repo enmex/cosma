@@ -4,10 +4,13 @@ import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.pkg.SoundEffect;
+import com.imit.cosma.pkg.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class Rotation implements SimpleAnimation{
+    private SoundEffect rotationSound;
     private float elapsedTime = 0f;
 
     private final int framesAmount = 4;
@@ -25,7 +28,7 @@ public class Rotation implements SimpleAnimation{
     private boolean isAnimated;
     //initialRotation - текущий поворот
     //targetRotation - конечный поворот
-    public Rotation(Point atlasCoords, int spriteSize, float initialRotation, float targetRotation){
+    public Rotation(Point atlasCoords, int spriteSize, float initialRotation, float targetRotation, SoundType soundType){
         currentRotation = initialRotation;
         rotationVelocity = Config.getInstance().ROTATION_VELOCITY; //скорость поворота
 
@@ -36,10 +39,14 @@ public class Rotation implements SimpleAnimation{
 
         this.atlasCoords = atlasCoords;
         this.spriteSize = spriteSize;
+
+        rotationSound = new SoundEffect(soundType);
     }
 
     @Override
-    public void init(int fromX, int fromY, int toX, int toY, float rotation) {}
+    public void init(int fromX, int fromY, int toX, int toY, float rotation) {
+        rotationSound.play();
+    }
 
     @Override
     public void render() {
@@ -48,6 +55,8 @@ public class Rotation implements SimpleAnimation{
         } else {
             currentRotation = targetRotation;
             isAnimated = false;
+
+            rotationSound.stop();
         }
     }
 

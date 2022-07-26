@@ -3,10 +3,14 @@ package com.imit.cosma.gui.animation.simple;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.imit.cosma.pkg.SoundEffect;
+import com.imit.cosma.pkg.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class Movement implements SimpleAnimation{
+    private SoundEffect movementSound;
+
     private float elapsedTime = 0f;
     private final int framesAmount = 4;
     private final float deltaTime = getInstance().ANIMATION_DURATION / framesAmount;
@@ -22,10 +26,11 @@ public class Movement implements SimpleAnimation{
     private Point atlasCoords;
     private int spriteSize;
 
-    public Movement(Point atlasCoords, int spriteSize){
+    public Movement(Point atlasCoords, int spriteSize, SoundType soundType){
         offset = new Vector();
         this.atlasCoords = atlasCoords;
         this.spriteSize = spriteSize;
+        movementSound = new SoundEffect(soundType);
     }
 
     @Override
@@ -42,6 +47,8 @@ public class Movement implements SimpleAnimation{
 
         departure = new Point(fromX, fromY);
         destination = new Point(toX, toY);
+
+        movementSound.play();
     }
 
     @Override
@@ -49,6 +56,7 @@ public class Movement implements SimpleAnimation{
         if(isArrived()){
             offset.set(destination.x - departure.x, destination.y - departure.y);
             isAnimated = false;
+            movementSound.stop();
         }
         else {
             offset.add(moveVelocityX, moveVelocityY);
