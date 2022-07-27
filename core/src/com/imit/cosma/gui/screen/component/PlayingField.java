@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.model.board.Board;
-import com.imit.cosma.model.board.Content;
+import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.state.BoardState;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.util.Point;
@@ -18,12 +18,12 @@ public class PlayingField {
     private final double BOARD_TO_SCREEN_HEIGHT_RATIO = 0.45;
     private final double SCREEN_OFFSET = 0.35;
 
-    private Texture grid;
+    private final Texture grid;
 
-    private Sprite selectedCell;
-    private TextureRegion spaceships;
+    private final Sprite selectedCell;
+    private final TextureRegion spaceships;
 
-    private SpriteBatch batch;
+    private final SpriteBatch batch;
 
     private final int CELL_AMOUNT_WIDTH = 8;
     private final int CELL_AMOUNT_HEIGHT = 8;
@@ -39,12 +39,12 @@ public class PlayingField {
 
     private int boardX = 0, boardY = 3 * cellHeight;
 
-    private Board board;
+    private final Board board;
 
-    private Point lastTouch;
+    private final Point lastTouch;
 
-    private ContentAnimation contentAnimation;
-    private Sprite sprite;
+    private final ContentAnimation contentAnimation;
+    private final Sprite sprite;
 
     public PlayingField(){
         board = new Board();
@@ -72,7 +72,7 @@ public class PlayingField {
     public void updateField(Point touchPoint) {
         Point selected = getSelectedBoardPoint(touchPoint);
 
-        if(!animationPlays() && !isGameOver() && !board.isLoading()){ //вызывать когда чел жмет на кнопку
+        if(!animationPlays() && !isGameOver() && !board.isLoading()){ //вызывается когда чел жмет на кнопку
             BoardState boardState = board.getCurrentState(selected);
             if(!boardState.isIdle()) {
                 contentAnimation.init(boardState.getAnimationType(), board.getCurrentPath(), cellWidth, cellHeight, boardY);

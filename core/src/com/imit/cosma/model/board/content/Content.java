@@ -1,6 +1,6 @@
-package com.imit.cosma.model.board;
+package com.imit.cosma.model.board.content;
 
-import com.imit.cosma.pkg.SoundType;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;

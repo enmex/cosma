@@ -5,10 +5,9 @@ import static com.imit.cosma.config.Config.getInstance;
 import com.imit.cosma.gui.animation.simple.Movement;
 import com.imit.cosma.gui.animation.simple.Rotation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
-import com.imit.cosma.model.board.Content;
-import com.imit.cosma.model.spaceship.Skeleton;
+import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.pkg.SoundType;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
@@ -35,10 +34,10 @@ public class MovementAnimation extends AnimationType {
         Movement shipMovement = new Movement(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE, contentSoundType);
 
         Rotation shipRotation = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
-                defaultRotation, defaultRotation + animationData.rotation*getOrientation(), contentSoundType);
+                defaultRotation, defaultRotation + animationData.rotation*getOrientation());
 
         Rotation shipRotationToDefault = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
-                defaultRotation + animationData.rotation * getOrientation(), defaultRotation, contentSoundType);
+                defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);

@@ -9,15 +9,16 @@ import com.imit.cosma.gui.animation.simple.Rotation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
-import com.imit.cosma.pkg.SoundType;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 import java.util.List;
 
-public class AttackAnimation extends AnimationType {
-    private SoundType playerShipSoundType, enemyShipSoundType;
+public class AttackOneAnimation extends AnimationType {
+    private SoundType playerShipSoundType;
+    private boolean isKillAttack;
 
     private final List<Weapon> weaponList;
     private final Point playerShipAtlasCoords, enemyShipAtlasCoords;
@@ -26,7 +27,7 @@ public class AttackAnimation extends AnimationType {
 
     private Point sourceBoardCell;
 
-    public AttackAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
+    public AttackOneAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
         super(spaceshipPlayer.getWeapons().size() + 2, spaceshipPlayer.getSide().getDefaultRotation());
         this.weaponList = spaceshipPlayer.getWeapons();
         playerShipAtlasCoords = spaceshipPlayer.getAtlasCoord();
@@ -35,7 +36,8 @@ public class AttackAnimation extends AnimationType {
         standingPlayerShipAnimationIndex = 2;
 
         playerShipSoundType = spaceshipPlayer.getSoundType();
-        enemyShipSoundType = spaceshipEnemy.getSoundType();
+
+        isKillAttack = spaceshipEnemy.getHealthPoints() <= 0;
     }
 
     @Override
@@ -66,11 +68,11 @@ public class AttackAnimation extends AnimationType {
         SimpleAnimation shipRotation = new Rotation(playerShipAtlasCoords,
                 getInstance().SHIP_SPRITE_SIZE, defaultRotation,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), playerShipSoundType);
+                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
 
         SimpleAnimation shipRotationToDefault = new Rotation(playerShipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation, playerShipSoundType);
+                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
                 screenPath.getTarget().y, datas.get(mainAnimationIndex).rotation);

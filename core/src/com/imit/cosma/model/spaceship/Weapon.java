@@ -1,6 +1,6 @@
 package com.imit.cosma.model.spaceship;
 
-import com.imit.cosma.pkg.SoundType;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 
 public enum Weapon {

@@ -1,4 +1,4 @@
-package com.imit.cosma.pkg;
+package com.imit.cosma.pkg.sound;
 
 public enum SoundType {
     CORVETTE_MOVING("sound/corvette_moving.ogg"),

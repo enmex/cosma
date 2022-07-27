@@ -1,21 +1,21 @@
 package com.imit.cosma.model.board.state;
 
 import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.AttackAnimation;
+import com.imit.cosma.gui.animation.compound.AttackOneAnimation;
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.spaceship.Spaceship;
 
-public class ShipAttackingBoardState implements BoardState{
+public class ShipAttackingOneTargetBoardState implements BoardState{
     private Cell source, target;
 
-    public ShipAttackingBoardState(Cell source, Cell target) {
+    public ShipAttackingOneTargetBoardState(Cell source, Cell target) {
         this.source = source;
         this.target = target;
     }
 
     @Override
     public AnimationType getAnimationType() {
-        return new AttackAnimation((Spaceship) source.getContent(), (Spaceship) target.getContent());
+        return new AttackOneAnimation((Spaceship) source.getContent(), (Spaceship) target.getContent());
     }
 
     @Override

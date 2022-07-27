@@ -1,22 +1,23 @@
-package com.imit.cosma.model.board;
+package com.imit.cosma.model.board.content;
 
-import com.imit.cosma.model.rules.side.None;
-import com.imit.cosma.pkg.SoundType;
+import com.imit.cosma.model.rules.side.NeutralSide;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.IdleMovingStyle;
 import com.imit.cosma.model.rules.move.MovingStyle;
 
-public class Space implements Content{
+public class BlackHole implements Content {
+    private StepMode stepMode;
 
     private MovingStyle movingStyle;
-    private final Point atlasCoords = new Point(-1, -1);
+    private final Point atlasCoords = new Point(0, 0);
     private Side side;
 
-    public Space(){
+    public BlackHole(){
         movingStyle = new IdleMovingStyle();
-        side = new None();
+        side = new NeutralSide();
     }
 
     @Override
@@ -26,7 +27,7 @@ public class Space implements Content{
 
     @Override
     public boolean isPassable() {
-        return true;
+        return false;
     }
 
     @Override
@@ -45,11 +46,13 @@ public class Space implements Content{
     }
 
     @Override
-    public void setStepMode(StepMode stepMode) {}
+    public void setStepMode(StepMode stepMode) {
+        this.stepMode = stepMode;
+    }
 
     @Override
     public StepMode getStepMode() {
-        return StepMode.COMPLETED;
+        return stepMode;
     }
 
     @Override
@@ -62,6 +65,7 @@ public class Space implements Content{
 
     @Override
     public int getDamage() {
+        //TODO
         return 0;
     }
 
@@ -72,7 +76,7 @@ public class Space implements Content{
 
     @Override
     public Content clone() {
-        return new Space();
+        return new BlackHole();
     }
 
     @Override

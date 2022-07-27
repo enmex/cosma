@@ -1,8 +1,7 @@
 package com.imit.cosma.gui.screen.component.infopanel;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.imit.cosma.model.board.Content;
+import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.spaceship.Spaceship;
 
 public class SpaceInformation extends ContentInformation{

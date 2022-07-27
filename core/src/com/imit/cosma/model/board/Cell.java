@@ -1,5 +1,8 @@
 package com.imit.cosma.model.board;
 
+import com.imit.cosma.model.board.content.BlackHole;
+import com.imit.cosma.model.board.content.Content;
+import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
@@ -16,6 +19,14 @@ public class Cell {
 
     public Cell() {
         this.content = new Space();
+    }
+
+    public static Cell initWithSpace() {
+        return new Cell(new Space());
+    }
+
+    public static Cell initWithBlackHole() {
+        return new Cell(new BlackHole());
     }
 
     public boolean isShip(){

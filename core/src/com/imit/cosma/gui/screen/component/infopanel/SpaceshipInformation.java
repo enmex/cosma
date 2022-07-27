@@ -6,9 +6,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.model.board.Content;
+import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.spaceship.Spaceship;
 
 public class SpaceshipInformation extends ContentInformation{

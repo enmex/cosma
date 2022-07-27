@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.screen.component.Component;
-import com.imit.cosma.model.board.Content;
-import com.imit.cosma.model.board.Space;
+import com.imit.cosma.model.board.content.Content;
+import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.model.rules.side.Side;
 
 public class InfoComponent extends Component {

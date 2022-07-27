@@ -1,8 +1,8 @@
 package com.imit.cosma.model.rules.side;
 
-public class None extends Side{
+public class NeutralSide extends Side{
 
-    public None() {
+    public NeutralSide() {
         super(0, 0);
     }
 
@@ -13,6 +13,6 @@ public class None extends Side{
 
     @Override
     public Side clone() {
-        return new None();
+        return new NeutralSide();
     }
 }

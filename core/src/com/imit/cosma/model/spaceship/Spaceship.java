@@ -1,8 +1,8 @@
 package com.imit.cosma.model.spaceship;
 
-import com.imit.cosma.pkg.SoundType;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
-import com.imit.cosma.model.board.Content;
+import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.side.Side;

@@ -1,6 +1,6 @@
 package com.imit.cosma.gui.screen.component.infopanel;
 
-import com.imit.cosma.model.board.Content;
+import com.imit.cosma.model.board.content.Content;
 
 public class SelectedCellDetails {
 

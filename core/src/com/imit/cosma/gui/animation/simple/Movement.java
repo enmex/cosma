@@ -3,8 +3,8 @@ package com.imit.cosma.gui.animation.simple;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
-import com.imit.cosma.pkg.SoundEffect;
-import com.imit.cosma.pkg.SoundType;
+import com.imit.cosma.pkg.sound.SoundEffect;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
@@ -48,7 +48,7 @@ public class Movement implements SimpleAnimation{
         departure = new Point(fromX, fromY);
         destination = new Point(toX, toY);
 
-        movementSound.play();
+        movementSound.playLoop();
     }
 
     @Override

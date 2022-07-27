@@ -1,4 +1,4 @@
-package com.imit.cosma.pkg;
+package com.imit.cosma.pkg.sound;
 
 import com.badlogic.gdx.audio.Sound;
 
@@ -10,8 +10,12 @@ public class SoundEffect {
         sound = SoundConfig.getInstance().soundBank.get(soundType);
     }
 
-    public void play() {
+    public void playLoop() {
         soundId = sound.loop();
+    }
+
+    public void play() {
+        soundId = sound.play();
     }
 
     public void stop() {
