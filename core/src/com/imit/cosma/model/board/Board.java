@@ -3,12 +3,17 @@ package com.imit.cosma.model.board;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.imit.cosma.ai.AI;
+import com.imit.cosma.model.board.content.DamageKit;
+import com.imit.cosma.model.board.content.HealthKit;
 import com.imit.cosma.model.board.content.Space;
+import com.imit.cosma.model.board.content.SupplyKit;
 import com.imit.cosma.model.board.state.BlackHoleSpawnState;
 import com.imit.cosma.model.board.state.BoardState;
 import com.imit.cosma.model.board.state.IdleBoardState;
 import com.imit.cosma.model.board.state.ShipAttackingOneTargetBoardState;
 import com.imit.cosma.model.board.state.ShipMovingBoardState;
+import com.imit.cosma.model.board.weather.SpaceDebris;
+import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.side.Enemy;
 import com.imit.cosma.model.rules.side.NeutralSide;
@@ -24,7 +29,9 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,12 +42,13 @@ public class Board implements Cloneable {
     private Cell selected;
     private Cell interacted;
     private Set<Point> interactedCells;
+    private Set<Point> emptyCells;
 
     private int turnCount;
 
     private Side turn;
 
-    private int selectedX, selectedY;
+    private Point selectedPoint;
 
     private int playerAdvantagePoints, enemyAdvantagePoints;
 
@@ -54,6 +62,7 @@ public class Board implements Cloneable {
     public Board() {
         cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
         emptySet = new HashSet<>();
+        emptyCells = new HashSet<>();
         selected = new Cell(new Space());
         interacted = new Cell(new Space());
         playerAdvantagePoints = 0;
@@ -90,6 +99,7 @@ public class Board implements Cloneable {
         for (int y = getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
+                emptyCells.add(new Point(x, y));
             }
         }
 
@@ -150,19 +160,19 @@ public class Board implements Cloneable {
         return new IdleBoardState();
     }
 
-    public BoardState calculateCurrentPlayerState(int selectedX, int selectedY){
-        currentPath = new Path(this.selectedX, this.selectedY, selectedX, selectedY);
+    public BoardState calculateCurrentPlayerState(Point selectedPoint){
+        currentPath = new Path(this.selectedPoint, selectedPoint);
 
         if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
-            if (selectedCanMoveTo(selectedX, selectedY)) {
-                setSelectedPosition(selectedX, selectedY);
+            if (selectedCanMoveTo(selectedPoint)) {
+                setSelectedPosition(selectedPoint);
 
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.MOVE);
 
-                return new ShipMovingBoardState(turn.isPlayer() ? getCell(selectedX, selectedY) : selected);
-            } else if (selectedCanFireTo(selectedX, selectedY)) {
-                damageShip(selectedX, selectedY, selected.getDamageAmount());
+                return new ShipMovingBoardState(turn.isPlayer() ? getCell(selectedPoint) : selected);
+            } else if (selectedCanFireTo(selectedPoint)) {
+                damageShip(selectedPoint, selected.getDamageAmount());
 
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.ATTACK);
@@ -242,7 +252,7 @@ public class Board implements Cloneable {
 
         cells[shipY][shipX].setDamage(damage);
         selected.setStepMode(StepMode.COMPLETED);
-        interactedCells.add(new Point(selectedX, selectedY));
+        interactedCells.add(selectedPoint);
 
         if(turn.isPlayer()){
             playerAdvantagePoints += Math.min(damage, cells[shipY][shipX].getHealthPoints());
@@ -254,6 +264,22 @@ public class Board implements Cloneable {
         if(cells[shipY][shipX].getContent().getHealthPoints() <= 0){
             destroyShip(shipX, shipY, Cell.initWithSpace());
         }
+    }
+
+    public void damageShip(Point target, int damage) {
+        damageShip(target.x, target.y, damage);
+    }
+
+    public void healShip(int shipX, int shipY, int healthPoints) {
+        interacted.setContent(cells[shipY][shipX].getContent().clone());
+
+        cells[shipY][shipX].addHealthPoints(healthPoints);
+        selected.setStepMode(StepMode.COMPLETED);
+        interactedCells.add(selectedPoint);
+    }
+
+    public void healShip(Point target, int healthPoints) {
+        healShip(target.x, target.y, healthPoints);
     }
 
     private void destroyShip(int shipX, int shipY, Cell replacement){
@@ -279,7 +305,9 @@ public class Board implements Cloneable {
     }
 
     public boolean selectedCanMoveTo(int x, int y){
-        return selected.isShip() && cells[y][x] != selected && selected.canMoveTo(selectedX, selectedY, x, y)
+        return selected.isShip()
+                && cells[y][x] != selected
+                && selected.canMoveTo(selectedPoint.x, selectedPoint.y, x, y)
                 && selected.getStepMode() == StepMode.MOVE && isPassable(x, y);
     }
 
@@ -307,12 +335,15 @@ public class Board implements Cloneable {
         return isShip(x, y) && cells[y][x].getStepMode() == StepMode.ATTACK ? Attack.getAvailable(this, x, y) : emptySet;
     }
 
-    private void setSelectedPosition(int toX, int toY) {
-        interacted.setContent(cells[toY][toX].getContent().clone());
+    private void setSelectedPosition(Point destination) {
+        interacted.setContent(cells[destination.y][destination.x].getContent().clone());
 
-        selected.swapContents(cells[toY][toX]);
-        cells[toY][toX].setStepMode(StepMode.ATTACK);
-        interactedCells.add(new Point(toX, toY));
+        emptyCells.remove(destination);
+        emptyCells.add(selectedPoint);
+
+        selected.swapContents(cells[destination.y][destination.x]);
+        cells[destination.y][destination.x].setStepMode(StepMode.ATTACK);
+        interactedCells.add(destination);
     }
 
     public Point getAtlasCoords(int x, int y){
@@ -323,11 +354,8 @@ public class Board implements Cloneable {
         return x >=0 && x < 8 && y >= 0 && y < 8;
     }
 
-    public int getSelectedX(){
-        return selectedX;
-    }
-    public int getSelectedY(){
-        return selectedY;
+    public Point getSelectedPoint() {
+        return selectedPoint;
     }
 
     public Side getTurn(){
@@ -364,12 +392,11 @@ public class Board implements Cloneable {
 
     private void setSelected(int x, int y) {
         selected = cells[y][x];
-        selectedX = x;
-        selectedY = y;
+        selectedPoint.set(x, y);
 
         if(selected.isShip()) {
             availableForAttack = Attack.getAvailable(this);
-            availableForMove = selected.getMoves().getAvailable(this, selectedX, selectedY);
+            availableForMove = selected.getMoves().getAvailable(this, selectedPoint);
         }
     }
 
@@ -440,8 +467,7 @@ public class Board implements Cloneable {
 
         this.playerSide = board.playerSide.clone();
         this.enemySide = board.enemySide.clone();
-        this.selectedX = board.selectedX;
-        this.selectedY = board.selectedY;
+        this.selectedPoint = board.selectedPoint.clone();
         this.enemy = board.enemy;
         this.currentPath = board.currentPath;
 
@@ -464,8 +490,7 @@ public class Board implements Cloneable {
                 board.cells[y][x] = new Cell(cells[y][x].getContent().clone());
             }
         }
-        board.selectedX = selectedX;
-        board.selectedY = selectedY;
+        board.selectedPoint = selectedPoint.clone();
         board.playerSide = playerSide.clone();
         board.enemySide = enemySide.clone();
         board.currentPath = currentPath;
@@ -514,7 +539,39 @@ public class Board implements Cloneable {
         }
     }
 
-    private
+    private BoardState calculateSpaceDebrisSpawnState() {
+        Map<Point, Integer> targets = new HashMap<>();
+        SpaceWeather debris = new SpaceDebris();
+
+        for (int i = 0; i < debris.getPiecesNumber(); i++) {
+            Point target = Randomizer.generatePoint(0, getInstance().BOARD_SIZE);
+            int damage = 0;
+
+            if(isShip(target)) {
+                damage = debris.generateDamage();
+                damageShip(target, damage);
+            }
+
+            targets.put(target, damage);
+        }
+
+        return //TODO state
+    }
+
+    private BoardState calculateSupplyKitSpawn() {
+        Point spawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE);
+        SupplyKit supplyKit;
+
+        int randomValue = (int) (Math.random() * 2);
+        if (randomValue == 0) {
+            supplyKit = new HealthKit();
+
+            return //TODO
+        } else {
+            supplyKit = new DamageKit();
+
+        }
+    }
 
     private void setCell(Point target, Cell newCell) {
         cells[target.y][target.x] = newCell;
@@ -547,10 +604,14 @@ public class Board implements Cloneable {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(emptySet, selected, interacted,
-                interactedCells, turn, selectedX, selectedY,
-                playerAdvantagePoints, enemyAdvantagePoints, enemy,
-                currentPath, availableForMove, availableForAttack, playerSide, enemySide);
+        int result = Objects.hash(emptySet, selected,
+                interacted, interactedCells,
+                emptyCells, turnCount,
+                turn, selectedPoint,
+                playerAdvantagePoints, enemyAdvantagePoints,
+                enemy, currentPath,
+                availableForMove, availableForAttack,
+                playerSide, enemySide, otherSide);
         result = 31 * result + Arrays.hashCode(cells);
         return result;
     }

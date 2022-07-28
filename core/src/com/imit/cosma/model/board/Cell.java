@@ -84,6 +84,10 @@ public class Cell {
         content.setDamage(damage);
     }
 
+    public void addHealthPoints(int healthPoints) {
+        content.addHealthPoints(healthPoints);
+    }
+
     public int getMaxHealthPoints() {
         return content.getMaxHealthPoints();
     }

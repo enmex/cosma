@@ -1,24 +1,27 @@
 package com.imit.cosma.model.board.weather;
 
 public class SpaceDebris implements SpaceWeather {
-    private double strength;
+    private final int minPiecesNumber;
+    private final int maxPiecesNumber;
 
-    private int minPiecesNumber;
-    private int maxPiecesNumber;
+    private final int minDamage;
+    private final int maxDamage;
 
-    private SpaceDebris() {
-        strength = Math.random() * 2;
+    public SpaceDebris() {
+        minPiecesNumber = 5;
+        maxPiecesNumber = 10; //TODO config
 
-        minPiecesNumber = /...
+        minDamage = 100;
+        maxDamage = 500;
     }
 
     @Override
     public int getPiecesNumber() {
-        return 0;
+        return (int) (Math.random() * (maxPiecesNumber - minPiecesNumber) + minPiecesNumber);
     }
 
     @Override
-    public int getDamage() {
-        return 0;
+    public int generateDamage() {
+        return (int) (Math.random() * (maxDamage - minDamage) + minDamage);
     }
 }

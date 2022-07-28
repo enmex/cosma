@@ -23,6 +23,8 @@ public interface Content extends Cloneable {
 
     void setDamage(int damage);
 
+    void addHealthPoints(int healthPoints);
+
     int getDamage();
 
     int getHealthPoints();

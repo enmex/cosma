@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Spaceship implements Content {
+    private double damageBonus;
 
     private Skeleton skeleton;
     private List<Weapon> weapons;
@@ -70,6 +71,14 @@ public class Spaceship implements Content {
         this.weaponAmount = skeleton.getWeaponCapacity();
     }
 
+    public void setDamageBonus(double damageBonus) {
+        this.damageBonus = damageBonus;
+    }
+
+    public double getDamageBonus() {
+        return damageBonus;
+    }
+
     public Skeleton getSkeleton(){
         return skeleton;
     }
@@ -120,7 +129,21 @@ public class Spaceship implements Content {
 
     @Override
     public int getDamage(){
-        return damagePoints;
+        int damage = damagePoints;
+        if (damageBonus > 0) {
+            damage *= damageBonus;
+        }
+
+        return damage;
+    }
+
+    @Override
+    public void addHealthPoints(int healthPoints) {
+        this.healthPoints += healthPoints;
+
+        if (this.healthPoints > skeleton.getHealthPoints()) {
+            this.healthPoints = skeleton.getHealthPoints();
+        }
     }
 
     @Override

@@ -4,10 +4,15 @@ import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.util.Point;
 
 public class HealthKit extends SupplyKit {
+    private int healthPoints;
+
+    public HealthKit() {
+        healthPoints = (int) (Math.random() * 499 + 1); // TODO config
+    }
 
     @Override
     public int getDamage() {
-        return -500;
+        return -healthPoints;
     }
 
     @Override
