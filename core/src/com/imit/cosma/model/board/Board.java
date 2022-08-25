@@ -489,11 +489,18 @@ public class Board implements Cloneable {
 
     //TODO refactor
     public BoardState calculateCurrentOtherState() {
-        double chance = 0.2; //TODO config
+        double spaceWeatherSpawnChance = 0.2; //TODO config
+        double supplyKitSpawnChance = 0.7;
         double generatedValue = Math.random();
 
-        if (generatedValue < chance) {
+        if (generatedValue < spaceWeatherSpawnChance) {
+            return (int)(Math.random() * 2) == 0
+                    ? calculateSpawnBlackHoleState()
+                    : calculateSpaceDebrisSpawnState();
+        }
 
+        if (generatedValue < supplyKitSpawnChance) {
+            return calculateSupplyKitSpawnState();
         }
 
         return new IdleBoardState();
