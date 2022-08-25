@@ -9,7 +9,7 @@ import java.util.Set;
 public final class IdleMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailable(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, Point target) {
         return new HashSet<>();
     }
 

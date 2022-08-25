@@ -24,8 +24,11 @@ public class HorseMovingStyle implements MovingStyle {
     }
 
     @Override
-    public Set<Point> getAvailable(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, Point target) {
         Set<Point> availablePoints = new HashSet<>();
+
+        int x = target.x;
+        int y = target.y;
 
         for(Vector vector : offsets){
             if(board.isPassable(x + vector.getX(), y + vector.getY())){

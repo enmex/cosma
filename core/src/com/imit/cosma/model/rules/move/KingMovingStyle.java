@@ -12,8 +12,11 @@ import java.util.Set;
 public final class KingMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailable(Board board, int x, int y) {
+    public Set<Point> getAvailable(Board board, Point target) {
         Set<Point> points = new HashSet<>();
+
+        int x = target.x;
+        int y = target.y;
 
         int neighborX, neighborY;
 

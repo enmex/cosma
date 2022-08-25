@@ -26,6 +26,10 @@ public class Point {
         this.y = y;
     }
 
+    public void set(Point newPoint) {
+        set(newPoint.x, newPoint.y);
+    }
+
     public boolean hasZero() {
         return x == 0 || y == 0;
     }

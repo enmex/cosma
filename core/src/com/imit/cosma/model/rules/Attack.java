@@ -10,8 +10,8 @@ import java.util.Set;
 public class Attack {
 
     public static Set<Point> getAvailable(Board board){
-        int selectedX = board.getSelectedX();
-        int selectedY = board.getSelectedY();
+        Point selectedPoint = board.getSelectedPoint();
+
         int radius = ((Spaceship)board.getSelected().getContent()).getWeaponRange();
 
         Set<Point> availableCells = new HashSet<>();
@@ -21,8 +21,8 @@ public class Attack {
 
         for(Direction direction : Direction.getHorizontal()){
             for(int i = 1; i <= radius; i++){
-                offsetX = selectedX + i * direction.getOffsetX();
-                offsetY = selectedY + i * direction.getOffsetY();
+                offsetX = selectedPoint.x + i * direction.getOffsetX();
+                offsetY = selectedPoint.y + i * direction.getOffsetY();
                 if(isAvailable(board, offsetX, offsetY)) {
                     availableCells.add(new Point(offsetX, offsetY));
                 }
@@ -36,8 +36,8 @@ public class Attack {
         }
         for(Direction direction : Direction.getVertical()){
             for(int i = 1; i <= radius; i++){
-                offsetX = selectedX + i * direction.getOffsetX();
-                offsetY = selectedY + i * direction.getOffsetY();
+                offsetX = selectedPoint.x + i * direction.getOffsetX();
+                offsetY = selectedPoint.y + i * direction.getOffsetY();
                 if(isAvailable(board, offsetX, offsetY)) {
                     availableCells.add(new Point(offsetX, offsetY));
                 }
@@ -53,8 +53,8 @@ public class Attack {
         if(radius == 3) { //TODO config
             for(Direction direction : Direction.getDiagonal()){
                 for(int i = 2; i <= radius - 1; i++){
-                    offsetX = selectedX + i * direction.getOffsetX();
-                    offsetY = selectedY + i * direction.getOffsetY();
+                    offsetX = selectedPoint.x + i * direction.getOffsetX();
+                    offsetY = selectedPoint.y + i * direction.getOffsetY();
                     if(isAvailable(board, offsetX, offsetY)){
                         availableCells.add(new Point(offsetX, offsetY));
                     }
@@ -62,6 +62,10 @@ public class Attack {
             }
         }
         return availableCells;
+    }
+
+    public static Set<Point> getAvailable(Board board ,Point target) {
+        return getAvailable(board, target.x, target.y);
     }
 
     public static Set<Point> getAvailable(Board board, int selectedX, int selectedY){
