@@ -73,7 +73,7 @@ public class Cell {
     }
 
     public int getDamageAmount(){
-        return content.isShip() ? ((Spaceship)content).getDamage() : 0;
+        return content.getDamage();
     }
 
     public int getHealthPoints(){

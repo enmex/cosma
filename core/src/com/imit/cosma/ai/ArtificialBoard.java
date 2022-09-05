@@ -2,6 +2,7 @@ package com.imit.cosma.ai;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.Board;
+import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MoveType;
@@ -144,7 +145,30 @@ public class ArtificialBoard implements Cloneable {
     }
 
     private void damageShip(Point target, int damage) {
+        healthField[target.y][target.x] -= damage;
+        stepModeField[selectedPoint.y][selectedPoint.x] = StepMode.COMPLETED;
 
+        if(healthField[target.y][target.x] <= 0){
+            destroyShip(target);
+        }
+    }
+
+    private void destroyShip(Point target) {
+        if(turn.isPlayer()) {
+            enemySide.removeShip();
+        }
+        else {
+            playerSide.removeShip();
+        }
+
+        healthField[target.y][target.x] = 0;
+        stepModeField[target.y][target.x] = StepMode.COMPLETED;
+        damageField[target.y][target.x] = 0;
+        obstaclesField[target.y][target.x] = true;
+        sidesField[target.y][target.x] = new NeutralSide();
+        maxHealthField[target.y][target.x] = 0;
+        weaponRangeField[target.y][target.x] = 0;
+        moveTypeField[target.y][target.x] = MoveType.IDLE;
     }
 
     private void setSelectedPosition(Point target) {
@@ -179,6 +203,8 @@ public class ArtificialBoard implements Cloneable {
         boolean obstacleTemp = obstaclesField[target.y][target.x];
         obstaclesField[target.y][target.x] = obstaclesField[selectedPoint.y][selectedPoint.x];
         obstaclesField[selectedPoint.y][selectedPoint.x] = obstacleTemp;
+
+        stepModeField[target.y][target.x] = StepMode.ATTACK;
     }
 
     private StepMode getStepMode(Point target) {

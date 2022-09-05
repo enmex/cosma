@@ -71,7 +71,7 @@ public class BlackHole implements Content {
 
     @Override
     public int getDamage() {
-        return 0;
+        return 9999;
     }
 
     @Override

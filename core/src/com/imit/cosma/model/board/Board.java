@@ -99,12 +99,20 @@ public class Board implements Cloneable {
         cells[0][0].setContent(spaceshipBuilder.setSide(playerSide)
                 .addSkeleton(Skeleton.DREADNOUGHT)
                 .addWeapon(4)
-                .setMoveType(MoveType.QUEEN).build());
+                .setMoveType(MoveType.HORSE).build());
+        cells[0][1].setContent(spaceshipBuilder.setSide(playerSide)
+                .addSkeleton(Skeleton.DREADNOUGHT)
+                .addWeapon(4)
+                .setMoveType(MoveType.HORSE).build());
 
         cells[7][0].setContent(spaceshipBuilder.setSide(enemySide)
                 .addSkeleton(Skeleton.CORVETTE)
                 .addWeapon(ShipRandomizer.getRandomAmount())
-                .setMoveType(MoveType.IDLE).build());
+                .setMoveType(MoveType.HORSE).build());
+        cells[7][1].setContent(spaceshipBuilder.setSide(enemySide)
+                .addSkeleton(Skeleton.CORVETTE)
+                .addWeapon(ShipRandomizer.getRandomAmount())
+                .setMoveType(MoveType.HORSE).build());
 
         emptyCells.remove(new Point(0, 0));
         emptyCells.remove(new Point(0, 7));
@@ -290,13 +298,13 @@ public class Board implements Cloneable {
     }
 
     private void destroyShip(Point target, Cell replacement) {
-        cells[target.y][target.x] = replacement;
-        if(turn.isPlayer()) {
+        if (cells[target.y][target.x].getSide().isPlayer()) {
+            playerSide.removeShip();
+        } else {
             enemySide.removeShip();
         }
-        else {
-            playerSide.removeShip();
-        }
+
+        cells[target.y][target.x] = replacement;
     }
 
     public boolean isPassable(Point target) {
@@ -508,7 +516,7 @@ public class Board implements Cloneable {
     }
 
     private BoardState calculateSpawnBlackHoleState() {
-        currentContentSpawnPoint = new Point(0, 1);
+        currentContentSpawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE - 1);
 
         Point blackHoleSpawnPoint = currentContentSpawnPoint.clone();
         Cell cellWithBlackHole = Cell.initWithBlackHole();
