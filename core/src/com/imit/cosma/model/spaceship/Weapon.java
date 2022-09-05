@@ -6,9 +6,9 @@ import com.imit.cosma.util.Point;
 public enum Weapon {
 
     MACHINE_GUN(0, 1, 300, new Point(0, 512), new Point(320, 512), SoundType.MACHINE_GUN_ATTACK),
-    LASER(1, 2, 500, new Point(0, 576), new Point(320, 512), SoundType.LASER_ATTACK),
-    ION_CANNON(2, 3, 1000, new Point(0, 640), new Point(320, 512), SoundType.ION_CANNON_ATTACK),
-    TORPEDO_LAUNCHER(3, 3, 800, new Point(0, 704), new Point(320, 512), SoundType.TORPEDO_LAUNCHER_ATTACK);
+    LASER(1, 2, 500, new Point(0, 576), new Point(320, 704), SoundType.LASER_ATTACK),
+    ION_CANNON(2, 3, 1000, new Point(0, 640), new Point(320, 576), SoundType.ION_CANNON_ATTACK),
+    TORPEDO_LAUNCHER(3, 3, 800, new Point(0, 704), new Point(320, 640), SoundType.TORPEDO_LAUNCHER_ATTACK);
 
     private final int id;
     private final int radius;

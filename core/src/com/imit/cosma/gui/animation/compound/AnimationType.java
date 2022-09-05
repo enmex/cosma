@@ -29,13 +29,23 @@ public abstract class AnimationType {
 
         Vector destinationVector = new Vector(screenPath.getSource(), screenPath.getTarget());
 
-        Array<SimpleAnimation> phases = new Array<>(phasesAmount);
-
         AnimationData data = new AnimationData();//main animated object
         data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector)));
         data.offset = new Vector();
         data.path = screenPath;
-        data.phases = phases;
+        data.phases = new Array<>(phasesAmount);
+
+        datas.add(data);
+    }
+
+    public void init(Point boardPoint, Point screenPoint) {
+        targetBoardPoint = boardPoint;
+
+        AnimationData data = new AnimationData();
+        data.rotation = 0;
+        data.offset = new Vector();
+        data.path = new Path(screenPoint, screenPoint);
+        data.phases = new Array<>(phasesAmount);
 
         datas.add(data);
     }

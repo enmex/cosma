@@ -1,5 +1,6 @@
 package com.imit.cosma.model.rules.move;
 
+import com.imit.cosma.ai.ArtificialBoard;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.Board;
 
@@ -10,6 +11,11 @@ public final class IdleMovingStyle implements MovingStyle {
 
     @Override
     public Set<Point> getAvailable(Board board, Point target) {
+        return new HashSet<>();
+    }
+
+    @Override
+    public Set<Point> getAvailable(ArtificialBoard board, Point target) {
         return new HashSet<>();
     }
 

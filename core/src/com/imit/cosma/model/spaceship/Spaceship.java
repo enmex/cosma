@@ -1,5 +1,6 @@
 package com.imit.cosma.model.spaceship;
 
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.content.Content;
@@ -17,7 +18,7 @@ public class Spaceship implements Content {
     private List<Weapon> weapons;
     private List<Weapon> selectedWeapons;
     private Side side;
-    private MovingStyle movingStyle;
+    private MoveType moveType;
 
     private StepMode stepMode;
 
@@ -46,8 +47,8 @@ public class Spaceship implements Content {
     }
 
     @Override
-    public MovingStyle getMovingStyle() {
-        return movingStyle;
+    public MoveType getMoveType() {
+        return moveType;
     }
 
     @Override
@@ -98,13 +99,13 @@ public class Spaceship implements Content {
         weapons.add(weapon);
     }
 
-    public void setMovingStyle(MovingStyle movingStyle){
-        this.movingStyle = movingStyle;
+    public void setMoveType(MoveType moveType){
+        this.moveType = moveType;
     }
 
     @Override
     public boolean canMoveTo(int fromX, int fromY, int x, int y){
-        return movingStyle.canMoveTo(fromX, fromY, x, y);
+        return moveType.getMove().canMoveTo(fromX, fromY, x, y);
     }
 
     @Override
@@ -171,12 +172,17 @@ public class Spaceship implements Content {
         spaceship.stepMode = stepMode;
         spaceship.damagePoints = damagePoints;
         spaceship.healthPoints = healthPoints;
-        spaceship.movingStyle = movingStyle;
+        spaceship.moveType = moveType;
         spaceship.selectedWeapons = selectedWeapons;
         spaceship.weaponAmount = weaponAmount;
         spaceship.weaponRange = weaponRange;
         spaceship.weapons = weapons;
         spaceship.skeleton = skeleton;
         return spaceship;
+    }
+
+    @Override
+    public boolean isGameObject() {
+        return false;
     }
 }

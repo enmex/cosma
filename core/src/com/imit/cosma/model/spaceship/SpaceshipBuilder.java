@@ -1,6 +1,6 @@
 package com.imit.cosma.model.spaceship;
 
-import com.imit.cosma.model.rules.move.MovingStyle;
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.Side;
 
 public class SpaceshipBuilder {
@@ -35,13 +35,13 @@ public class SpaceshipBuilder {
         return this;
     }
 
-    public SpaceshipBuilder setMovingStyle() {
-        spaceship.setMovingStyle(ShipRandomizer.getRandomMoves());
+    public SpaceshipBuilder setMoveType() {
+        spaceship.setMoveType(ShipRandomizer.getRandomMoveType());
         return this;
     }
 
-    public SpaceshipBuilder setMovingStyle(MovingStyle style) {
-        spaceship.setMovingStyle(style);
+    public SpaceshipBuilder setMoveType(MoveType moveType) {
+        spaceship.setMoveType(moveType);
         return this;
     }
 

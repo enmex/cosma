@@ -1,5 +1,6 @@
 package com.imit.cosma.gui.animation.simple;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
@@ -7,6 +8,8 @@ import com.imit.cosma.util.Vector;
 
 //just frames of sprite
 public class Idle implements SimpleAnimation{
+    private final PlayMode playMode;
+
     private float elapsedTime = 0f;
     private float deltaTime;
 
@@ -24,8 +27,9 @@ public class Idle implements SimpleAnimation{
 
     private boolean isAnimated;
 
-    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY, int duration, float rotation, int frames){
+    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, int duration, float rotation, int frames){
         this.atlasCoords = atlasCoords;
+        this.playMode = playMode;
         this.spriteSize = spriteSize;
         offset = new Vector(targetOffsetX, targetOffsetY);
         this.duration = duration;
@@ -34,16 +38,24 @@ public class Idle implements SimpleAnimation{
         this.deltaTime = Config.getInstance().ANIMATION_DURATION / frames;
     }
 
-    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY){
-        this(atlasCoords, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
+    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY){
+        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
     }
 
-    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
-        this(atlasCoords, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 6); //TODO set in config
+    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
+        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 6); //TODO set in config
     }
 
-    public Idle(Point atlasCoords, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
-        this(atlasCoords, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION,rotation, frames);
+    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
+        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION, rotation, frames);
+    }
+
+    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames, int duration){
+        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, duration, rotation, frames);
+    }
+
+    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation){
+        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION, rotation, 6);
     }
 
     @Override
@@ -88,7 +100,7 @@ public class Idle implements SimpleAnimation{
 
     @Override
     public PlayMode getPlayMode() {
-        return PlayMode.NORMAL;
+        return playMode;
     }
 
     @Override

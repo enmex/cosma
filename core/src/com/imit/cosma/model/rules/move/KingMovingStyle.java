@@ -1,5 +1,6 @@
 package com.imit.cosma.model.rules.move;
 
+import com.imit.cosma.ai.ArtificialBoard;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.Board;
@@ -26,6 +27,27 @@ public final class KingMovingStyle implements MovingStyle {
 
             if(inBoard(neighborX, neighborY)
                 && board.isPassable(neighborX, neighborY)){
+                points.add(new Point(neighborX, neighborY));
+            }
+        }
+        return points;
+    }
+
+    @Override
+    public Set<Point> getAvailable(ArtificialBoard board, Point target) {
+        Set<Point> points = new HashSet<>();
+
+        int x = target.x;
+        int y = target.y;
+
+        int neighborX, neighborY;
+
+        for(Direction direction : Direction.values()){
+            neighborX = x + direction.getOffsetX();
+            neighborY = y + direction.getOffsetY();
+
+            if(inBoard(neighborX, neighborY)
+                    && board.isPassable(neighborX, neighborY)){
                 points.add(new Point(neighborX, neighborY));
             }
         }

@@ -1,7 +1,7 @@
 package com.imit.cosma.model.board.state;
 
 import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.AttackOneAnimation;
+import com.imit.cosma.gui.animation.compound.AttackSpaceshipAnimation;
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.spaceship.Spaceship;
 
@@ -15,11 +15,16 @@ public class ShipAttackingOneTargetBoardState implements BoardState{
 
     @Override
     public AnimationType getAnimationType() {
-        return new AttackOneAnimation((Spaceship) source.getContent(), (Spaceship) target.getContent());
+        return new AttackSpaceshipAnimation((Spaceship) source.getContent(), (Spaceship) target.getContent());
     }
 
     @Override
     public boolean isIdle() {
         return false;
+    }
+
+    @Override
+    public boolean affectsManyCells() {
+        return true;
     }
 }

@@ -5,4 +5,5 @@ import com.imit.cosma.gui.animation.compound.AnimationType;
 public interface BoardState {
     AnimationType getAnimationType();
     boolean isIdle();
+    boolean affectsManyCells();
 }

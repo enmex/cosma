@@ -3,10 +3,10 @@ package com.imit.cosma.model.board;
 import com.imit.cosma.model.board.content.BlackHole;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.content.Space;
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.spaceship.Spaceship;
 
 public class Cell {
@@ -47,8 +47,8 @@ public class Cell {
         return content.canMoveTo(fromX, fromY, x, y);
     }
 
-    public MovingStyle getMoves(){
-        return content.getMovingStyle();
+    public MoveType getMoveType(){
+        return content.getMoveType();
     }
 
     public Point getAtlasCoord(){
@@ -90,5 +90,9 @@ public class Cell {
 
     public int getMaxHealthPoints() {
         return content.getMaxHealthPoints();
+    }
+
+    public boolean isGameObject() {
+        return content.isGameObject();
     }
 }

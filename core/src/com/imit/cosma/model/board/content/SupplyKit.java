@@ -2,6 +2,7 @@ package com.imit.cosma.model.board.content;
 
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.IdleMovingStyle;
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.Side;
@@ -10,11 +11,11 @@ import com.imit.cosma.util.Point;
 
 public abstract class SupplyKit implements Content {
     private final Side side;
-    private final MovingStyle movingStyle;
+    private final MoveType moveType;
 
     protected SupplyKit() {
         side = new NeutralSide();
-        movingStyle = new IdleMovingStyle();
+        moveType = MoveType.IDLE;
     }
 
     @Override
@@ -33,8 +34,8 @@ public abstract class SupplyKit implements Content {
     }
 
     @Override
-    public MovingStyle getMovingStyle() {
-        return movingStyle;
+    public MoveType getMoveType() {
+        return moveType;
     }
 
     @Override
@@ -68,5 +69,10 @@ public abstract class SupplyKit implements Content {
     @Override
     public SoundType getSoundType() {
         return null;
+    }
+
+    @Override
+    public boolean isGameObject() {
+        return true;
     }
 }

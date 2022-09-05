@@ -26,7 +26,7 @@ public class DecisionTree{
         isCaching = false;
     }
 
-    public MutualLinkedMap<Path, StepMode> treeSearch(Board board) {
+    public MutualLinkedMap<Path, StepMode> treeSearch(ArtificialBoard board) {
         for(int i = 0; i < SEARCH_LIMIT; i++) {
             TreeNode node = selectNode(board, root);
             int reward = node.stateReward;
@@ -38,7 +38,7 @@ public class DecisionTree{
         return bestChild.pathToTypeMap;
     }
 
-    private void expandNode(Board board, TreeNode current) {
+    private void expandNode(ArtificialBoard board, TreeNode current) {
         int childrenNumber = 0;
         MoveGenerator generator = new MoveGenerator(board);
 
@@ -47,9 +47,9 @@ public class DecisionTree{
                 : new ArrayList<>(generator.getPlayerPaths());
 
         for(Path firstPath : firstPaths) {
-            Board firstTurnBoard = board.clone();
+            ArtificialBoard firstTurnBoard = board.clone();
 
-            StepMode firstTurnMode = firstTurnBoard.doArtificialTurn(firstPath);
+            StepMode firstTurnMode = firstTurnBoard.doTurn(firstPath);
             generator.update(firstTurnBoard);
             firstTurnBoard.updateSide();
 
@@ -66,9 +66,9 @@ public class DecisionTree{
             } else {
                 for(Path secondPath : pathsForSecondTurn) {
 
-                    Board secondTurnBoard = firstTurnBoard.clone();
+                    ArtificialBoard secondTurnBoard = firstTurnBoard.clone();
 
-                    StepMode secondMode = secondTurnBoard.doArtificialTurn(secondPath);
+                    StepMode secondMode = secondTurnBoard.doTurn(secondPath);
 
                     MutualLinkedMap<Path, StepMode> pathToTypeMap = new MutualLinkedMap<>();
                     pathToTypeMap.put(secondPath, secondMode);
@@ -108,7 +108,7 @@ public class DecisionTree{
         }
     }
 
-    private TreeNode selectNode(Board board, TreeNode current) {
+    private TreeNode selectNode(ArtificialBoard board, TreeNode current) {
         if(current.children.isEmpty()) {
             expandNode(board, current);
         }
@@ -134,7 +134,7 @@ public class DecisionTree{
         return selectBestNode(current);
     }
 
-    private void initNode(Board board, TreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
+    private void initNode(ArtificialBoard board, TreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
         TreeNode node = parent.getChild(pathToTypeMap.keySet());
 
         if(node == null) {
@@ -206,7 +206,7 @@ class TreeNode {
         return totalReward + Math.sqrt(Math.log(parent.visits) / visits);
     }
 
-    public void setAdvantage(Board board) {
+    public void setAdvantage(ArtificialBoard board) {
         Path path = getByStepMode(StepMode.ATTACK);
 
         if(path == null) {

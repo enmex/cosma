@@ -1,11 +1,11 @@
 package com.imit.cosma.model.rules.side;
 
-public class Player extends Side{
-    public Player() {
+public class PlayerSide extends Side{
+    public PlayerSide() {
         super(0);
     }
 
-    public Player(int shipsNumber) {
+    public PlayerSide(int shipsNumber) {
         super(0, shipsNumber);
     }
 
@@ -16,7 +16,7 @@ public class Player extends Side{
 
     @Override
     public Side clone() {
-        Side player = new Player(shipsNumber);
+        Side player = new PlayerSide(shipsNumber);
         player.turns = turns;
         return player;
     }

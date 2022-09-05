@@ -4,7 +4,7 @@ import com.imit.cosma.model.board.content.SupplyKit;
 import com.imit.cosma.util.Point;
 
 public class SupplyKitSpawnAnimation extends AnimationType {
-    protected SupplyKitSpawnAnimation(Point spawnPoint, SupplyKit supplyKit) {
+    public SupplyKitSpawnAnimation(Point spawnPoint, SupplyKit supplyKit) {
         super(1, 0);
     }
 

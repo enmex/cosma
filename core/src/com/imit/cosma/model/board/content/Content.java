@@ -1,5 +1,6 @@
 package com.imit.cosma.model.board.content;
 
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.util.Point;
@@ -12,7 +13,7 @@ public interface Content extends Cloneable {
     boolean isPassable();
     boolean canMoveTo(int fromX, int fromY, int x, int y);
 
-    MovingStyle getMovingStyle();
+    MoveType getMoveType();
 
     Point getAtlasCoord();
 
@@ -35,4 +36,7 @@ public interface Content extends Cloneable {
     int getMaxHealthPoints();
 
     SoundType getSoundType();
+
+    boolean isGameObject();
+
 }

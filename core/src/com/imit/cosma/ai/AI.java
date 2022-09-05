@@ -16,12 +16,12 @@ public class AI {
 
     private MutualLinkedMap<Path, StepMode> playerTurns;
 
-    private Board board;
+    private ArtificialBoard board;
 
     private MutualLinkedMap<Path, StepMode> currentPaths;
 
     public AI(final Board board){
-        this.board = board.clone();
+        this.board = new ArtificialBoard(board);
         playerTurns = new MutualLinkedMap<>();
         cachedTree = new DecisionTree();
         generator = new MoveGenerator(board);
@@ -55,7 +55,7 @@ public class AI {
     }
 
     public void update(Board board){
-        this.board = board;
+        this.board.update(board);
         generator.update(board);
     }
 

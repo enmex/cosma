@@ -31,12 +31,12 @@ public class MovementAnimation extends AnimationType {
         AnimationData animationData = datas.get(mainAnimatedObject);
         animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
 
-        Movement shipMovement = new Movement(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE, contentSoundType);
+        Movement shipMovement = new Movement(shipAtlasCoords, getInstance().CONTENT_SPRITE_SIZE, contentSoundType);
 
-        Rotation shipRotation = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
+        Rotation shipRotation = new Rotation(shipAtlasCoords, getInstance().CONTENT_SPRITE_SIZE,
                 defaultRotation, defaultRotation + animationData.rotation*getOrientation());
 
-        Rotation shipRotationToDefault = new Rotation(shipAtlasCoords, getInstance().SHIP_SPRITE_SIZE,
+        Rotation shipRotationToDefault = new Rotation(shipAtlasCoords, getInstance().CONTENT_SPRITE_SIZE,
                 defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y,

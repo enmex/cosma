@@ -25,4 +25,9 @@ public class HealthKit extends SupplyKit {
 
     @Override
     public void setDamage(int damage) {}
+
+    @Override
+    public void addHealthPoints(int healthPoints) {
+
+    }
 }

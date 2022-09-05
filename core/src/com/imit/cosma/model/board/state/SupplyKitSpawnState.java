@@ -23,4 +23,9 @@ public class SupplyKitSpawnState implements BoardState {
     public boolean isIdle() {
         return false;
     }
+
+    @Override
+    public boolean affectsManyCells() {
+        return false;
+    }
 }

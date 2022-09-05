@@ -12,4 +12,9 @@ public class IdleBoardState implements BoardState{
     public boolean isIdle() {
         return true;
     }
+
+    @Override
+    public boolean affectsManyCells() {
+        return false;
+    }
 }

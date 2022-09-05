@@ -17,6 +17,11 @@ public class DamageKit extends SupplyKit {
     public void setDamage(int damage) {}
 
     @Override
+    public void addHealthPoints(int healthPoints) {
+
+    }
+
+    @Override
     public int getDamage() {
         return 0;
     }

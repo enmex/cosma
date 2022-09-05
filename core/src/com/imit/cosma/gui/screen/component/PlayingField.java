@@ -41,8 +41,6 @@ public class PlayingField {
 
     private final Board board;
 
-    private final Point lastTouch;
-
     private final ContentAnimation contentAnimation;
     private final Sprite sprite;
 
@@ -57,8 +55,6 @@ public class PlayingField {
 
         batch = new SpriteBatch();
         sprite = new Sprite(spaceships);
-
-        lastTouch = new Point();
     }
 
     public void render(Point touchPoint){
@@ -72,14 +68,21 @@ public class PlayingField {
     public void updateField(Point touchPoint) {
         Point selected = getSelectedBoardPoint(touchPoint);
 
-        if(!animationPlays() && !isGameOver() && !board.isLoading()){ //вызывается когда чел жмет на кнопку
+        if(!animationPlays() && !isGameOver() && !board.isLoading()){
             BoardState boardState = board.getCurrentState(selected);
             if(!boardState.isIdle()) {
-                contentAnimation.init(boardState.getAnimationType(), board.getCurrentPath(), cellWidth, cellHeight, boardY);
+                String atlasPath = boardState.affectsManyCells() ? Config.getInstance().SPACESHIP_PATH : Config.getInstance().GAME_OBJECTS_PATH;
+                TextureRegion atlas = new TextureRegion(new Texture(atlasPath));
+
+                if (boardState.affectsManyCells()) {
+                    contentAnimation.init(boardState.getAnimationType(), atlas, board.getCurrentPath(), cellWidth, cellHeight, boardY);
+                } else {
+                    contentAnimation.init(boardState.getAnimationType(), atlas, board.getCurrentContentSpawnPoint(), cellWidth, cellHeight, boardY);
+                }
+
             }
             board.updateSide();
         }
-        board.setSelectedPlayerTurn(selected);
     }
 
     private Point getSelectedBoardPoint(Point touchPoint) {
@@ -111,8 +114,9 @@ public class PlayingField {
         batch.begin();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
-                if(board.isShip(x, y) && !contentAnimation.isAnimatedObject(x, y)) {
+                if(board.containsContent(x, y) && !contentAnimation.isAnimatedObject(x, y)) {
                     Point atlas = board.getAtlasCoords(x, y);
+                    sprite.setRegion(board.isGameObject(x, y) ? Config.getInstance().GAME_OBJECTS_ATLAS : Config.getInstance().SPACESHIP_ATLAS);
                     sprite.setRegion(atlas.x, atlas.y, 128, 128);
                     sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
                     sprite.setBounds(cellWidth * x, cellHeight * y + boardY, cellWidth, cellHeight);
@@ -173,7 +177,7 @@ public class PlayingField {
     }
 
     private boolean inBoard(Point touchPoint){
-        return touchPoint.x >= 0 && touchPoint.x <= boardWidth && touchPoint.y >= boardY && touchPoint.y <= boardY + boardHeight;
+        return touchPoint.x >= 0 && touchPoint.x <= boardWidth && worldHeight - touchPoint.y >= boardY && worldHeight - touchPoint.y <= boardY + boardHeight;
     }
 
     private int getBoardX(int touchX){
@@ -190,14 +194,6 @@ public class PlayingField {
 
     public boolean isEnemyTurn(){
         return !board.getTurn().isPlayer();
-    }
-
-    public int getPlayerAdvantagePoints(){
-        return board.getPlayerAdvantagePoints();
-    }
-
-    public int getEnemyAdvantagePoints(){
-        return board.getEnemyAdvantagePoints();
     }
 
     public boolean isGameOver() {

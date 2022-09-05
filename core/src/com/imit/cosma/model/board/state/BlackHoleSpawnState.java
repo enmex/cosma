@@ -29,4 +29,9 @@ public class BlackHoleSpawnState implements BoardState {
     public boolean isIdle() {
         return false;
     }
+
+    @Override
+    public boolean affectsManyCells() {
+        return false;
+    }
 }

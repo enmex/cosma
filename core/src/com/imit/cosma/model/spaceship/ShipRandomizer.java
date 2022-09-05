@@ -15,8 +15,8 @@ public class ShipRandomizer {
         return Weapon.getByID((int) (Math.random()*Skeleton.values().length));
     }
 
-    public static MovingStyle getRandomMoves(){
-        return MoveType.values()[(int) (Math.random()* MoveType.values().length)].getMove();
+    public static MoveType getRandomMoveType(){
+        return MoveType.values()[(int) (Math.random()* MoveType.values().length)];
     }
 
     public static int getRandomAmount(){

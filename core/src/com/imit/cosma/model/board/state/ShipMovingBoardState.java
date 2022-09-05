@@ -20,4 +20,9 @@ public class ShipMovingBoardState implements BoardState{
     public boolean isIdle() {
         return false;
     }
+
+    @Override
+    public boolean affectsManyCells() {
+        return true;
+    }
 }

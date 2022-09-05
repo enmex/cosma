@@ -1,5 +1,6 @@
 package com.imit.cosma.model.board.content;
 
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
@@ -10,12 +11,12 @@ import com.imit.cosma.model.rules.move.MovingStyle;
 
 public class Space implements Content{
 
-    private MovingStyle movingStyle;
+    private MoveType moveType;
     private final Point atlasCoords = new Point(-1, -1);
     private Side side;
 
     public Space(){
-        movingStyle = new IdleMovingStyle();
+        moveType = MoveType.IDLE;
         side = new NeutralSide();
     }
 
@@ -30,8 +31,8 @@ public class Space implements Content{
     }
 
     @Override
-    public MovingStyle getMovingStyle() {
-        return movingStyle;
+    public MoveType getMoveType() {
+        return moveType;
     }
 
     @Override
@@ -61,6 +62,11 @@ public class Space implements Content{
     public void setDamage(int damage) {}
 
     @Override
+    public void addHealthPoints(int healthPoints) {
+
+    }
+
+    @Override
     public int getDamage() {
         return 0;
     }
@@ -83,5 +89,10 @@ public class Space implements Content{
     @Override
     public SoundType getSoundType() {
         return null;
+    }
+
+    @Override
+    public boolean isGameObject() {
+        return false;
     }
 }
