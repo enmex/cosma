@@ -1,5 +1,6 @@
 package com.imit.cosma.model.board;
 
+import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.BlackHole;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.content.Space;
@@ -18,11 +19,11 @@ public class Cell {
     }
 
     public Cell() {
-        this.content = new Space();
+        this.content = Config.getInstance().SPACE;
     }
 
     public static Cell initWithSpace() {
-        return new Cell(new Space());
+        return new Cell(Config.getInstance().SPACE);
     }
 
     public static Cell initWithBlackHole() {

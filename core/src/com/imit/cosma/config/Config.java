@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.XmlReader;
+import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.model.rules.move.HorseMovingStyle;
 import com.imit.cosma.model.rules.move.IdleMovingStyle;
 import com.imit.cosma.model.rules.move.KingMovingStyle;
@@ -52,6 +53,8 @@ public class Config {
     public TextureRegion SPACESHIP_ATLAS;
     public TextureRegion GAME_OBJECTS_ATLAS;
 
+    public Space SPACE;
+
     private Config(){
         Element element = getElement();
         //ANIMATION_SPEED = element.getInt("animation_speed");
@@ -65,6 +68,8 @@ public class Config {
 
         SPACESHIP_ATLAS = new TextureRegion(new Texture(SPACESHIP_PATH));
         GAME_OBJECTS_ATLAS = new TextureRegion(new Texture(GAME_OBJECTS_PATH));
+
+        SPACE = new Space();
     }
 
     private static Element getElement(){

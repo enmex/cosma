@@ -21,7 +21,7 @@ public class InfoComponent extends Component {
     public InfoComponent(){
         super();
         selectedCellDetails = new SelectedCellDetails();
-        currentContent = new Space();
+        currentContent = Config.getInstance().SPACE;
         panel = new TextureRegion(new Texture(Config.getInstance().INFORMATION_PANEL_PATH), 0, 0, 256, 128);
     }
 

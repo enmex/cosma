@@ -1,6 +1,7 @@
 package com.imit.cosma.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class MutualLinkedMap<K, V> {
@@ -59,7 +60,6 @@ public class MutualLinkedMap<K, V> {
             values.remove(index);
         }
     }
-
 
     public int size() {
         return keys.size();

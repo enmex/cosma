@@ -2,9 +2,7 @@ package com.imit.cosma.model.board;
 
 import static com.imit.cosma.config.Config.getInstance;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.ai.AI;
-import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.HealthKit;
 import com.imit.cosma.model.board.content.Space;
@@ -16,15 +14,12 @@ import com.imit.cosma.model.board.state.ShipAttackingOneTargetBoardState;
 import com.imit.cosma.model.board.state.ShipMovingBoardState;
 import com.imit.cosma.model.board.state.SupplyKitSpawnState;
 import com.imit.cosma.model.rules.Attack;
-import com.imit.cosma.model.rules.move.MoveType;
-import com.imit.cosma.model.rules.move.QueenMovingStyle;
 import com.imit.cosma.model.rules.side.EnemySide;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.spaceship.ShipRandomizer;
-import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.pkg.random.Randomizer;
@@ -33,7 +28,6 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.PingPongList;
 import com.imit.cosma.util.Point;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -43,11 +37,12 @@ import java.util.Set;
 public class Board implements Cloneable {
     private Set<Point> emptySet;
 
+    private ObjectController objectController;
+
     private Cell[][] cells;
     private Cell selected;
     private Cell interacted;
     private Set<Point> interactedCells;
-    private List<Point> emptyCells, contentCells;
 
     private int turnCount;
 
@@ -69,12 +64,12 @@ public class Board implements Cloneable {
     public Board() {
         cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
         emptySet = new HashSet<>();
-        emptyCells = new ArrayList<>();
-        contentCells = new ArrayList<>();
-        selected = new Cell(new Space());
-        interacted = new Cell(new Space());
+        selected = new Cell(getInstance().SPACE);
+        interacted = new Cell(getInstance().SPACE);
         playerAdvantagePoints = 0;
         enemyAdvantagePoints = 0;
+
+        objectController = new ObjectController();
 
         SpaceshipBuilder spaceshipBuilder = new SpaceshipBuilder();
 
@@ -129,7 +124,7 @@ public class Board implements Cloneable {
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType().build();
                 cells[y][x] = new Cell(spaceship);
-                contentCells.add(new Point(x, y));
+                objectController.addSpaceship(x, y);
             }
         }
 
@@ -137,7 +132,7 @@ public class Board implements Cloneable {
         for (int y = getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
-                emptyCells.add(new Point(x, y));
+                objectController.addSpace(x, y);
             }
         }
 
@@ -149,7 +144,7 @@ public class Board implements Cloneable {
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType().build();
                 cells[y][x] = new Cell(spaceship);
-                contentCells.add(new Point(x, y));
+                objectController.addSpaceship(x, y);
             }
         }
 
@@ -284,8 +279,7 @@ public class Board implements Cloneable {
 
         if(cells[target.y][target.x].getContent().getHealthPoints() <= 0){
             destroyShip(target, Cell.initWithSpace());
-            emptyCells.add(target);
-            contentCells.remove(target);
+            objectController.setEmpty(target);
         }
     }
 
@@ -371,14 +365,11 @@ public class Board implements Cloneable {
     private void setSelectedPosition(Point destination) {
         interacted.setContent(cells[destination.y][destination.x].getContent().clone());
 
-        contentCells.add(destination);
-        contentCells.remove(selectedPoint);
-        
-        emptyCells.remove(destination);
-        emptyCells.add(selectedPoint);
-
         swapCells(selectedPoint, destination);
         cells[destination.y][destination.x].setStepMode(StepMode.ATTACK);
+
+        objectController.setSpaceship(destination);
+        objectController.setEmpty(selectedPoint);
 
         interactedCells.add(destination.clone());
     }
@@ -504,19 +495,26 @@ public class Board implements Cloneable {
 
     //TODO refactor
     public BoardState calculateCurrentOtherState() {
-        double spaceWeatherSpawnChance = 0.95; //TODO config
+        double spaceWeatherSpawnChance = 0.2; //TODO config
         double supplyKitSpawnChance = 0.7;
         double generatedValue = Math.random();
 
         if (generatedValue < spaceWeatherSpawnChance) {
             return calculateSpawnBlackHoleState();
+        } else {
+            objectController.clearGameObjects();
         }
 
         return new IdleBoardState();
     }
 
+    private void clearCell(Point target) {
+        cells[target.y][target.x].setContent(getInstance().SPACE);
+    }
+
     private BoardState calculateSpawnBlackHoleState() {
         currentContentSpawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE - 1);
+        objectController.addGameObject(currentContentSpawnPoint);
 
         Point blackHoleSpawnPoint = currentContentSpawnPoint.clone();
         Cell cellWithBlackHole = Cell.initWithBlackHole();
@@ -531,7 +529,7 @@ public class Board implements Cloneable {
             return new BlackHoleSpawnState(blackHoleSpawnPoint, victimSpaceship);
         } else {
             setCell(blackHoleSpawnPoint, cellWithBlackHole);
-            emptyCells.remove(blackHoleSpawnPoint);
+            objectController.setGameObject(blackHoleSpawnPoint);
 
             return new BlackHoleSpawnState(blackHoleSpawnPoint);
         }
@@ -561,7 +559,7 @@ public class Board implements Cloneable {
     }
 
     private BoardState calculateSupplyKitSpawnState() {
-        Point spawnPoint = Randomizer.getRandom(emptyCells);
+        Point spawnPoint = Randomizer.getRandom(objectController.getSpaceLocations());
         SupplyKit supplyKit;
 
         int randomValue = (int) (Math.random() * 2);
@@ -572,7 +570,6 @@ public class Board implements Cloneable {
     }
 
     private void setCell(Point target, Cell newCell) {
-        emptyCells.remove(target);
         cells[target.y][target.x] = newCell;
     }
 
@@ -609,7 +606,7 @@ public class Board implements Cloneable {
     @Override
     public int hashCode() {
         int result = Objects.hash(emptySet, selected, interacted,
-                interactedCells, emptyCells, contentCells,
+                interactedCells,
                 turnCount, turn, selectedPoint, playerAdvantagePoints,
                 enemyAdvantagePoints, enemy, currentPath, availableForMove,
                 availableForAttack, playerSide, enemySide, neutralSide);

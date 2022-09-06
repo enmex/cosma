@@ -17,7 +17,7 @@ public class Spaceship implements Content {
     private Skeleton skeleton;
     private List<Weapon> weapons;
     private List<Weapon> selectedWeapons;
-    private Side side;
+    private final Side side;
     private MoveType moveType;
 
     private StepMode stepMode;
