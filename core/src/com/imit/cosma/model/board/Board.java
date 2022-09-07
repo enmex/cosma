@@ -498,11 +498,18 @@ public class Board implements Cloneable {
         double spaceWeatherSpawnChance = 0.2; //TODO config
         double supplyKitSpawnChance = 0.7;
         double generatedValue = Math.random();
-
-        if (generatedValue < spaceWeatherSpawnChance) {
-            return calculateSpawnBlackHoleState();
+        if (Math.random() < 0.5) {
+            if (generatedValue < spaceWeatherSpawnChance) {
+                return calculateSpawnBlackHoleState();
+            } else {
+                objectController.clearGameObjects();
+            }
         } else {
-            objectController.clearGameObjects();
+            if (generatedValue < supplyKitSpawnChance) {
+                return calculateSupplyKitSpawnState();
+            } else {
+                objectController.clearGameObjects();
+            }
         }
 
         return new IdleBoardState();
@@ -565,8 +572,11 @@ public class Board implements Cloneable {
         int randomValue = (int) (Math.random() * 2);
         
         supplyKit = randomValue == 0 ? new HealthKit() : new DamageKit();
+        Cell cell = new Cell(supplyKit);
+        setCell(spawnPoint, cell);
         
-        return new SupplyKitSpawnState(spawnPoint, supplyKit);
+        //return new SupplyKitSpawnState(spawnPoint, supplyKit);
+        return new IdleBoardState();
     }
 
     private void setCell(Point target, Cell newCell) {

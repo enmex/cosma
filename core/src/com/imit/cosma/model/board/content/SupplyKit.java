@@ -10,10 +10,12 @@ import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 
 public abstract class SupplyKit implements Content {
+    protected Point atlasPoint;
     private final Side side;
     private final MoveType moveType;
 
-    protected SupplyKit() {
+    protected SupplyKit(Point atlasPoint) {
+        this.atlasPoint = atlasPoint;
         side = new NeutralSide();
         moveType = MoveType.IDLE;
     }
@@ -39,7 +41,9 @@ public abstract class SupplyKit implements Content {
     }
 
     @Override
-    public abstract Point getAtlasCoord();
+    public Point getAtlasCoord() {
+        return atlasPoint;
+    }
 
     @Override
     public Side getSide() {

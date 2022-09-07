@@ -80,6 +80,10 @@ public class Spaceship implements Content {
         return damageBonus;
     }
 
+    public void disableDamageBonus() {
+        damageBonus = 1.0;
+    }
+
     public Skeleton getSkeleton(){
         return skeleton;
     }
@@ -131,7 +135,7 @@ public class Spaceship implements Content {
     @Override
     public int getDamage(){
         int damage = damagePoints;
-        if (damageBonus > 0) {
+        if (damageBonus != 1.0) {
             damage *= damageBonus;
         }
 
