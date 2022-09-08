@@ -28,11 +28,6 @@ public class DamageKit extends SupplyKit {
         return 0;
     }
 
-    @Override
-    public Point getAtlasCoord() {
-        return null;
-    }
-
     public double getDamageBonus() {
         return damageBonus;
     }

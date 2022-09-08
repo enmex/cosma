@@ -1,5 +1,6 @@
 package com.imit.cosma.gui.screen.component;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -28,8 +29,8 @@ public class PlayingField {
     private final int CELL_AMOUNT_WIDTH = 8;
     private final int CELL_AMOUNT_HEIGHT = 8;
 
-    private int worldWidth = 1080;
-    private int worldHeight = 1920;
+    private int worldWidth = Gdx.graphics.getWidth();
+    private int worldHeight = Gdx.graphics.getHeight();
 
     private int boardWidth = worldWidth;
     private int boardHeight = worldWidth;

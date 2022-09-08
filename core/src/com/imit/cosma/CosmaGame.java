@@ -7,16 +7,12 @@ import com.imit.cosma.gui.screen.MainMenuScreen;
 public class CosmaGame extends Game {
 
 	MainMenuScreen mainMenuScreen;
+	//GameScreen screen;
 
 	@Override
 	public void create() {
-		mainMenuScreen = new MainMenuScreen();
+		mainMenuScreen = new MainMenuScreen(this);
 		setScreen(mainMenuScreen);
-	}
-
-	@Override
-	public void render() {
-		if (mainMenuScreen.)
 	}
 
 	@Override

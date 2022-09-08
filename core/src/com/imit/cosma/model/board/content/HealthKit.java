@@ -18,11 +18,6 @@ public class HealthKit extends SupplyKit {
     }
 
     @Override
-    public Point getAtlasCoord() {
-        return null;
-    }
-
-    @Override
     public void setStepMode(StepMode stepMode) {}
 
     @Override

@@ -17,7 +17,6 @@ import com.imit.cosma.gui.screen.component.PlayingField;
 import com.imit.cosma.util.Point;
 
 public class GameScreen implements Screen {
-
     private Player player;
 
     private PlayingField playingField;
@@ -41,8 +40,8 @@ public class GameScreen implements Screen {
 
         batch = new SpriteBatch();
 
-        worldWidth = 1080;
-        worldHeight = 1920;
+        worldWidth = Gdx.graphics.getWidth();
+        worldHeight = Gdx.graphics.getHeight();
 
         scoreComponent = new ScoreComponent();
 
