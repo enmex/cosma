@@ -1,0 +1,20 @@
+
+widgets-skin.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+down
+  rotate: false
+  xy: 1, 131
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+up
+  rotate: false
+  xy: 1, 1
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1

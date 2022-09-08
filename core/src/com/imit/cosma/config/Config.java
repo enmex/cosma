@@ -42,6 +42,7 @@ public class Config {
     public String FONT_PATH = "font\\font.fnt";
     public String SELECTED_CELL_PATH = "selected.png";
     public String GAME_OBJECTS_PATH = "objects.png";
+    public String WIDGETS_PATH = "widgets.png";
 
     public MovingStyle KING_MOVING_STYLE;
     public MovingStyle QUEEN_MOVING_STYLE;
