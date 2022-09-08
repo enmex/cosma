@@ -44,7 +44,7 @@ public class MainMenuScreen implements Screen {
         style.font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH));
         style.checkedOffsetX = -1;
         style.checkedOffsetY = -1;
-        playButton = new TextButton("PLAY", style);
+        playButton = new TextButton("START", style);
         playButton.setColor(Color.RED);
         playButton.addListener(new EventListener() {
             @Override
