@@ -8,7 +8,7 @@ import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
-public class Movement implements SimpleAnimation{
+public class MovementAnimation implements SimpleAnimation{
     private SoundEffect movementSound;
 
     private float elapsedTime = 0f;
@@ -23,12 +23,12 @@ public class Movement implements SimpleAnimation{
     private Vector offset;
     private Point departure, destination;
 
-    private Point atlasCoords;
+    private String atlasPath;
     private int spriteSize;
 
-    public Movement(Point atlasCoords, int spriteSize, SoundType soundType){
+    public MovementAnimation(String atlasPath, int spriteSize, SoundType soundType){
         offset = new Vector();
-        this.atlasCoords = atlasCoords;
+        this.atlasPath = atlasPath;
         this.spriteSize = spriteSize;
         movementSound = new SoundEffect(soundType);
     }
@@ -68,8 +68,8 @@ public class Movement implements SimpleAnimation{
     }
 
     @Override
-    public Point getAtlasCoords() {
-        return atlasCoords;
+    public String getAtlasPath() {
+        return atlasPath;
     }
 
     @Override

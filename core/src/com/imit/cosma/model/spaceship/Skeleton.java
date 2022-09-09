@@ -1,27 +1,41 @@
 package com.imit.cosma.model.spaceship;
 
+import com.imit.cosma.config.Config;
 import com.imit.cosma.pkg.sound.SoundType;
-import com.imit.cosma.util.Point;
 
 public enum Skeleton {
 
-    CORVETTE(0, 2,500, new Point(0, 0), new Point(640, 0), SoundType.CORVETTE_MOVING),
-    DESTROYER(1, 4,1000, new Point(0, 128), new Point(640, 128),  SoundType.DESTROYER_MOVING),
-    BATTLESHIP(2,6, 2500, new Point(0, 256), new Point(640, 256),  SoundType.BATTLESHIP_MOVING),
-    DREADNOUGHT(3,8,4000, new Point(0, 384), new Point(640, 384),  SoundType.DREADNOUGHT_MOVING);
+    CORVETTE(0, 2,500,
+            Config.getInstance().CORVETTE_DESTRUCTION_ATLAS_PATH,
+            Config.getInstance().CORVETTE_IDLE_ATLAS_PATH,
+            SoundType.CORVETTE_MOVING),
+    DESTROYER(1, 4,1000,
+            Config.getInstance().DESTROYER_DESTRUCTION_ATLAS_PATH,
+            Config.getInstance().DESTROYER_IDLE_ATLAS_PATH,
+            SoundType.DESTROYER_MOVING),
+    BATTLESHIP(2,6, 2500,
+            Config.getInstance().BATTLESHIP_DESTRUCTION_ATLAS_PATH,
+            Config.getInstance().BATTLESHIP_IDLE_ATLAS_PATH,
+            SoundType.BATTLESHIP_MOVING),
+    DREADNOUGHT(3,8,4000,
+            Config.getInstance().DREADNOUGHT_DESTRUCTION_ATLAS_PATH,
+            Config.getInstance().DREADNOUGHT_IDLE_ATLAS_PATH,
+            SoundType.DREADNOUGHT_MOVING);
 
     private final int weaponCapacity;
-    private final Point atlasCoord, destructionCoord;
+    private final String idleAnimationPath, destructionAnimationPath;
     private int healthPoints;
     private final SoundType sound;
     private int id;
 
-    Skeleton(int id, int weaponCapacity, int healthPoints, Point atlasCoord, Point destructionCoord, SoundType sound){
+    Skeleton(int id, int weaponCapacity, int healthPoints, String destructionAnimationPath, String idleAnimationPath, SoundType sound){
         this.id = id;
         this.weaponCapacity = weaponCapacity;
         this.healthPoints = healthPoints;
-        this.atlasCoord = atlasCoord;
-        this.destructionCoord = destructionCoord;
+
+        this.idleAnimationPath = idleAnimationPath;
+        this.destructionAnimationPath = destructionAnimationPath;
+
         this.sound = sound;
     }
 
@@ -29,12 +43,12 @@ public enum Skeleton {
         return weaponCapacity;
     }
 
-    public Point getAtlasCoord() {
-        return atlasCoord;
+    public String getIdleAnimationPath() {
+        return idleAnimationPath;
     }
 
-    public Point getDestructionCoord() {
-        return destructionCoord;
+    public String getDestructionAnimationPath() {
+        return destructionAnimationPath;
     }
 
     public int getHealthPoints() {

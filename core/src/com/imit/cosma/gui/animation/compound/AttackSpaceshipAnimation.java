@@ -4,9 +4,9 @@ import static com.imit.cosma.config.Config.*;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.utils.Array;
-import com.imit.cosma.gui.animation.simple.Idle;
-import com.imit.cosma.gui.animation.simple.Movement;
-import com.imit.cosma.gui.animation.simple.Rotation;
+import com.imit.cosma.gui.animation.simple.IdleAnimation;
+import com.imit.cosma.gui.animation.simple.MovementAnimation;
+import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
@@ -22,7 +22,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
     private final boolean isKillAttack;
 
     private final List<Weapon> weaponList;
-    private final Point playerShipAtlasCoords, enemyShipAtlasCoords, enemyShipDestructionAtlasCoords;
+    private final String playerShipAtlasPath, enemyShipAtlasPath, enemyShipDestructionAtlasPath;
     private final int mainAnimationIndex;
     private final int standingPlayerShipAnimationIndex;
 
@@ -31,9 +31,9 @@ public class AttackSpaceshipAnimation extends AnimationType {
     public AttackSpaceshipAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
         super(spaceshipPlayer.getWeapons().size() + 2, spaceshipPlayer.getSide().getDefaultRotation());
         this.weaponList = spaceshipPlayer.getWeapons();
-        playerShipAtlasCoords = spaceshipPlayer.getAtlasCoord();
-        enemyShipAtlasCoords = spaceshipEnemy.getAtlasCoord();
-        enemyShipDestructionAtlasCoords = spaceshipEnemy.getSkeleton().getDestructionCoord();
+        playerShipAtlasPath = spaceshipPlayer.getIdleAnimationPath();
+        enemyShipAtlasPath = spaceshipEnemy.getIdleAnimationPath();
+        enemyShipDestructionAtlasPath = spaceshipEnemy.getSkeleton().getDestructionAnimationPath();
         mainAnimationIndex = 1;
         standingPlayerShipAnimationIndex = 2;
 
@@ -46,7 +46,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath) {
         //init static enemy spaceship
         AnimationData staticEnemyShip = new AnimationData();
-        Idle enemyShipStanding = new Idle(enemyShipAtlasCoords, Animation.PlayMode.LOOP, getInstance().CONTENT_SPRITE_SIZE,
+        IdleAnimation enemyShipStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP, getInstance().CONTENT_SPRITE_SIZE,
                 0, 0, (int) (180 - defaultRotation),
                 getInstance().FRAMES_AMOUNT_SHIPS);
 
@@ -67,12 +67,12 @@ public class AttackSpaceshipAnimation extends AnimationType {
         //init main animation
         datas.get(mainAnimationIndex).rotation *= Math.signum(datas.get(mainAnimationIndex).rotation - defaultRotation);
 
-        SimpleAnimation shipRotation = new Rotation(playerShipAtlasCoords,
+        SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath,
                 getInstance().CONTENT_SPRITE_SIZE, defaultRotation,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
                         * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
 
-        SimpleAnimation shipRotationToDefault = new Rotation(playerShipAtlasCoords, getInstance().CONTENT_SPRITE_SIZE,
+        SimpleAnimation shipRotationToDefault = new RotationAnimation(playerShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
                         * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation);
 
@@ -85,23 +85,23 @@ public class AttackSpaceshipAnimation extends AnimationType {
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
         for(Weapon weapon : weaponList){
-            Movement movement = new Movement(weapon.getShotSprite(), getInstance().SHOT_SPRITE_SIZE, weapon.getSound());
-            Idle explosion = new Idle(weapon.getExplosionSprite(), Animation.PlayMode.NORMAL, getInstance().SHOT_SPRITE_SIZE,
+            MovementAnimation movementAnimation = new MovementAnimation(weapon.getShotAnimationPath(), getInstance().SHOT_SPRITE_SIZE, weapon.getSound());
+            IdleAnimation explosion = new IdleAnimation(weapon.getExplosionAnimationPath(), Animation.PlayMode.NORMAL, getInstance().SHOT_SPRITE_SIZE,
                     screenPath.getTarget().x - screenPath.getSource().x,
                     screenPath.getTarget().y - screenPath.getSource().y);
 
-            movement.init(screenPath.getSource().x, screenPath.getSource().y,
+            movementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
                     screenPath.getTarget().x, screenPath.getTarget().y,
                     defaultRotation
                             + datas.get(mainAnimationIndex).rotation
                             * Math.signum(screenPath.getSource().x
                             - screenPath.getTarget().x));
-            datas.get(mainAnimationIndex).phases.add(movement);
+            datas.get(mainAnimationIndex).phases.add(movementAnimation);
             datas.get(mainAnimationIndex).phases.add(explosion);
         }
 
         if (isKillAttack) {
-            Idle destruction = new Idle(enemyShipDestructionAtlasCoords, Animation.PlayMode.NORMAL,
+            IdleAnimation destruction = new IdleAnimation(enemyShipDestructionAtlasPath, Animation.PlayMode.NORMAL,
                     getInstance().CONTENT_SPRITE_SIZE, screenPath.getTarget().x - screenPath.getSource().x,
                     screenPath.getTarget().y - screenPath.getSource().y, 180 - defaultRotation);
             datas.get(mainAnimationIndex).phases.add(destruction);
@@ -113,7 +113,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         //init player staticPlayerShip
         AnimationData staticPlayerShip = new AnimationData();
-        Idle playerShipStanding = new Idle(playerShipAtlasCoords, Animation.PlayMode.LOOP, getInstance().CONTENT_SPRITE_SIZE, 0, 0,
+        IdleAnimation playerShipStanding = new IdleAnimation(playerShipAtlasPath, Animation.PlayMode.LOOP, getInstance().CONTENT_SPRITE_SIZE, 0, 0,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
                         * Math.signum(screenPath.getSource().x - screenPath.getTarget().x),
                 getInstance().FRAMES_AMOUNT_SHIPS);
@@ -160,10 +160,10 @@ public class AttackSpaceshipAnimation extends AnimationType {
     }
 
     @Override
-    public boolean isAnimated(int x, int y) {
+    public boolean isAnimated(Point objectLocation) {
         return datas.size != 0 && datas.get(mainAnimationIndex).getCurrentPhase().isAnimated() && (
-                (sourceBoardCell.x == x && sourceBoardCell.y == y)
-                || (targetBoardPoint.x == x && targetBoardPoint.y == y) );
+                sourceBoardCell.equals(objectLocation)
+                || targetBoardPoint.equals(objectLocation) );
 
     }
 }

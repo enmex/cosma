@@ -1,9 +1,10 @@
 package com.imit.cosma.gui.animation;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
@@ -64,13 +65,12 @@ public class ContentAnimation {
     }
 
     private void updateSpriteAnimation(AnimationData data){
-        int framesAmount = data.getFramesAmount();
-        this.frames = new Array<>(framesAmount);
-        for(int i = 1; i < framesAmount; i++){
-            this.frames.add(new TextureRegion(atlas,
-                    data.getAtlasCoords().x + data.getSpriteSize() * i, data.getAtlasCoords().y, data.getSpriteSize(), data.getSpriteSize()));
-        }
-        spriteAnimation = new Animation<>(Config.getInstance().ANIMATION_DURATION, this.frames);
+        String atlasPath = data.getAtlasPath();
+        String[] dirs = atlasPath.split("\\\\");
+        String region = dirs[dirs.length - 1];
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
+
+        spriteAnimation = new Animation<TextureRegion>(Config.getInstance().ANIMATION_DURATION, atlas.findRegion(region.split("\\.")[0]));
         spriteAnimation.setPlayMode(data.getPlayMode());
     }
 
@@ -101,7 +101,7 @@ public class ContentAnimation {
     public boolean isAnimated(){
         return animationType != null && animationType.isAnimated();
     }
-    public boolean isAnimatedObject(int x, int y){
-        return animationType != null && animationType.isAnimated(x, y);
+    public boolean isAnimatedObject(Point objectLocation){
+        return animationType != null && animationType.isAnimated(objectLocation);
     }
 }

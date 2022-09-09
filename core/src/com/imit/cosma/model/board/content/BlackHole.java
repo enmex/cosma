@@ -1,19 +1,17 @@
 package com.imit.cosma.model.board.content;
 
+import com.imit.cosma.config.Config;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.rules.move.IdleMovingStyle;
-import com.imit.cosma.model.rules.move.MovingStyle;
 
 public class BlackHole implements Content {
     private StepMode stepMode;
 
     private MoveType moveType;
-    private final Point atlasCoords = new Point(0, 0);
     private Side side;
 
     public BlackHole(){
@@ -37,8 +35,8 @@ public class BlackHole implements Content {
     }
 
     @Override
-    public Point getAtlasCoord() {
-        return atlasCoords;
+    public String getIdleAnimationPath() {
+        return Config.getInstance().BLACK_HOLE_IDLE_ATLAS_PATH;
     }
 
     @Override

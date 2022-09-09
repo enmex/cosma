@@ -2,10 +2,8 @@ package com.imit.cosma.model.spaceship;
 
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.pkg.sound.SoundType;
-import com.imit.cosma.util.Point;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.side.Side;
 
 import java.util.ArrayList;
@@ -113,8 +111,8 @@ public class Spaceship implements Content {
     }
 
     @Override
-    public Point getAtlasCoord() {
-        return skeleton.getAtlasCoord();
+    public String getIdleAnimationPath() {
+        return skeleton.getIdleAnimationPath();
     }
 
     @Override

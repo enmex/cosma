@@ -7,12 +7,17 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.state.BoardState;
 import com.imit.cosma.model.rules.side.Side;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class PlayingField {
 
@@ -45,6 +50,8 @@ public class PlayingField {
     private final ContentAnimation contentAnimation;
     private final Sprite sprite;
 
+    private List<AnimatedSprite> animatedSprites;
+
     public PlayingField(){
         board = new Board();
         board.initAI();
@@ -56,14 +63,19 @@ public class PlayingField {
 
         batch = new SpriteBatch();
         sprite = new Sprite(spaceships);
+
+        animatedSprites = new ArrayList<>(Config.getInstance().BOARD_SIZE * Config.getInstance().BOARD_SIZE);
+        for (Point location : board.getNonEmptyLocations()) {
+            animatedSprites.add(new AnimatedSprite(1 / 15f, board.getIdleAnimationPath(location), toScreenPoint(location)));
+        }
     }
 
-    public void render(Point touchPoint){
+    public void render(float delta, Point touchPoint){
         if(!touchPoint.hasZero() && !animationPlays() && !isEnemyTurn()) {
             drawSelected(touchPoint);
         }
         drawGrid();
-        drawBoardObjects();
+        drawBoardObjects(delta);
     }
 
     public void updateField(Point touchPoint) {
@@ -72,11 +84,20 @@ public class PlayingField {
         if(!animationPlays() && !isGameOver() && !board.isLoading()){
             BoardState boardState = board.getCurrentState(selected);
             if(!boardState.isIdle()) {
+                Path currentPath = board.getCurrentPath();
+
                 String atlasPath = boardState.affectsManyCells() ? Config.getInstance().SPACESHIP_PATH : Config.getInstance().GAME_OBJECTS_PATH;
                 TextureRegion atlas = new TextureRegion(new Texture(atlasPath));
 
                 if (boardState.affectsManyCells()) {
-                    contentAnimation.init(boardState.getAnimationType(), atlas, board.getCurrentPath(), cellWidth, cellHeight, boardY);
+                    for (AnimatedSprite sprite : animatedSprites) {
+                        if (sprite.getLocation().equals(currentPath.getSource())) {
+                            sprite.setLocation(currentPath.getTarget().clone());
+                            break;
+                        }
+                    }
+
+                    contentAnimation.init(boardState.getAnimationType(), atlas, currentPath, cellWidth, cellHeight, boardY);
                 } else {
                     contentAnimation.init(boardState.getAnimationType(), atlas, board.getCurrentContentSpawnPoint(), cellWidth, cellHeight, boardY);
                 }
@@ -110,12 +131,20 @@ public class PlayingField {
         }
     }
 
-    private void drawBoardObjects(){
+    private void drawBoardObjects(float delta){
         //draw idle objs
         batch.begin();
+        for (AnimatedSprite sprite : animatedSprites) {
+            if (!contentAnimation.isAnimatedObject(sprite.getLocation())) {
+                sprite.render(delta, cellWidth, cellHeight);
+            }
+        }
+
+        /*
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.containsContent(x, y) && !contentAnimation.isAnimatedObject(x, y)) {
+
                     Point atlas = board.getAtlasCoords(x, y);
                     sprite.setRegion(board.isGameObject(x, y) ? Config.getInstance().GAME_OBJECTS_ATLAS : Config.getInstance().SPACESHIP_ATLAS);
                     sprite.setRegion(atlas.x, atlas.y, 128, 128);
@@ -126,6 +155,8 @@ public class PlayingField {
                 }
             }
         }
+
+         */
         batch.end();
 
         //draw animated
@@ -161,6 +192,10 @@ public class PlayingField {
 
     public void dispose(){
         batch.dispose();
+
+        for (AnimatedSprite sprite : animatedSprites) {
+            sprite.dispose();
+        }
     }
 
     public void resize(int width, int height){
@@ -199,6 +234,10 @@ public class PlayingField {
 
     public boolean isGameOver() {
         return board.isGameOver();
+    }
+
+    private Point toScreenPoint(Point boardPoint) {
+        return new Point(boardPoint.x * cellWidth, boardPoint.y * cellHeight + boardY);
     }
 }
 

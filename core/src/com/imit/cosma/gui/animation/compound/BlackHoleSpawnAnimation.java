@@ -3,13 +3,10 @@ package com.imit.cosma.gui.animation.compound;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.simple.Idle;
+import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
-import com.imit.cosma.util.Vector;
 
 public class BlackHoleSpawnAnimation extends AnimationType{
     private Point spawnPoint;
@@ -27,8 +24,8 @@ public class BlackHoleSpawnAnimation extends AnimationType{
     }
 
     @Override
-    public boolean isAnimated(int x, int y) {
-        return spawnPoint.x == x && spawnPoint.y == y && datas.get(0).getCurrentPhase().isAnimated();
+    public boolean isAnimated(Point objectLocation) {
+        return spawnPoint.equals(objectLocation) && datas.get(0).getCurrentPhase().isAnimated();
     }
 
     @Override
@@ -43,11 +40,12 @@ public class BlackHoleSpawnAnimation extends AnimationType{
         AnimationData blackHoleSpawnAnimation = datas.get(0);
         blackHoleSpawnAnimation.currentPhase = 0;
 
-        Idle blackHoleSpawn = new Idle(new Point(128, 0), Animation.PlayMode.NORMAL, Config.getInstance().CONTENT_SPRITE_SIZE,
+
+        IdleAnimation blackHoleSpawn = new IdleAnimation("", Animation.PlayMode.NORMAL, Config.getInstance().CONTENT_SPRITE_SIZE,
                 0, 0, defaultRotation, 6, (int) getInstance().LONG_ANIMATION_DURATION);
         blackHoleSpawnAnimation.phases.add(blackHoleSpawn);
         if (victimSpaceship != null) {
-            Idle destruction = new Idle(victimSpaceship.getAtlasCoord(), Animation.PlayMode.NORMAL,
+            IdleAnimation destruction = new IdleAnimation(victimSpaceship.getIdleAnimationPath(), Animation.PlayMode.NORMAL,
                     getInstance().CONTENT_SPRITE_SIZE, 0, 0, 180 - defaultRotation);
             blackHoleSpawnAnimation.phases.add(destruction);
         }

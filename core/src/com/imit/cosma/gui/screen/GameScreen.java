@@ -65,7 +65,7 @@ public class GameScreen implements Screen {
             infoPanel.updateContent(playingField.getSelectedContent(), playingField.getTurn());
         }
 
-        playingField.render(player.getTouchPoint());
+        playingField.render(delta, player.getTouchPoint());
 
         infoPanel.render();
         //scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());

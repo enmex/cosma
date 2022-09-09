@@ -22,8 +22,8 @@ public class AnimationData {
         return path;
     }
 
-    public Point getAtlasCoords(){
-        return phases.get(currentPhase).getAtlasCoords();
+    public String getAtlasPath(){
+        return phases.get(currentPhase).getAtlasPath();
     }
     public int getSpriteSize(){
         return phases.get(currentPhase).getSpriteSize();

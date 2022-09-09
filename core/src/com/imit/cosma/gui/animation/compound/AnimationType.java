@@ -1,7 +1,6 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.utils.Array;
-import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
@@ -64,7 +63,7 @@ public abstract class AnimationType {
             }
         }
     }
-    public abstract boolean isAnimated(int x, int y);
+    public abstract boolean isAnimated(Point objectLocation);
     public boolean isAnimated(){
         return datas.size != 0 && targetBoardPoint.x != -1 && targetBoardPoint.y != -1;
     }

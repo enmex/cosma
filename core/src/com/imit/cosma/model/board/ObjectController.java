@@ -68,6 +68,17 @@ public class ObjectController {
         return spaceLocations;
     }
 
+    public List<Point> getNonEmptyLocations() {
+        List<Point> nonEmptyLocations = new ArrayList<>();
+        for (ContentType content : contentLocations.values()) {
+            if (content != ContentType.SPACE) {
+                nonEmptyLocations.add(contentLocations.getKey(content));
+            }
+        }
+
+        return nonEmptyLocations;
+    }
+
     public void clearGameObjects() {
         List<Point> gameObjects = getGameObjectsLocations();
         for (Point location : gameObjects) {
@@ -88,6 +99,10 @@ public class ObjectController {
     public void setGameObject(Point location) {
         contentLocations.removeKey(location);
         contentLocations.put(location, ContentType.GAME_OBJECT);
+    }
+
+    public boolean isEmpty(int x, int y) {
+        return contentLocations.getValue(new Point(x, y)) == ContentType.SPACE;
     }
 
     public void clear() {

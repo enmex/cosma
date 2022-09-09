@@ -6,8 +6,6 @@ import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.rules.move.IdleMovingStyle;
-import com.imit.cosma.model.rules.move.MovingStyle;
 
 public class Space implements Content{
 
@@ -36,8 +34,8 @@ public class Space implements Content{
     }
 
     @Override
-    public Point getAtlasCoord() {
-        return atlasCoords;
+    public String getIdleAnimationPath() {
+        return null;
     }
 
     @Override

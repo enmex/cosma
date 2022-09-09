@@ -2,11 +2,9 @@ package com.imit.cosma.gui.animation.compound;
 
 import static com.imit.cosma.config.Config.getInstance;
 
-import com.imit.cosma.gui.animation.simple.Movement;
-import com.imit.cosma.gui.animation.simple.Rotation;
+import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.board.content.Content;
-import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
@@ -14,13 +12,13 @@ import com.imit.cosma.util.Point;
 public class MovementAnimation extends AnimationType {
     private SoundType contentSoundType;
 
-    private final Point shipAtlasCoords;
+    private final String shipAtlasPath;
 
     private final int mainAnimatedObject;
 
     public MovementAnimation(Content content){
         super(getInstance().MOVEMENT_ANIMATION_PHASES, content.getSide().getDefaultRotation());
-        shipAtlasCoords = ((Spaceship)content).getSkeleton().getAtlasCoord();
+        shipAtlasPath = content.getIdleAnimationPath();
         mainAnimatedObject = 0;
         contentSoundType = content.getSoundType();
     }
@@ -31,26 +29,26 @@ public class MovementAnimation extends AnimationType {
         AnimationData animationData = datas.get(mainAnimatedObject);
         animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
 
-        Movement shipMovement = new Movement(shipAtlasCoords, getInstance().CONTENT_SPRITE_SIZE, contentSoundType);
+        com.imit.cosma.gui.animation.simple.MovementAnimation shipMovementAnimation = new com.imit.cosma.gui.animation.simple.MovementAnimation(shipAtlasPath, getInstance().CONTENT_SPRITE_SIZE, contentSoundType);
 
-        Rotation shipRotation = new Rotation(shipAtlasCoords, getInstance().CONTENT_SPRITE_SIZE,
+        RotationAnimation shipRotationAnimation = new RotationAnimation(shipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
                 defaultRotation, defaultRotation + animationData.rotation*getOrientation());
 
-        Rotation shipRotationToDefault = new Rotation(shipAtlasCoords, getInstance().CONTENT_SPRITE_SIZE,
+        RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(shipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
                 defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
 
-        shipRotation.init(screenPath.getSource().x, screenPath.getSource().y,
+        shipRotationAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
 
-        shipMovement.init(screenPath.getSource().x, screenPath.getSource().y,
+        shipMovementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, defaultRotation + animationData.rotation * getOrientation());
 
-        shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y,
+        shipRotationAnimationToDefault.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
 
-        animationData.phases.add(shipRotation);
-        animationData.phases.add(shipMovement);
-        animationData.phases.add(shipRotationToDefault);
+        animationData.phases.add(shipRotationAnimation);
+        animationData.phases.add(shipMovementAnimation);
+        animationData.phases.add(shipRotationAnimationToDefault);
 
         animationData.currentPhase = 0;
 
@@ -92,8 +90,8 @@ public class MovementAnimation extends AnimationType {
     }
 
     @Override
-    public boolean isAnimated(int x, int y) {
-        return targetBoardPoint.x == x && targetBoardPoint.y == y;
+    public boolean isAnimated(Point objectLocation) {
+        return targetBoardPoint.equals(objectLocation);
     }
 
     private int getOrientation(){

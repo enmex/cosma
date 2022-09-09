@@ -12,7 +12,7 @@ public class SpaceDebrisSpawnAnimation extends AnimationType {
     }
 
     @Override
-    public boolean isAnimated(int x, int y) {
+    public boolean isAnimated(Point objectLocation) {
         return false;
     }
 }

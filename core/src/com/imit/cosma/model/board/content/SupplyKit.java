@@ -1,9 +1,7 @@
 package com.imit.cosma.model.board.content;
 
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.rules.move.IdleMovingStyle;
 import com.imit.cosma.model.rules.move.MoveType;
-import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.pkg.sound.SoundType;
@@ -41,8 +39,8 @@ public abstract class SupplyKit implements Content {
     }
 
     @Override
-    public Point getAtlasCoord() {
-        return atlasPoint;
+    public String getIdleAnimationPath() {
+        return null;
     }
 
     @Override

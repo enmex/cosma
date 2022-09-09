@@ -3,12 +3,9 @@ package com.imit.cosma.model.board;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.BlackHole;
 import com.imit.cosma.model.board.content.Content;
-import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.model.rules.move.MoveType;
-import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.spaceship.Spaceship;
 
 public class Cell {
 
@@ -52,8 +49,8 @@ public class Cell {
         return content.getMoveType();
     }
 
-    public Point getAtlasCoord(){
-        return content.getAtlasCoord();
+    public String getIdleAnimationPath(){
+        return content.getIdleAnimationPath();
     }
 
     public StepMode getStepMode(){

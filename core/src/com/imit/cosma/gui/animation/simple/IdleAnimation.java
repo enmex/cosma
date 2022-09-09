@@ -1,13 +1,11 @@
 package com.imit.cosma.gui.animation.simple;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 //just frames of sprite
-public class Idle implements SimpleAnimation{
+public class IdleAnimation implements SimpleAnimation{
     private final PlayMode playMode;
 
     private float elapsedTime = 0f;
@@ -18,7 +16,7 @@ public class Idle implements SimpleAnimation{
 
     private float rotation;
 
-    private Point atlasCoords;
+    private String atlasPath;
     private int spriteSize;
 
     private final Vector offset;
@@ -27,8 +25,8 @@ public class Idle implements SimpleAnimation{
 
     private boolean isAnimated;
 
-    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, int duration, float rotation, int frames){
-        this.atlasCoords = atlasCoords;
+    public IdleAnimation(String atlasPath, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, int duration, float rotation, int frames){
+        this.atlasPath = atlasPath;
         this.playMode = playMode;
         this.spriteSize = spriteSize;
         offset = new Vector(targetOffsetX, targetOffsetY);
@@ -38,24 +36,24 @@ public class Idle implements SimpleAnimation{
         this.deltaTime = Config.getInstance().ANIMATION_DURATION / frames;
     }
 
-    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY){
-        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
+    public IdleAnimation(String atlasPath, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY){
+        this(atlasPath, playMode, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION);
     }
 
-    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
-        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 6); //TODO set in config
+    public IdleAnimation(String atlasPath, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, int duration){
+        this(atlasPath, playMode, spriteSize, targetOffsetX, targetOffsetY, duration, 0f, 6); //TODO set in config
     }
 
-    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
-        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION, rotation, frames);
+    public IdleAnimation(String atlasPath, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames){
+        this(atlasPath, playMode, spriteSize, targetOffsetX, targetOffsetY, Config.getInstance().INFINITY_ANIMATION_DURATION, rotation, frames);
     }
 
-    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames, int duration){
-        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, duration, rotation, frames);
+    public IdleAnimation(String atlasPath, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation, int frames, int duration){
+        this(atlasPath, playMode, spriteSize, targetOffsetX, targetOffsetY, duration, rotation, frames);
     }
 
-    public Idle(Point atlasCoords, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation){
-        this(atlasCoords, playMode, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION, rotation, 6);
+    public IdleAnimation(String atlasPath, PlayMode playMode, int spriteSize, int targetOffsetX, int targetOffsetY, float rotation){
+        this(atlasPath, playMode, spriteSize, targetOffsetX, targetOffsetY, (int) Config.getInstance().ANIMATION_DURATION, rotation, 6);
     }
 
     @Override
@@ -74,8 +72,8 @@ public class Idle implements SimpleAnimation{
     }
 
     @Override
-    public Point getAtlasCoords() {
-        return atlasCoords;
+    public String getAtlasPath() {
+        return atlasPath;
     }
 
     @Override

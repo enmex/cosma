@@ -5,14 +5,12 @@ import static com.imit.cosma.config.Config.getInstance;
 import com.imit.cosma.ai.AI;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.HealthKit;
-import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.model.board.content.SupplyKit;
 import com.imit.cosma.model.board.state.BlackHoleSpawnState;
 import com.imit.cosma.model.board.state.BoardState;
 import com.imit.cosma.model.board.state.IdleBoardState;
 import com.imit.cosma.model.board.state.ShipAttackingOneTargetBoardState;
 import com.imit.cosma.model.board.state.ShipMovingBoardState;
-import com.imit.cosma.model.board.state.SupplyKitSpawnState;
 import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.side.EnemySide;
 import com.imit.cosma.model.rules.side.NeutralSide;
@@ -250,7 +248,7 @@ public class Board implements Cloneable {
     }
 
     public boolean containsContent(int x, int y) {
-        return !(cells[y][x].getContent() instanceof Space);
+        return !objectController.isEmpty(x, y);
     }
 
     public boolean isShipSelected() {
@@ -362,6 +360,10 @@ public class Board implements Cloneable {
                 : emptySet;
     }
 
+    public List<Point> getNonEmptyLocations() {
+        return objectController.getNonEmptyLocations();
+    }
+
     private void setSelectedPosition(Point destination) {
         interacted.setContent(cells[destination.y][destination.x].getContent().clone());
 
@@ -374,8 +376,12 @@ public class Board implements Cloneable {
         interactedCells.add(destination.clone());
     }
 
-    public Point getAtlasCoords(int x, int y){
-        return cells[y][x].getAtlasCoord();
+    public String getIdleAnimationPath(int x, int y){
+        return cells[y][x].getIdleAnimationPath();
+    }
+
+    public String getIdleAnimationPath(Point target) {
+        return getIdleAnimationPath(target.x, target.y);
     }
 
     public boolean inBoard(Point target){

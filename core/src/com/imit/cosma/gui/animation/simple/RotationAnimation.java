@@ -7,7 +7,7 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
-public class Rotation implements SimpleAnimation{
+public class RotationAnimation implements SimpleAnimation{
     private float elapsedTime = 0f;
 
     private final int framesAmount = 4;
@@ -17,7 +17,7 @@ public class Rotation implements SimpleAnimation{
     private float currentRotation;
     private final float targetRotation;
 
-    private final Point atlasCoords;
+    private final String atlasPath;
     private final int spriteSize;
 
     private final Vector offset = new Vector();
@@ -25,7 +25,7 @@ public class Rotation implements SimpleAnimation{
     private boolean isAnimated;
     //initialRotation - текущий поворот
     //targetRotation - конечный поворот
-    public Rotation(Point atlasCoords, int spriteSize, float initialRotation, float targetRotation){
+    public RotationAnimation(String atlasPath, int spriteSize, float initialRotation, float targetRotation){
         currentRotation = initialRotation;
         rotationVelocity = Config.getInstance().ROTATION_VELOCITY; //скорость поворота
 
@@ -34,7 +34,7 @@ public class Rotation implements SimpleAnimation{
         }
         this.targetRotation = targetRotation;
 
-        this.atlasCoords = atlasCoords;
+        this.atlasPath = atlasPath;
         this.spriteSize = spriteSize;
 
     }
@@ -54,8 +54,8 @@ public class Rotation implements SimpleAnimation{
     }
 
     @Override
-    public Point getAtlasCoords() {
-        return atlasCoords;
+    public String getAtlasPath() {
+        return atlasPath;
     }
 
     @Override
