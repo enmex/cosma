@@ -27,7 +27,6 @@ public class PlayingField {
     private final Texture grid;
 
     private final Sprite selectedCell;
-    private final TextureRegion spaceships;
 
     private final SpriteBatch batch;
 
@@ -38,17 +37,16 @@ public class PlayingField {
     private int worldHeight = Gdx.graphics.getHeight();
 
     private int boardWidth = worldWidth;
-    private int boardHeight = worldWidth;
+    private int boardHeight = (int) (worldHeight * BOARD_TO_SCREEN_HEIGHT_RATIO);
 
     private int cellWidth = boardWidth/CELL_AMOUNT_WIDTH;
     private int cellHeight = boardHeight/CELL_AMOUNT_HEIGHT;
 
-    private int boardX = 0, boardY = 3 * cellHeight;
+    private int boardX = 0, boardY = (int) (worldHeight*SCREEN_OFFSET);
 
     private final Board board;
 
     private final ContentAnimation contentAnimation;
-    private final Sprite sprite;
 
     private List<AnimatedSprite> animatedSprites;
 
@@ -59,14 +57,14 @@ public class PlayingField {
 
         grid = new Texture(Config.getInstance().GRID_PATH);
         selectedCell = new Sprite(new Texture(Config.getInstance().SELECTED_CELL_PATH));
-        spaceships = new TextureRegion(new Texture(Config.getInstance().SPACESHIP_PATH));
 
         batch = new SpriteBatch();
-        sprite = new Sprite(spaceships);
 
         animatedSprites = new ArrayList<>(Config.getInstance().BOARD_SIZE * Config.getInstance().BOARD_SIZE);
         for (Point location : board.getNonEmptyLocations()) {
-            animatedSprites.add(new AnimatedSprite(1 / 15f, board.getIdleAnimationPath(location), toScreenPoint(location)));
+            animatedSprites.add(new AnimatedSprite(1 / 2f,
+                    board.getIdleAnimationPath(location), toScreenPoint(location),
+                    board.getDefaultRotation(location)));
         }
     }
 
@@ -91,8 +89,8 @@ public class PlayingField {
 
                 if (boardState.affectsManyCells()) {
                     for (AnimatedSprite sprite : animatedSprites) {
-                        if (sprite.getLocation().equals(currentPath.getSource())) {
-                            sprite.setLocation(currentPath.getTarget().clone());
+                        if (sprite.getLocationOnScreen().equals(currentPath.getSource())) {
+                            sprite.setLocationOnScreen(currentPath.getTarget().clone());
                             break;
                         }
                     }
@@ -118,6 +116,7 @@ public class PlayingField {
 
     private void drawGrid(){
         batch.begin();
+        System.out.println("grid " + boardY);
         batch.draw(grid, boardX,  boardY, boardWidth, boardHeight);
         batch.end();
     }
@@ -125,7 +124,8 @@ public class PlayingField {
     private void drawSelected(Point touchPoint){
         if(inBoard(touchPoint)) {
             batch.begin();
-            batch.draw(selectedCell, getBoardX(touchPoint.x), getBoardY(worldHeight - touchPoint.y), cellWidth, cellHeight);
+            batch.draw(selectedCell, getBoardX(touchPoint.x),
+                    getBoardY(worldHeight - touchPoint.y), cellWidth, cellHeight);
             batch.end();
             drawAvailableCells();
         }
@@ -133,31 +133,9 @@ public class PlayingField {
 
     private void drawBoardObjects(float delta){
         //draw idle objs
-        batch.begin();
         for (AnimatedSprite sprite : animatedSprites) {
-            if (!contentAnimation.isAnimatedObject(sprite.getLocation())) {
-                sprite.render(delta, cellWidth, cellHeight);
-            }
+            sprite.render(delta, cellWidth, cellHeight);
         }
-
-        /*
-        for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
-            for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
-                if(board.containsContent(x, y) && !contentAnimation.isAnimatedObject(x, y)) {
-
-                    Point atlas = board.getAtlasCoords(x, y);
-                    sprite.setRegion(board.isGameObject(x, y) ? Config.getInstance().GAME_OBJECTS_ATLAS : Config.getInstance().SPACESHIP_ATLAS);
-                    sprite.setRegion(atlas.x, atlas.y, 128, 128);
-                    sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
-                    sprite.setBounds(cellWidth * x, cellHeight * y + boardY, cellWidth, cellHeight);
-                    sprite.setRotation(board.getDefaultRotation(x, y));
-                    sprite.draw(batch);
-                }
-            }
-        }
-
-         */
-        batch.end();
 
         //draw animated
         if(contentAnimation.isAnimated()) {
@@ -237,6 +215,7 @@ public class PlayingField {
     }
 
     private Point toScreenPoint(Point boardPoint) {
+        System.out.println("toScreenPoint " + boardY);
         return new Point(boardPoint.x * cellWidth, boardPoint.y * cellHeight + boardY);
     }
 }

@@ -37,9 +37,9 @@ public class ObjectController {
 
     public List<Point> getGameObjectsLocations() {
         List<Point> objectsLocations = new ArrayList<>();
-        for (ContentType content : contentLocations.values()) {
-            if (content == ContentType.GAME_OBJECT) {
-                objectsLocations.add(contentLocations.getKey(content));
+        for (Point location : contentLocations.keySet()) {
+            if (contentLocations.getValue(location) == ContentType.GAME_OBJECT) {
+                objectsLocations.add(location);
             }
         }
 
@@ -48,9 +48,9 @@ public class ObjectController {
 
     public List<Point> getSpaceshipsLocations() {
         List<Point> shipsLocations = new ArrayList<>();
-        for (ContentType content : contentLocations.values()) {
-            if (content == ContentType.SPACESHIP) {
-                shipsLocations.add(contentLocations.getKey(content));
+        for (Point location : contentLocations.keySet()) {
+            if (contentLocations.getValue(location) == ContentType.SPACESHIP) {
+                shipsLocations.add(location);
             }
         }
 
@@ -59,9 +59,9 @@ public class ObjectController {
 
     public List<Point> getSpaceLocations() {
         List<Point> spaceLocations = new ArrayList<>();
-        for (ContentType content : contentLocations.values()) {
-            if (content == ContentType.SPACE) {
-                spaceLocations.add(contentLocations.getKey(content));
+        for (Point location : contentLocations.keySet()) {
+            if (contentLocations.getValue(location) == ContentType.SPACE) {
+                spaceLocations.add(location);
             }
         }
 
@@ -70,9 +70,9 @@ public class ObjectController {
 
     public List<Point> getNonEmptyLocations() {
         List<Point> nonEmptyLocations = new ArrayList<>();
-        for (ContentType content : contentLocations.values()) {
-            if (content != ContentType.SPACE) {
-                nonEmptyLocations.add(contentLocations.getKey(content));
+        for (Point location : contentLocations.keySet()) {
+            if (contentLocations.getValue(location) != ContentType.SPACE) {
+                nonEmptyLocations.add(location);
             }
         }
 

@@ -127,7 +127,7 @@ public class Board implements Cloneable {
         }
 
         //initialise space cells
-        for (int y = getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE; y++) {
+        for (int y = getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE - getInstance().SPACESHIP_ROWS; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
                 objectController.addSpace(x, y);
@@ -406,6 +406,10 @@ public class Board implements Cloneable {
 
     public float getDefaultRotation(int x, int y){
         return cells[y][x].getSide().getDefaultRotation();
+    }
+
+    public float getDefaultRotation(Point target) {
+        return getDefaultRotation(target.x, target.y);
     }
 
     public void setSelectedEnemyTurn(Point target) {

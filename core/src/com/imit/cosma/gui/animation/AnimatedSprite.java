@@ -2,6 +2,7 @@ package com.imit.cosma.gui.animation;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,22 +10,27 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 
 public class AnimatedSprite {
-    private final float frameTime;
     private float elapsedTime;
-    private SpriteBatch batch;
-    private Animation<TextureRegion> animation;
+    private final SpriteBatch batch;
+    private final Sprite sprite;
+    private final Animation<TextureRegion> animation;
 
-    private Point location;
+    private final float rotation;
 
-    public AnimatedSprite(float frameTime, String atlasPath, Point locationOnScreen) {
-        this.frameTime = frameTime;
-        this.location = locationOnScreen;
+    private Point locationOnScreen;
+
+    public AnimatedSprite(float frameTime, String atlasPath, Point locationOnScreen, float rotation) {
+        this.locationOnScreen = locationOnScreen;
+        this.rotation = rotation;
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
-        animation = new Animation<TextureRegion>(frameTime, atlas.findRegion(Config.getInstance().IDLE_ANIMATION_REGION_NAME));
+        animation = new Animation<TextureRegion>(frameTime,
+                atlas.findRegions(Config.getInstance().IDLE_ANIMATION_REGION_NAME));
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
         batch = new SpriteBatch();
+
+        sprite = new Sprite();
     }
 
     public void render(float delta, int width, int height) {
@@ -32,7 +38,12 @@ public class AnimatedSprite {
         TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
 
         batch.begin();
-        batch.draw(currentFrame, location.x, location.y, width, height);
+        sprite.setRegion(currentFrame);
+        sprite.setOrigin((float) width / 2, (float) height / 2);
+        sprite.setBounds(locationOnScreen.x, locationOnScreen.y, width, height);
+        sprite.setRotation(rotation);
+        sprite.draw(batch);
+
         batch.end();
     }
 
@@ -40,11 +51,11 @@ public class AnimatedSprite {
         batch.dispose();
     }
 
-    public void setLocation(Point location) {
-        this.location = location;
+    public void setLocationOnScreen(Point locationOnScreen) {
+        this.locationOnScreen = locationOnScreen;
     }
 
-    public Point getLocation() {
-        return location;
+    public Point getLocationOnScreen() {
+        return locationOnScreen;
     }
 }

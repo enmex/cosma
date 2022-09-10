@@ -80,8 +80,10 @@ public class ContentAnimation {
                 updateSpriteAnimation(data);
                 batch.begin();
 
-                sprite.setRegion(spriteAnimation.getKeyFrame(data.getElapsedTime(),
-                        data.getPlayMode() != Animation.PlayMode.NORMAL));
+                TextureRegion currentFrame = spriteAnimation.getKeyFrame(data.getElapsedTime(),
+                        data.getPlayMode() != Animation.PlayMode.NORMAL);
+
+                sprite.setRegion(currentFrame);
 
                 sprite.setBounds(data.getPath().getSource().x + data.getOffset().getX(),
                         data.getPath().getSource().y + data.getOffset().getY(), cellWidth, cellHeight);
