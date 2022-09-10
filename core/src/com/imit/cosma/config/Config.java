@@ -35,6 +35,7 @@ public class Config {
     public int BOARD_SIZE = 8;
     public int SPACESHIP_ROWS = 1;
     public int MOVEMENT_ANIMATION_PHASES = 3;
+    public int MOVEMENT_VELOCITY = 2;
     public String BACKGROUND_PATH = "background.png";
     public String GRID_PATH = "grid.png";
     public String SPACESHIP_PATH = "spaceships.png";
@@ -74,6 +75,11 @@ public class Config {
     public String DREADNOUGHT_DESTRUCTION_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "destruction_dreadnought.atlas";
     public String BATTLESHIP_DESTRUCTION_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "destruction_battleship.atlas";
 
+    public String CORVETTE_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_corvette.atlas";
+    public String DESTROYER_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_destroyer.atlas";
+    public String DREADNOUGHT_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_dreadnought.atlas";
+    public String BATTLESHIP_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_battleship.atlas";
+
     public String BLACK_HOLE_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_black_hole.atlas";
     public String HEALTH_KIT_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_health_kit.atlas";
     public String DAMAGE_KIT_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_damage_kit.atlas";
@@ -89,6 +95,9 @@ public class Config {
     public String TORPEDO_LAUNCHER_DESTRUCTION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "";
 
     public String IDLE_ANIMATION_REGION_NAME = "idle";
+    public String MOVEMENT_ANIMATION_REGION_NAME = "move";
+
+    public String BLACK_HOLE_SPAWN_ATLAS_PATH = "";
 
     private Config(){
         Element element = getElement();

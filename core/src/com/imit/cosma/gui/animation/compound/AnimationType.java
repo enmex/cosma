@@ -71,6 +71,8 @@ public abstract class AnimationType {
         return datas;
     }
 
+    public abstract String getAtlasPath();
+
     public void clear(){
         datas.clear();
         targetBoardPoint.set(-1, -1);

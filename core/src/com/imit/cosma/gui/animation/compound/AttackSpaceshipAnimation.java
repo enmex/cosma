@@ -5,7 +5,7 @@ import static com.imit.cosma.config.Config.*;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
-import com.imit.cosma.gui.animation.simple.MovementAnimation;
+import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
@@ -85,18 +85,18 @@ public class AttackSpaceshipAnimation extends AnimationType {
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
         for(Weapon weapon : weaponList){
-            MovementAnimation movementAnimation = new MovementAnimation(weapon.getShotAnimationPath(), getInstance().SHOT_SPRITE_SIZE, weapon.getSound());
+            SimpleMovementAnimation simpleMovementAnimation = new SimpleMovementAnimation(weapon.getShotAnimationPath(), getInstance().SHOT_SPRITE_SIZE, weapon.getSound());
             IdleAnimation explosion = new IdleAnimation(weapon.getExplosionAnimationPath(), Animation.PlayMode.NORMAL, getInstance().SHOT_SPRITE_SIZE,
                     screenPath.getTarget().x - screenPath.getSource().x,
                     screenPath.getTarget().y - screenPath.getSource().y);
 
-            movementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
+            simpleMovementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
                     screenPath.getTarget().x, screenPath.getTarget().y,
                     defaultRotation
                             + datas.get(mainAnimationIndex).rotation
                             * Math.signum(screenPath.getSource().x
                             - screenPath.getTarget().x));
-            datas.get(mainAnimationIndex).phases.add(movementAnimation);
+            datas.get(mainAnimationIndex).phases.add(simpleMovementAnimation);
             datas.get(mainAnimationIndex).phases.add(explosion);
         }
 
@@ -165,5 +165,10 @@ public class AttackSpaceshipAnimation extends AnimationType {
                 sourceBoardCell.equals(objectLocation)
                 || targetBoardPoint.equals(objectLocation) );
 
+    }
+
+    @Override
+    public String getAtlasPath() {
+        return null;
     }
 }

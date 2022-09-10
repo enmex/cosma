@@ -1,8 +1,9 @@
 package com.imit.cosma.model.board.state;
 
 import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.MovementAnimation;
+import com.imit.cosma.gui.animation.compound.ShipMovementAnimation;
 import com.imit.cosma.model.board.Cell;
+import com.imit.cosma.model.spaceship.Spaceship;
 
 public class ShipMovingBoardState implements BoardState{
     private Cell cell;
@@ -13,7 +14,7 @@ public class ShipMovingBoardState implements BoardState{
 
     @Override
     public AnimationType getAnimationType() {
-        return new MovementAnimation(cell.getContent());
+        return new ShipMovementAnimation((Spaceship) cell.getContent());
     }
 
     @Override

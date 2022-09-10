@@ -8,6 +8,7 @@ public interface SimpleAnimation {
     void init(int fromX, int fromY, int toX, int toY, float rotation);
     void render();
     String getAtlasPath();
+    String getRegionName();
     int getSpriteSize();
     float getRotation();
     boolean isAnimated();

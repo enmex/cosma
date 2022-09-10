@@ -34,6 +34,11 @@ public class BlackHoleSpawnAnimation extends AnimationType{
     }
 
     @Override
+    public String getAtlasPath() {
+        return getInstance().BLACK_HOLE_SPAWN_ATLAS_PATH;
+    }
+
+    @Override
     public void init(Point boardPoint, Point screenPoint) {
         super.init(boardPoint, screenPoint);
 

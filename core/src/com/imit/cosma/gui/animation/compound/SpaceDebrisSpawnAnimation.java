@@ -15,4 +15,9 @@ public class SpaceDebrisSpawnAnimation extends AnimationType {
     public boolean isAnimated(Point objectLocation) {
         return false;
     }
+
+    @Override
+    public String getAtlasPath() {
+        return null;
+    }
 }

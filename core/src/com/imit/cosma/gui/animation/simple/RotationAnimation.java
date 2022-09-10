@@ -94,6 +94,11 @@ public class RotationAnimation implements SimpleAnimation{
     }
 
     @Override
+    public String getRegionName() {
+        return getInstance().IDLE_ANIMATION_REGION_NAME;
+    }
+
+    @Override
     public void setAnimated(){
         isAnimated = true;
     }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationData;
 import com.imit.cosma.gui.animation.compound.AnimationType;
@@ -14,14 +13,12 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 public class ContentAnimation {
-    private TextureRegion atlas;
 
     private Animation<TextureRegion> spriteAnimation;
-    private Array<TextureRegion> frames;
 
     private AnimationType animationType;
-    private SpriteBatch batch;
-    private Sprite sprite;
+    private final SpriteBatch batch;
+    private final Sprite sprite;
 
     private int cellWidth, cellHeight;
 
@@ -34,31 +31,28 @@ public class ContentAnimation {
         this(null);
     }
 
-    private void setAnimationType(AnimationType animationType, TextureRegion atlas){
+    private void setAnimationType(AnimationType animationType){
         this.animationType = animationType;
-        this.atlas = atlas;
-        sprite.setRegion(atlas);
     }
 
-    public void init(AnimationType animationType, TextureRegion atlas, Path boardPath, int cellWidth, int cellHeight, int boardY){
+    public void init(AnimationType animationType, Path boardPath, int cellWidth, int cellHeight, int boardY){
         Path screenPath = new Path(new Point(boardPath.getSource().x * cellWidth,
                 boardPath.getSource().y * cellHeight + boardY),
                 new Point(boardPath.getTarget().x * cellWidth,
                         boardPath.getTarget().y * cellHeight + boardY));
 
         animationType.init(boardPath, screenPath);
-        setAnimationType(animationType, atlas);
+        setAnimationType(animationType);
 
         this.cellHeight = cellHeight;
         this.cellWidth = cellWidth;
-
     }
 
-    public void init(AnimationType animationType, TextureRegion atlas, Point boardPoint, int cellWidth, int cellHeight, int boardY) {
+    public void init(AnimationType animationType, Point boardPoint, int cellWidth, int cellHeight, int boardY) {
         Point screenPoint = new Point(boardPoint.x * cellWidth,
                 boardPoint.y * cellHeight + boardY);
         animationType.init(boardPoint, screenPoint);
-        setAnimationType(animationType, atlas);
+        setAnimationType(animationType);
 
         this.cellHeight = cellHeight;
         this.cellWidth = cellWidth;
@@ -66,11 +60,9 @@ public class ContentAnimation {
 
     private void updateSpriteAnimation(AnimationData data){
         String atlasPath = data.getAtlasPath();
-        String[] dirs = atlasPath.split("\\\\");
-        String region = dirs[dirs.length - 1];
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
 
-        spriteAnimation = new Animation<TextureRegion>(Config.getInstance().ANIMATION_DURATION, atlas.findRegion(region.split("\\.")[0]));
+        spriteAnimation = new Animation<TextureRegion>(Config.getInstance().ANIMATION_DURATION, atlas.findRegions(data.getRegionName()));
         spriteAnimation.setPlayMode(data.getPlayMode());
     }
 
@@ -94,7 +86,7 @@ public class ContentAnimation {
                 batch.end();
             }
         }
-        setAnimationType(animationType, atlas);
+        setAnimationType(animationType);
         if(isAnimated()) {
             animationType.render();
         }
@@ -103,6 +95,7 @@ public class ContentAnimation {
     public boolean isAnimated(){
         return animationType != null && animationType.isAnimated();
     }
+
     public boolean isAnimatedObject(Point objectLocation){
         return animationType != null && animationType.isAnimated(objectLocation);
     }

@@ -25,6 +25,11 @@ public class AnimationData {
     public String getAtlasPath(){
         return phases.get(currentPhase).getAtlasPath();
     }
+
+    public String getRegionName() {
+        return phases.get(currentPhase).getRegionName();
+    }
+
     public int getSpriteSize(){
         return phases.get(currentPhase).getSpriteSize();
     }

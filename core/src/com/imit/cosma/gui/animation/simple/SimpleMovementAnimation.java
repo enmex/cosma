@@ -3,12 +3,13 @@ package com.imit.cosma.gui.animation.simple;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.pkg.sound.SoundEffect;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
-public class MovementAnimation implements SimpleAnimation{
+public class SimpleMovementAnimation implements SimpleAnimation{
     private SoundEffect movementSound;
 
     private float elapsedTime = 0f;
@@ -26,7 +27,7 @@ public class MovementAnimation implements SimpleAnimation{
     private String atlasPath;
     private int spriteSize;
 
-    public MovementAnimation(String atlasPath, int spriteSize, SoundType soundType){
+    public SimpleMovementAnimation(String atlasPath, int spriteSize, SoundType soundType){
         offset = new Vector();
         this.atlasPath = atlasPath;
         this.spriteSize = spriteSize;
@@ -41,9 +42,11 @@ public class MovementAnimation implements SimpleAnimation{
         distance = (toX - fromX) * (toX - fromX) + (toY - fromY) * (toY - fromY);
         distance = (int) Math.sqrt(distance);
 
-        moveVelocityX = (int) (distance * Math.signum(toX - fromX) / getInstance().ANIMATION_DURATION); //x
-        moveVelocityY = (int) (coefficient != 0 ? distance * coefficient * Math.signum(toY - fromY) / getInstance().ANIMATION_DURATION
-                : distance * Math.signum(toY - fromY) / getInstance().ANIMATION_DURATION);
+        float velocity = getInstance().MOVEMENT_VELOCITY;
+
+        moveVelocityX = (int) (velocity * Math.signum(toX - fromX)); //x
+        moveVelocityY = (int) (coefficient != 0 ? velocity * coefficient * Math.signum(toY - fromY)
+                : velocity * Math.signum(toY - fromY));
 
         departure = new Point(fromX, fromY);
         destination = new Point(toX, toY);
@@ -99,6 +102,11 @@ public class MovementAnimation implements SimpleAnimation{
 
     public boolean isAnimated() {
         return isAnimated;
+    }
+
+    @Override
+    public String getRegionName() {
+        return getInstance().MOVEMENT_ANIMATION_REGION_NAME;
     }
 
     public void setAnimated() {

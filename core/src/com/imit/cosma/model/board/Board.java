@@ -164,7 +164,7 @@ public class Board implements Cloneable {
             } else if (turn instanceof EnemySide) {
                 return calculateCurrentEnemyState();
             } else {
-                return calculateCurrentOtherState();
+                return new IdleBoardState();
             }
         }
         return new IdleBoardState();

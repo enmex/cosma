@@ -9,19 +9,19 @@ public class IdleAnimation implements SimpleAnimation{
     private final PlayMode playMode;
 
     private float elapsedTime = 0f;
-    private float deltaTime;
+    private final float deltaTime;
 
-    private int duration;
+    private final int duration;
     private float current = 0;
 
     private float rotation;
 
-    private String atlasPath;
-    private int spriteSize;
+    private final String atlasPath;
+    private final int spriteSize;
 
     private final Vector offset;
 
-    private int frames;
+    private final int frames;
 
     private boolean isAnimated;
 
@@ -109,6 +109,11 @@ public class IdleAnimation implements SimpleAnimation{
     @Override
     public float getElapsedTime() {
         return elapsedTime += deltaTime;
+    }
+
+    @Override
+    public String getRegionName() {
+        return Config.getInstance().IDLE_ANIMATION_REGION_NAME;
     }
 
     @Override

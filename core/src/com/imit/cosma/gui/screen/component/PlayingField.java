@@ -84,20 +84,17 @@ public class PlayingField {
             if(!boardState.isIdle()) {
                 Path currentPath = board.getCurrentPath();
 
-                String atlasPath = boardState.affectsManyCells() ? Config.getInstance().SPACESHIP_PATH : Config.getInstance().GAME_OBJECTS_PATH;
-                TextureRegion atlas = new TextureRegion(new Texture(atlasPath));
-
                 if (boardState.affectsManyCells()) {
                     for (AnimatedSprite sprite : animatedSprites) {
-                        if (sprite.getLocationOnScreen().equals(currentPath.getSource())) {
-                            sprite.setLocationOnScreen(currentPath.getTarget().clone());
+                        if (sprite.getLocationOnScreen().equals(toScreenPoint(currentPath.getSource()))) {
+                            sprite.setLocationOnScreen(toScreenPoint(currentPath.getTarget()));
                             break;
                         }
                     }
 
-                    contentAnimation.init(boardState.getAnimationType(), atlas, currentPath, cellWidth, cellHeight, boardY);
+                    contentAnimation.init(boardState.getAnimationType(), currentPath, cellWidth, cellHeight, boardY);
                 } else {
-                    contentAnimation.init(boardState.getAnimationType(), atlas, board.getCurrentContentSpawnPoint(), cellWidth, cellHeight, boardY);
+                    contentAnimation.init(boardState.getAnimationType(), board.getCurrentContentSpawnPoint(), cellWidth, cellHeight, boardY);
                 }
 
             }
@@ -134,7 +131,9 @@ public class PlayingField {
     private void drawBoardObjects(float delta){
         //draw idle objs
         for (AnimatedSprite sprite : animatedSprites) {
-            sprite.render(delta, cellWidth, cellHeight);
+            if (!contentAnimation.isAnimatedObject(sprite.getLocationOnScreen())) {
+                sprite.render(delta, cellWidth, cellHeight);
+            }
         }
 
         //draw animated
@@ -215,7 +214,6 @@ public class PlayingField {
     }
 
     private Point toScreenPoint(Point boardPoint) {
-        System.out.println("toScreenPoint " + boardY);
         return new Point(boardPoint.x * cellWidth, boardPoint.y * cellHeight + boardY);
     }
 }
