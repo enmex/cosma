@@ -52,7 +52,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         moveVelocityX = (float) (Math.sin(radians) * velocity);
         moveVelocityY = (float) (Math.cos(radians) * velocity);
-
+       // moveVelocityY = 0.61f;
         departure = new Point(fromX, fromY);
         destination = new Point(toX, toY);
 
