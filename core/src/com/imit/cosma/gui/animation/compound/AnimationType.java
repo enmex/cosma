@@ -1,12 +1,12 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.utils.Array;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
 
 public abstract class AnimationType {
-    protected final Vector normalVector;
     protected float defaultRotation;
 
     protected Array<AnimationData> datas;
@@ -17,7 +17,6 @@ public abstract class AnimationType {
 
     protected AnimationType(int phasesAmount, float initialRotation){
         this.defaultRotation = initialRotation;
-        normalVector = new Vector(0, (int) Math.cos(Math.toRadians(initialRotation)));
 
         datas = new Array<>();
         this.phasesAmount = phasesAmount;
@@ -26,10 +25,19 @@ public abstract class AnimationType {
     public void init(Path boardPath, Path screenPath){
         targetBoardPoint = boardPath.getTarget();
 
-        Vector destinationVector = new Vector(screenPath.getSource(), screenPath.getTarget());
+        float orientation = (float) Math.cos(Math.toRadians(defaultRotation));
+
+        Vector normalVector = new Vector(0, orientation);
+        Vector destinationVector = new Vector(
+                screenPath.getTarget().x - screenPath.getSource().x,
+                orientation * (screenPath.getTarget().y - screenPath.getSource().y)
+        );
+
+        //normalVector = new Vector(screenPath.getTarget().x, (float) Math.cos(Math.toRadians(defaultRotation)));
 
         AnimationData data = new AnimationData();//main animated object
         data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector)));
+
         data.offset = new Vector();
         data.path = screenPath;
         data.phases = new Array<>(phasesAmount);

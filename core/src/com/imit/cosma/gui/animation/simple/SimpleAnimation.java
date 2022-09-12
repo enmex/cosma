@@ -9,7 +9,7 @@ public interface SimpleAnimation {
     void render();
     String getAtlasPath();
     String getRegionName();
-    int getSpriteSize();
+
     float getRotation();
     boolean isAnimated();
     void setAnimated();
@@ -17,7 +17,6 @@ public interface SimpleAnimation {
     Vector getOffset();
 
     PlayMode getPlayMode();
-    int getFramesAmount();
 
     float getElapsedTime();
 }

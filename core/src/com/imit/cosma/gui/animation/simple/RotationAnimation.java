@@ -2,16 +2,13 @@ package com.imit.cosma.gui.animation.simple;
 
 import static com.imit.cosma.config.Config.getInstance;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class RotationAnimation implements SimpleAnimation{
-    private float elapsedTime = 0f;
-
-    private final int framesAmount = 4;
-    private final float deltaTime = getInstance().ANIMATION_DURATION / framesAmount;
+    private float elapsedTime;
 
     private float rotationVelocity;
     private float currentRotation;
@@ -37,6 +34,7 @@ public class RotationAnimation implements SimpleAnimation{
         this.atlasPath = atlasPath;
         this.spriteSize = spriteSize;
 
+        elapsedTime = 0f;
     }
 
     @Override
@@ -59,11 +57,6 @@ public class RotationAnimation implements SimpleAnimation{
     }
 
     @Override
-    public int getSpriteSize() {
-        return spriteSize;
-    }
-
-    @Override
     public float getRotation() {
         return currentRotation;
     }
@@ -76,16 +69,6 @@ public class RotationAnimation implements SimpleAnimation{
     @Override
     public PlayMode getPlayMode() {
         return PlayMode.LOOP;
-    }
-
-    @Override
-    public int getFramesAmount() {
-        return framesAmount;
-    }
-
-    @Override
-    public float getElapsedTime() {
-        return elapsedTime += deltaTime;
     }
 
     @Override
@@ -110,5 +93,10 @@ public class RotationAnimation implements SimpleAnimation{
 
     private boolean isArrived(){
         return rotationVelocity < 0 ? currentRotation > targetRotation : currentRotation < targetRotation;
+    }
+
+    @Override
+    public float getElapsedTime() {
+        return elapsedTime += Gdx.graphics.getDeltaTime();
     }
 }

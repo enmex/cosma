@@ -14,6 +14,7 @@ import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
+import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -133,7 +134,6 @@ public class ArtificialBoard implements Cloneable {
 
     private void setSelected(Point target) {
         selectedPoint.set(target);
-
         if(isShip(selectedPoint)) {
             availableForAttack = getStepMode(selectedPoint) == StepMode.ATTACK
                     ? Attack.getAvailable(this, selectedPoint)

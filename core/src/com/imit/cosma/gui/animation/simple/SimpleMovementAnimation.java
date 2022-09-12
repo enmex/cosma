@@ -2,8 +2,8 @@ package com.imit.cosma.gui.animation.simple;
 
 import static com.imit.cosma.config.Config.getInstance;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
-import com.imit.cosma.config.Config;
 import com.imit.cosma.pkg.sound.SoundEffect;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
@@ -13,19 +13,19 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private SoundEffect movementSound;
 
     private float elapsedTime = 0f;
-    private final int framesAmount = 4;
-    private final float deltaTime = getInstance().ANIMATION_DURATION / framesAmount;
 
     private float rotation;
-    private double distance;
-    private int moveVelocityX, moveVelocityY;
+    private double distance, traveledDistance;
+    private float moveVelocityX, moveVelocityY;
     private boolean isAnimated;
 
-    private Vector offset;
+    private final Vector offset;
     private Point departure, destination;
 
-    private String atlasPath;
-    private int spriteSize;
+    private final String atlasPath;
+    private final int spriteSize;
+
+    private Vector from;
 
     public SimpleMovementAnimation(String atlasPath, int spriteSize, SoundType soundType){
         offset = new Vector();
@@ -37,16 +37,21 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     @Override
     public void init(int fromX, int fromY, int toX, int toY, float rotation) {
         this.rotation = rotation;
-        double coefficient = Math.floor(Math.abs(90 - rotation)) != 90 ? Math.abs(Math.tan(Math.toRadians(90 - rotation))) : 1; //y=kx, k=tg(a)
+        from = new Vector(fromX, fromY);
 
         distance = (toX - fromX) * (toX - fromX) + (toY - fromY) * (toY - fromY);
-        distance = (int) Math.sqrt(distance);
+        distance = Math.sqrt(distance);
 
-        float velocity = getInstance().MOVEMENT_VELOCITY;
+        traveledDistance = 0;
 
-        moveVelocityX = (int) (velocity * Math.signum(toX - fromX)); //x
-        moveVelocityY = (int) (coefficient != 0 ? velocity * coefficient * Math.signum(toY - fromY)
-                : velocity * Math.signum(toY - fromY));
+        float duration = getInstance().ANIMATION_DURATION;
+
+        double velocity = distance / duration; //x
+
+        double radians = Math.toRadians(Math.abs(rotation + 90));
+
+        moveVelocityX = (float) (Math.sin(radians) * velocity);
+        moveVelocityY = (float) (Math.cos(radians) * velocity);
 
         departure = new Point(fromX, fromY);
         destination = new Point(toX, toY);
@@ -63,21 +68,19 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         }
         else {
             offset.add(moveVelocityX, moveVelocityY);
+            System.out.println(from);
+            traveledDistance += Math.sqrt(moveVelocityX * moveVelocityX + moveVelocityY * moveVelocityY);
+            from.add(moveVelocityX, moveVelocityY);
         }
     }
 
     private boolean isArrived(){
-        return Math.sqrt(offset.getX() * offset.getX() + offset.getY() * offset.getY()) >= distance;
+        return traveledDistance >= distance;
     }
 
     @Override
     public String getAtlasPath() {
         return atlasPath;
-    }
-
-    @Override
-    public int getSpriteSize() {
-        return spriteSize;
     }
 
     @Override
@@ -91,13 +94,8 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     }
 
     @Override
-    public int getFramesAmount() {
-        return framesAmount;
-    }
-
-    @Override
     public float getElapsedTime() {
-        return elapsedTime += deltaTime;
+        return elapsedTime += Gdx.graphics.getDeltaTime();
     }
 
     public boolean isAnimated() {

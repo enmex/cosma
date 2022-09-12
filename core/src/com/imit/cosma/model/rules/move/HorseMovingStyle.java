@@ -32,8 +32,8 @@ public class HorseMovingStyle implements MovingStyle {
         int y = target.y;
 
         for(Vector vector : offsets){
-            if(board.isPassable(x + vector.getX(), y + vector.getY())){
-                availablePoints.add(new Point(x + vector.getX(), y + vector.getY()));
+            if(board.isPassable((int) (x + vector.getX()), (int) (y + vector.getY()))){
+                availablePoints.add(new Point((int)(x + vector.getX()), (int)(y + vector.getY())));
             }
         }
 
@@ -48,8 +48,8 @@ public class HorseMovingStyle implements MovingStyle {
         int y = target.y;
 
         for(Vector vector : offsets){
-            if(board.isPassable(x + vector.getX(), y + vector.getY())){
-                availablePoints.add(new Point(x + vector.getX(), y + vector.getY()));
+            if(board.isPassable((int)(x + vector.getX()), (int)(y + vector.getY()))){
+                availablePoints.add(new Point((int)(x + vector.getX()), (int)(y + vector.getY())));
             }
         }
 

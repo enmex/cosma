@@ -47,7 +47,7 @@ public class BlackHoleSpawnAnimation extends AnimationType{
 
 
         IdleAnimation blackHoleSpawn = new IdleAnimation("", Animation.PlayMode.NORMAL, Config.getInstance().CONTENT_SPRITE_SIZE,
-                0, 0, defaultRotation, 6, (int) getInstance().LONG_ANIMATION_DURATION);
+                0, 0, defaultRotation);
         blackHoleSpawnAnimation.phases.add(blackHoleSpawn);
         if (victimSpaceship != null) {
             IdleAnimation destruction = new IdleAnimation(victimSpaceship.getIdleAnimationPath(), Animation.PlayMode.NORMAL,

@@ -46,9 +46,8 @@ public class AttackSpaceshipAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath) {
         //init static enemy spaceship
         AnimationData staticEnemyShip = new AnimationData();
-        IdleAnimation enemyShipStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP, getInstance().CONTENT_SPRITE_SIZE,
-                0, 0, (int) (180 - defaultRotation),
-                getInstance().FRAMES_AMOUNT_SHIPS);
+        IdleAnimation enemyShipStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP,
+                0, 0, (int) (180 - defaultRotation));
 
         enemyShipStanding.setAnimated();
 
@@ -115,8 +114,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
         AnimationData staticPlayerShip = new AnimationData();
         IdleAnimation playerShipStanding = new IdleAnimation(playerShipAtlasPath, Animation.PlayMode.LOOP, getInstance().CONTENT_SPRITE_SIZE, 0, 0,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x),
-                getInstance().FRAMES_AMOUNT_SHIPS);
+                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
         staticPlayerShip.phases = new Array<>(1);
         staticPlayerShip.phases.add(playerShipStanding);
         staticPlayerShip.offset = new Vector();

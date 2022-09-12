@@ -30,12 +30,6 @@ public class AnimationData {
         return phases.get(currentPhase).getRegionName();
     }
 
-    public int getSpriteSize(){
-        return phases.get(currentPhase).getSpriteSize();
-    }
-    public int getFramesAmount(){
-        return phases.get(currentPhase).getFramesAmount();
-    }
     public PlayMode getPlayMode(){
         return phases.get(currentPhase).getPlayMode();
     }
@@ -44,9 +38,5 @@ public class AnimationData {
     }
     public SimpleAnimation getCurrentPhase(){
         return phases.get(currentPhase);
-    }
-
-    public float getElapsedTime() {
-        return phases.get(currentPhase).getElapsedTime();
     }
 }

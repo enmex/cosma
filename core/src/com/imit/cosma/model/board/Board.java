@@ -12,12 +12,14 @@ import com.imit.cosma.model.board.state.IdleBoardState;
 import com.imit.cosma.model.board.state.ShipAttackingOneTargetBoardState;
 import com.imit.cosma.model.board.state.ShipMovingBoardState;
 import com.imit.cosma.model.rules.Attack;
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.spaceship.ShipRandomizer;
+import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.pkg.random.Randomizer;
@@ -81,39 +83,32 @@ public class Board implements Cloneable {
         sides.add(enemySide);
 
         selectedPoint = new Point();
-        /*
+
+        Point pShip = new Point(4, 4);
+        Point eShip = new Point(0, 7);
+
         for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
-                cells[y][x] = new Cell();
-                emptyCells.add(new Point(x, y));
+                Point point = new Point(x, y);
+                if (point.equals(pShip)) {
+                    cells[y][x] = new Cell(spaceshipBuilder.setSide(playerSide)
+                            .addSkeleton(Skeleton.DREADNOUGHT)
+                            .addWeapon(ShipRandomizer.getRandomAmount())
+                            .setMoveType(MoveType.QUEEN).build());
+                    objectController.addSpaceship(x, y);
+                } else if (point.equals(eShip)) {
+                    cells[y][x] = new Cell(spaceshipBuilder.setSide(enemySide)
+                            .addSkeleton()
+                            .addWeapon(ShipRandomizer.getRandomAmount())
+                            .setMoveType(MoveType.OFFICER).build());
+                    objectController.addSpaceship(x, y);
+                } else {
+                    cells[y][x] = Cell.initWithSpace();
+                    objectController.addSpace(x, y);
+                }
             }
         }
-
-        cells[0][0].setContent(spaceshipBuilder.setSide(playerSide)
-                .addSkeleton(Skeleton.DREADNOUGHT)
-                .addWeapon(4)
-                .setMoveType(MoveType.HORSE).build());
-        cells[0][1].setContent(spaceshipBuilder.setSide(playerSide)
-                .addSkeleton(Skeleton.DREADNOUGHT)
-                .addWeapon(4)
-                .setMoveType(MoveType.HORSE).build());
-
-        cells[7][0].setContent(spaceshipBuilder.setSide(enemySide)
-                .addSkeleton(Skeleton.CORVETTE)
-                .addWeapon(ShipRandomizer.getRandomAmount())
-                .setMoveType(MoveType.HORSE).build());
-        cells[7][1].setContent(spaceshipBuilder.setSide(enemySide)
-                .addSkeleton(Skeleton.CORVETTE)
-                .addWeapon(ShipRandomizer.getRandomAmount())
-                .setMoveType(MoveType.HORSE).build());
-
-        emptyCells.remove(new Point(0, 0));
-        emptyCells.remove(new Point(0, 7));
-
-        contentCells.add(new Point(0, 0));
-        contentCells.add(new Point(0, 7));
-        */
-
+        /*
         //initialise player ships
         for (int y = 0; y < getInstance().SPACESHIP_ROWS; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
@@ -144,7 +139,7 @@ public class Board implements Cloneable {
                 cells[y][x] = new Cell(spaceship);
                 objectController.addSpaceship(x, y);
             }
-        }
+        }*/
 
         turn = playerSide;
         interactedCells = new HashSet<>();

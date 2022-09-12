@@ -16,13 +16,13 @@ import com.imit.cosma.model.rules.move.QueenMovingStyle;
 import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
 
 public class Config {
-    public int DEFAULT_SHIPS_NUMBER = 8;
+    public int DEFAULT_SHIPS_NUMBER = 2;
     private static Config instance;
 
     public int BLACK_HOLE_MAX_DAMAGE = 10000;
     public int ANIMATION_SPEED;
-    public float ANIMATION_DURATION = 30;
-    public float LONG_ANIMATION_DURATION = 60;
+    public float ANIMATION_DURATION = 400;
+    public float LONG_ANIMATION_DURATION = 160;
     public int INFINITY_ANIMATION_DURATION = 9999;
     public int FRAMES_AMOUNT_SHIPS = 4;
     public float ROTATION_VELOCITY = 2f;
@@ -57,9 +57,15 @@ public class Config {
 
     public Space SPACE;
 
-    public int BOARD_CELL_WIDTH;
-    public int BOARD_CELL_HEIGHT;
-    public int BOARD_Y;
+    public int WORLD_WIDTH = Gdx.graphics.getWidth();
+    public int WORLD_HEIGHT = Gdx.graphics.getHeight();
+
+    public int BOARD_WIDTH = WORLD_WIDTH;
+    public int BOARD_HEIGHT = (int) (WORLD_HEIGHT * 0.45);
+
+    public int BOARD_CELL_WIDTH = BOARD_WIDTH / BOARD_SIZE;
+    public int BOARD_CELL_HEIGHT = BOARD_HEIGHT / BOARD_SIZE;
+    public int BOARD_Y = (int) (WORLD_HEIGHT * 0.35);
 
     private final String SPACESHIP_ANIMATIONS_DIRECTORY = "animation\\spaceship\\";
     private final String GAME_OBJECT_ANIMATIONS_DIRECTORY = "";
@@ -89,10 +95,10 @@ public class Config {
     public String ION_CANNON_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_ion_cannon.atlas";
     public String TORPEDO_LAUNCHER_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_machine_gun.atlas";
 
-    public String MACHINE_GUN_DESTRUCTION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "";
-    public String LASER_DESTRUCTION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "";
-    public String ION_CANNON_DESTRUCTION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "";
-    public String TORPEDO_LAUNCHER_DESTRUCTION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "";
+    public String MACHINE_GUN_EXPLOSION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "explosion_machine_gun.atlas";
+    public String LASER_EXPLOSION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "explosion_laser.atlas";
+    public String ION_CANNON_EXPLOSION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "explosion_ion_cannon.atlas";
+    public String TORPEDO_LAUNCHER_EXPLOSION_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "explosion_torpedo_launcher.atlas";
 
     public String IDLE_ANIMATION_REGION_NAME = "idle";
     public String MOVEMENT_ANIMATION_REGION_NAME = "move";
@@ -114,8 +120,6 @@ public class Config {
         GAME_OBJECTS_ATLAS = new TextureRegion(new Texture(GAME_OBJECTS_PATH));
 
         SPACE = new Space();
-
-
     }
 
     private static Element getElement(){

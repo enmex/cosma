@@ -155,9 +155,6 @@ public class Attack {
             for(int i = 1; i <= radius; i++){
                 offsetX = selectedX + i * direction.getOffsetX();
                 offsetY = selectedY + i * direction.getOffsetY();
-                if(direction == Direction.NORTH && offsetY == 7) {
-                    System.out.println();
-                }
                 if(isAvailable(board, offsetX, offsetY)) {
                     availableCells.add(new Point(offsetX, offsetY));
                 }

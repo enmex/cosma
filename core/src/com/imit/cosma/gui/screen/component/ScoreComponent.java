@@ -41,7 +41,6 @@ public class ScoreComponent extends Component {
         componentBottom = (int) (0.9 * height);
         componentWidth = width;
 
-        System.out.println(componentHeight + " " + componentBottom);
     }
 
 }

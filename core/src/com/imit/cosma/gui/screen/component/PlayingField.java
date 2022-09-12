@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.ContentAnimation;
@@ -48,7 +47,8 @@ public class PlayingField {
 
     private final ContentAnimation contentAnimation;
 
-    private List<AnimatedSprite> animatedSprites;
+    private final List<AnimatedSprite> animatedSprites;
+    private List<Point> animatedLocations;
 
     public PlayingField(){
         board = new Board();
@@ -62,10 +62,12 @@ public class PlayingField {
 
         animatedSprites = new ArrayList<>(Config.getInstance().BOARD_SIZE * Config.getInstance().BOARD_SIZE);
         for (Point location : board.getNonEmptyLocations()) {
-            animatedSprites.add(new AnimatedSprite(1 / 2f,
+            animatedSprites.add(new AnimatedSprite(1/3f,
                     board.getIdleAnimationPath(location), toScreenPoint(location),
                     board.getDefaultRotation(location)));
         }
+
+        animatedLocations = new ArrayList<>();
     }
 
     public void render(float delta, Point touchPoint){
@@ -82,6 +84,7 @@ public class PlayingField {
         if(!animationPlays() && !isGameOver() && !board.isLoading()){
             BoardState boardState = board.getCurrentState(selected);
             if(!boardState.isIdle()) {
+                animatedLocations.clear();
                 Path currentPath = board.getCurrentPath();
 
                 if (boardState.affectsManyCells()) {
@@ -113,7 +116,6 @@ public class PlayingField {
 
     private void drawGrid(){
         batch.begin();
-        System.out.println("grid " + boardY);
         batch.draw(grid, boardX,  boardY, boardWidth, boardHeight);
         batch.end();
     }
@@ -131,14 +133,14 @@ public class PlayingField {
     private void drawBoardObjects(float delta){
         //draw idle objs
         for (AnimatedSprite sprite : animatedSprites) {
-            if (!contentAnimation.isAnimatedObject(sprite.getLocationOnScreen())) {
+            if (!contentAnimation.isAnimatedObject(toBoardPoint(sprite.getLocationOnScreen()))) {
                 sprite.render(delta, cellWidth, cellHeight);
             }
         }
 
         //draw animated
         if(contentAnimation.isAnimated()) {
-            contentAnimation.render();
+            contentAnimation.render(delta);
         }
 
     }
@@ -215,6 +217,13 @@ public class PlayingField {
 
     private Point toScreenPoint(Point boardPoint) {
         return new Point(boardPoint.x * cellWidth, boardPoint.y * cellHeight + boardY);
+    }
+
+    private Point toBoardPoint(Point screenPoint) {
+        return new Point(
+                screenPoint.x / cellWidth,
+                (screenPoint.y - boardY) / cellHeight
+        );
     }
 }
 

@@ -30,12 +30,13 @@ public class ShipMovementAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath){
         super.init(boardPath, screenPath);
         AnimationData animationData = datas.get(mainAnimatedObject);
-        animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
+        //animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
+
 
         SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(movingShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE, contentSoundType);
 
         RotationAnimation shipRotationAnimation = new RotationAnimation(idleShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
-                defaultRotation, defaultRotation + animationData.rotation*getOrientation());
+                defaultRotation, defaultRotation + animationData.rotation * getOrientation());
 
         RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(idleShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
                 defaultRotation + animationData.rotation * getOrientation(), defaultRotation);

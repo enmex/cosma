@@ -2,14 +2,14 @@ package com.imit.cosma.util;
 
 public class Vector {
 
-    private int x, y;
+    private float x, y;
 
     public Vector(){
-        x = 0;
-        y = 0;
+        x = 0f;
+        y = 0f;
     }
 
-    public Vector(int x, int y){
+    public Vector(float x, float y){
         this.x = x;
         this.y = y;
     }
@@ -23,7 +23,7 @@ public class Vector {
         this.x += vector.x;
         this.y += vector.y;
     }
-    public void add(int x, int y){
+    public void add(float x, float y){
         this.x += x;
         this.y += y;
     }
@@ -31,16 +31,20 @@ public class Vector {
         this.x = vector.x;
         this.y = vector.y;
     }
-    public void set(int x, int y){
+    public void set(float x, float y){
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public int getY() {
+    public float getLength() {
+        return (float) Math.sqrt(x * x + y * y);
+    }
+
+    public float getY() {
         return y;
     }
 

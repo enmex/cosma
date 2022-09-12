@@ -1,11 +1,13 @@
 package com.imit.cosma.gui.animation;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationData;
 import com.imit.cosma.gui.animation.compound.AnimationType;
@@ -22,10 +24,13 @@ public class ContentAnimation {
 
     private int cellWidth, cellHeight;
 
+    private float elapsedTime;
+
     public ContentAnimation(AnimationType animationType){
         batch = new SpriteBatch();
         this.animationType = animationType;
         sprite = new Sprite();
+        elapsedTime = 0f;
     }
     public ContentAnimation(){
         this(null);
@@ -36,10 +41,16 @@ public class ContentAnimation {
     }
 
     public void init(AnimationType animationType, Path boardPath, int cellWidth, int cellHeight, int boardY){
-        Path screenPath = new Path(new Point(boardPath.getSource().x * cellWidth,
-                boardPath.getSource().y * cellHeight + boardY),
-                new Point(boardPath.getTarget().x * cellWidth,
-                        boardPath.getTarget().y * cellHeight + boardY));
+        Path screenPath = new Path(
+                new Point(
+                        boardPath.getSource().x * cellWidth,
+                        boardPath.getSource().y * cellHeight + boardY
+                ),
+                new Point(
+                        boardPath.getTarget().x * cellWidth,
+                        boardPath.getTarget().y * cellHeight + boardY
+                )
+        );
 
         animationType.init(boardPath, screenPath);
         setAnimationType(animationType);
@@ -66,26 +77,31 @@ public class ContentAnimation {
         spriteAnimation.setPlayMode(data.getPlayMode());
     }
 
-    public void render(){
+    public void render(float delta){
+        elapsedTime += delta;
+
         for(AnimationData data : animationType.getDatas()) {
             if(data.getCurrentPhase().isAnimated()) {
                 updateSpriteAnimation(data);
                 batch.begin();
 
-                TextureRegion currentFrame = spriteAnimation.getKeyFrame(data.getElapsedTime(),
+                TextureRegion currentFrame = spriteAnimation.getKeyFrame(elapsedTime,
                         data.getPlayMode() != Animation.PlayMode.NORMAL);
 
                 sprite.setRegion(currentFrame);
-
                 sprite.setBounds(data.getPath().getSource().x + data.getOffset().getX(),
                         data.getPath().getSource().y + data.getOffset().getY(), cellWidth, cellHeight);
                 sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
                 sprite.setRotation(data.getCurrentRotation());
                 sprite.draw(batch);
 
+
                 batch.end();
+            } else {
+                elapsedTime = 0f;
             }
         }
+
         setAnimationType(animationType);
         if(isAnimated()) {
             animationType.render();
