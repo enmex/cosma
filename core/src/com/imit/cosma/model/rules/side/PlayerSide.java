@@ -6,7 +6,7 @@ public class PlayerSide extends Side{
     }
 
     public PlayerSide(int shipsNumber) {
-        super(0, shipsNumber);
+        super(180, shipsNumber);
     }
 
     @Override

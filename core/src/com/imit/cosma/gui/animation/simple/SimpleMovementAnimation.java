@@ -39,6 +39,11 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         this.rotation = rotation;
         from = new Vector(fromX, fromY);
 
+        Vector destinationVector = new Vector(
+                toX - fromX,
+                toY - fromY
+        );
+
         distance = (toX - fromX) * (toX - fromX) + (toY - fromY) * (toY - fromY);
         distance = Math.sqrt(distance);
 
@@ -48,11 +53,11 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         double velocity = distance / duration; //x
 
-        double radians = Math.toRadians(Math.abs(rotation + 90));
+        double radians = Math.toRadians(rotation < 0 ? rotation - 90 : rotation + 90);
 
-        moveVelocityX = (float) (Math.sin(radians) * velocity);
-        moveVelocityY = (float) (Math.cos(radians) * velocity);
-       // moveVelocityY = 0.61f;
+        moveVelocityX = (float) (Math.abs(Math.cos(radians)) * velocity * Math.signum(destinationVector.getX()));
+        moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity * Math.signum(destinationVector.getY()));
+
         departure = new Point(fromX, fromY);
         destination = new Point(toX, toY);
 
