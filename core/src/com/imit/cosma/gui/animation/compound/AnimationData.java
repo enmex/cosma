@@ -14,29 +14,17 @@ public class AnimationData {
     protected Array<SimpleAnimation> phases;
     protected int currentPhase;
 
-    public Vector getOffset() {
-        return offset;
-    }
-
     public Path getPath() {
         return path;
-    }
-
-    public String getAtlasPath(){
-        return phases.get(currentPhase).getAtlasPath();
-    }
-
-    public String getRegionName() {
-        return phases.get(currentPhase).getRegionName();
-    }
-
-    public PlayMode getPlayMode(){
-        return phases.get(currentPhase).getPlayMode();
     }
     public float getCurrentRotation(){
         return phases.get(currentPhase).getRotation();
     }
     public SimpleAnimation getCurrentPhase(){
         return phases.get(currentPhase);
+    }
+
+    public float getElapsedTime(float delta) {
+        return phases.get(currentPhase).getElapsedTime(delta);
     }
 }

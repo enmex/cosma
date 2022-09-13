@@ -3,14 +3,25 @@ package com.imit.cosma.gui.animation.simple;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.pkg.sound.SoundEffect;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class SimpleMovementAnimation implements SimpleAnimation{
-    private SoundEffect movementSound;
+    private final SpriteBatch batch;
+    private final Sprite sprite;
+
+    private final Animation<TextureRegion> animation;
+
+    private final SoundEffect movementSound;
 
     private float elapsedTime = 0f;
 
@@ -22,22 +33,30 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private final Vector offset;
     private Point departure, destination;
 
-    private final String atlasPath;
-    private final int spriteSize;
+    private Point currentLocation;
 
-    private Vector from;
-
-    public SimpleMovementAnimation(String atlasPath, int spriteSize, SoundType soundType){
+    public SimpleMovementAnimation(String atlasPath, SoundType soundType){
         offset = new Vector();
-        this.atlasPath = atlasPath;
-        this.spriteSize = spriteSize;
         movementSound = new SoundEffect(soundType);
+
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
+
+        animation = new Animation<TextureRegion>(getInstance().ANIMATION_DURATION,
+                atlas.findRegions(getInstance().MOVEMENT_ANIMATION_REGION_NAME));
+
+        sprite = new Sprite();
+        sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
+        sprite.setOrigin((float) getInstance().BOARD_CELL_WIDTH / 2,
+                (float) getInstance().BOARD_CELL_HEIGHT / 2);
+
+        batch = new SpriteBatch();
     }
 
     @Override
     public void init(int fromX, int fromY, int toX, int toY, float rotation) {
         this.rotation = rotation;
-        from = new Vector(fromX, fromY);
+
+        currentLocation = new Point(fromX, fromY);
 
         Vector destinationVector = new Vector(
                 toX - fromX,
@@ -65,27 +84,33 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     }
 
     @Override
-    public void render() {
+    public void render(float delta) {
+        elapsedTime += delta;
+
         if(isArrived()){
             offset.set(destination.x - departure.x, destination.y - departure.y);
+            currentLocation.set(currentLocation.x + (int) offset.getX(), currentLocation.y + (int) offset.getY());
             isAnimated = false;
             movementSound.stop();
         }
         else {
             offset.add(moveVelocityX, moveVelocityY);
-            System.out.println(from);
+            currentLocation.add((int) moveVelocityX, (int) moveVelocityY);
             traveledDistance += Math.sqrt(moveVelocityX * moveVelocityX + moveVelocityY * moveVelocityY);
-            from.add(moveVelocityX, moveVelocityY);
         }
+
+        TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
+
+        batch.begin();
+        sprite.setRegion(currentFrame);
+        sprite.setPosition(currentLocation.x, currentLocation.y);
+        sprite.setRotation(rotation);
+        sprite.draw(batch);
+        batch.end();
     }
 
     private boolean isArrived(){
         return traveledDistance >= distance;
-    }
-
-    @Override
-    public String getAtlasPath() {
-        return atlasPath;
     }
 
     @Override
@@ -94,22 +119,12 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     }
 
     @Override
-    public PlayMode getPlayMode() {
-        return PlayMode.LOOP;
-    }
-
-    @Override
-    public float getElapsedTime() {
-        return elapsedTime += Gdx.graphics.getDeltaTime();
+    public float getElapsedTime(float delta) {
+        return elapsedTime += delta;
     }
 
     public boolean isAnimated() {
         return isAnimated;
-    }
-
-    @Override
-    public String getRegionName() {
-        return getInstance().MOVEMENT_ANIMATION_REGION_NAME;
     }
 
     public void setAnimated() {
@@ -122,7 +137,8 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     }
 
     @Override
-    public Vector getOffset() {
-        return offset;
+    public Point getLocationOnScreen() {
+        return null;
     }
+
 }

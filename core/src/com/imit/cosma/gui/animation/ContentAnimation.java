@@ -1,36 +1,14 @@
 package com.imit.cosma.gui.animation;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.compound.AnimationData;
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 public class ContentAnimation {
-
-    private Animation<TextureRegion> spriteAnimation;
-
     private AnimationType animationType;
-    private final SpriteBatch batch;
-    private final Sprite sprite;
-
-    private int cellWidth, cellHeight;
-
-    private float elapsedTime;
 
     public ContentAnimation(AnimationType animationType){
-        batch = new SpriteBatch();
         this.animationType = animationType;
-        sprite = new Sprite();
-        elapsedTime = 0f;
     }
     public ContentAnimation(){
         this(null);
@@ -55,8 +33,6 @@ public class ContentAnimation {
         animationType.init(boardPath, screenPath);
         setAnimationType(animationType);
 
-        this.cellHeight = cellHeight;
-        this.cellWidth = cellWidth;
     }
 
     public void init(AnimationType animationType, Point boardPoint, int cellWidth, int cellHeight, int boardY) {
@@ -65,47 +41,23 @@ public class ContentAnimation {
         animationType.init(boardPoint, screenPoint);
         setAnimationType(animationType);
 
-        this.cellHeight = cellHeight;
-        this.cellWidth = cellWidth;
-    }
-
-    private void updateSpriteAnimation(AnimationData data){
-        String atlasPath = data.getAtlasPath();
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
-
-        spriteAnimation = new Animation<TextureRegion>(Config.getInstance().ANIMATION_DURATION, atlas.findRegions(data.getRegionName()));
-        spriteAnimation.setPlayMode(data.getPlayMode());
     }
 
     public void render(float delta){
-        elapsedTime += delta;
-
+        animationType.render(delta);
+        /*
         for(AnimationData data : animationType.getDatas()) {
             if(data.getCurrentPhase().isAnimated()) {
-                updateSpriteAnimation(data);
-                batch.begin();
-
-                TextureRegion currentFrame = spriteAnimation.getKeyFrame(elapsedTime,
-                        data.getPlayMode() != Animation.PlayMode.NORMAL);
-
-                sprite.setRegion(currentFrame);
-                sprite.setBounds(data.getPath().getSource().x + data.getOffset().getX(),
-                        data.getPath().getSource().y + data.getOffset().getY(), cellWidth, cellHeight);
-                sprite.setOrigin((float) cellWidth / 2, (float) cellHeight / 2);
-                sprite.setRotation(data.getCurrentRotation());
-                sprite.draw(batch);
-
-
-                batch.end();
-            } else {
-                elapsedTime = 0f;
+                data.getCurrentPhase().render(delta);
             }
         }
 
         setAnimationType(animationType);
         if(isAnimated()) {
-            animationType.render();
+            animationType.render(delta);
         }
+
+         */
     }
 
     public boolean isAnimated(){

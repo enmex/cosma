@@ -34,11 +34,6 @@ public class BlackHoleSpawnAnimation extends AnimationType{
     }
 
     @Override
-    public String getAtlasPath() {
-        return getInstance().BLACK_HOLE_SPAWN_ATLAS_PATH;
-    }
-
-    @Override
     public void init(Point boardPoint, Point screenPoint) {
         super.init(boardPoint, screenPoint);
 
@@ -46,13 +41,13 @@ public class BlackHoleSpawnAnimation extends AnimationType{
         blackHoleSpawnAnimation.currentPhase = 0;
 
 
-        IdleAnimation blackHoleSpawn = new IdleAnimation("", Animation.PlayMode.NORMAL, Config.getInstance().CONTENT_SPRITE_SIZE,
-                0, 0, defaultRotation);
-        blackHoleSpawnAnimation.phases.add(blackHoleSpawn);
+        //IdleAnimation blackHoleSpawn = new IdleAnimation("", Animation.PlayMode.NORMAL, Config.getInstance().CONTENT_SPRITE_SIZE,
+          //      0, 0, defaultRotation);
+        //blackHoleSpawnAnimation.phases.add(blackHoleSpawn);
         if (victimSpaceship != null) {
-            IdleAnimation destruction = new IdleAnimation(victimSpaceship.getIdleAnimationPath(), Animation.PlayMode.NORMAL,
-                    getInstance().CONTENT_SPRITE_SIZE, 0, 0, 180 - defaultRotation);
-            blackHoleSpawnAnimation.phases.add(destruction);
+            //IdleAnimation destruction = new IdleAnimation(victimSpaceship.getIdleAnimationPath(), Animation.PlayMode.NORMAL,
+              //      getInstance().CONTENT_SPRITE_SIZE, 0, 0, 180 - defaultRotation);
+          //  blackHoleSpawnAnimation.phases.add(destruction);
         }
 
         datas.add(blackHoleSpawnAnimation);

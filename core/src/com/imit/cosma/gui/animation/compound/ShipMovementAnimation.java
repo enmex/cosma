@@ -30,15 +30,13 @@ public class ShipMovementAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath){
         super.init(boardPath, screenPath);
         AnimationData animationData = datas.get(mainAnimatedObject);
-        //animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
+        
+        SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(movingShipAtlasPath, contentSoundType);
 
-
-        SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(movingShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE, contentSoundType);
-
-        RotationAnimation shipRotationAnimation = new RotationAnimation(idleShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
+        RotationAnimation shipRotationAnimation = new RotationAnimation(idleShipAtlasPath,
                 defaultRotation, defaultRotation + animationData.rotation * getOrientation());
 
-        RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(idleShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
+        RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(idleShipAtlasPath,
                 defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
 
         shipRotationAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
@@ -47,7 +45,7 @@ public class ShipMovementAnimation extends AnimationType {
         shipSimpleMovementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, defaultRotation + animationData.rotation * getOrientation());
 
-        shipRotationAnimationToDefault.init(screenPath.getSource().x, screenPath.getSource().y,
+        shipRotationAnimationToDefault.init(screenPath.getTarget().x, screenPath.getTarget().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
 
         animationData.phases.add(shipRotationAnimation);
@@ -57,25 +55,6 @@ public class ShipMovementAnimation extends AnimationType {
         animationData.currentPhase = 0;
 
         animationData.phases.get(mainAnimatedObject).setAnimated();
-    }
-
-    @Override
-    public void render() {
-        AnimationData animationData = datas.get(mainAnimatedObject);
-
-        animationData.phases.get(animationData.currentPhase).render();
-        if (!animationData.phases.get(animationData.currentPhase).isAnimated()) {
-            animationData.currentPhase++;
-            if(animationData.currentPhase >= animationData.phases.size){
-                clear();
-            }
-            else {
-                animationData.phases.get(animationData.currentPhase).setAnimated();
-            }
-        }
-        if(animationData.currentPhase == 1) {
-            animationData.offset = animationData.phases.get(animationData.currentPhase).getOffset();
-        }
     }
 
     @Override
@@ -91,11 +70,6 @@ public class ShipMovementAnimation extends AnimationType {
             }
         }
         return false;
-    }
-
-    @Override
-    public String getAtlasPath() {
-        return null;
     }
 
     @Override

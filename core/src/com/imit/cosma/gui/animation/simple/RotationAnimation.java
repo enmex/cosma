@@ -3,26 +3,33 @@ package com.imit.cosma.gui.animation.simple;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.Vector;
+import com.imit.cosma.util.Point;
 
 public class RotationAnimation implements SimpleAnimation{
+    private final SpriteBatch batch;
+    private final Sprite sprite;
+
     private float elapsedTime;
 
     private float rotationVelocity;
     private float currentRotation;
     private final float targetRotation;
 
-    private final String atlasPath;
-    private final int spriteSize;
+    private Point locationOnScreen;
 
-    private final Vector offset = new Vector();
+    private final Animation<TextureRegion> animation;
 
     private boolean isAnimated;
     //initialRotation - текущий поворот
     //targetRotation - конечный поворот
-    public RotationAnimation(String atlasPath, int spriteSize, float initialRotation, float targetRotation){
+    public RotationAnimation(String atlasPath, float initialRotation, float targetRotation){
         currentRotation = initialRotation;
         rotationVelocity = Config.getInstance().ROTATION_VELOCITY; //скорость поворота
 
@@ -31,29 +38,45 @@ public class RotationAnimation implements SimpleAnimation{
         }
         this.targetRotation = targetRotation;
 
-        this.atlasPath = atlasPath;
-        this.spriteSize = spriteSize;
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
+
+        animation = new Animation<TextureRegion>(getInstance().ANIMATION_DURATION,
+                atlas.findRegions(getInstance().IDLE_ANIMATION_REGION_NAME));
+
+        sprite = new Sprite();
+        sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
+        sprite.setOrigin((float) getInstance().BOARD_CELL_WIDTH / 2,
+                (float) getInstance().BOARD_CELL_HEIGHT / 2);
+
+        batch = new SpriteBatch();
 
         elapsedTime = 0f;
     }
 
     @Override
     public void init(int fromX, int fromY, int toX, int toY, float rotation) {
+        this.locationOnScreen = new Point(fromX, fromY);
     }
 
     @Override
-    public void render() {
+    public void render(float delta) {
+        elapsedTime += delta;
+
         if (isArrived()) {
             currentRotation += rotationVelocity;
         } else {
             currentRotation = targetRotation;
             isAnimated = false;
         }
-    }
 
-    @Override
-    public String getAtlasPath() {
-        return atlasPath;
+        TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
+
+        batch.begin();
+        sprite.setRegion(currentFrame);
+        sprite.setPosition(locationOnScreen.x, locationOnScreen.y);
+        sprite.setRotation(currentRotation);
+        sprite.draw(batch);
+        batch.end();
     }
 
     @Override
@@ -62,23 +85,13 @@ public class RotationAnimation implements SimpleAnimation{
     }
 
     @Override
-    public Vector getOffset() {
-        return offset;
-    }
-
-    @Override
-    public PlayMode getPlayMode() {
-        return PlayMode.LOOP;
+    public Point getLocationOnScreen() {
+        return locationOnScreen;
     }
 
     @Override
     public boolean isAnimated() {
         return isAnimated;
-    }
-
-    @Override
-    public String getRegionName() {
-        return getInstance().IDLE_ANIMATION_REGION_NAME;
     }
 
     @Override
@@ -96,7 +109,7 @@ public class RotationAnimation implements SimpleAnimation{
     }
 
     @Override
-    public float getElapsedTime() {
-        return elapsedTime += Gdx.graphics.getDeltaTime();
+    public float getElapsedTime(float delta) {
+        return elapsedTime += delta;
     }
 }

@@ -1,7 +1,6 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.utils.Array;
-import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
@@ -33,10 +32,8 @@ public abstract class AnimationType {
                 orientation * (screenPath.getTarget().y - screenPath.getSource().y)
         );
 
-        //normalVector = new Vector(screenPath.getTarget().x, (float) Math.cos(Math.toRadians(defaultRotation)));
-
         AnimationData data = new AnimationData();//main animated object
-        data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector)));
+        data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector))) - defaultRotation;
 
         data.offset = new Vector();
         data.path = screenPath;
@@ -57,9 +54,9 @@ public abstract class AnimationType {
         datas.add(data);
     }
 
-    public void render(){
+    public void render(float delta){
         for(AnimationData data : datas){
-            data.phases.get(data.currentPhase).render();
+            data.phases.get(data.currentPhase).render(delta);
             if (!data.phases.get(data.currentPhase).isAnimated()) {
                 data.currentPhase++;
                 if(data.currentPhase >= data.phases.size){
@@ -78,8 +75,6 @@ public abstract class AnimationType {
     public Array<AnimationData> getDatas() {
         return datas;
     }
-
-    public abstract String getAtlasPath();
 
     public void clear(){
         datas.clear();

@@ -1,22 +1,19 @@
 package com.imit.cosma.gui.animation.simple;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public interface SimpleAnimation {
 
     void init(int fromX, int fromY, int toX, int toY, float rotation);
-    void render();
-    String getAtlasPath();
-    String getRegionName();
+    void render(float delta);
 
     float getRotation();
     boolean isAnimated();
     void setAnimated();
     void setNotAnimated();
-    Vector getOffset();
+    Point getLocationOnScreen();
 
-    PlayMode getPlayMode();
-
-    float getElapsedTime();
+    float getElapsedTime(float delta);
 }

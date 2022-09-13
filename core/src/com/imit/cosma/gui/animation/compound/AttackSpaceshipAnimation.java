@@ -18,13 +18,11 @@ import com.imit.cosma.util.Vector;
 import java.util.List;
 
 public class AttackSpaceshipAnimation extends AnimationType {
-    private final SoundType playerShipSoundType;
     private final boolean isKillAttack;
 
     private final List<Weapon> weaponList;
     private final String playerShipAtlasPath, enemyShipAtlasPath, enemyShipDestructionAtlasPath;
     private final int mainAnimationIndex;
-    private final int standingPlayerShipAnimationIndex;
 
     private Point sourceBoardCell;
 
@@ -35,9 +33,6 @@ public class AttackSpaceshipAnimation extends AnimationType {
         enemyShipAtlasPath = spaceshipEnemy.getIdleAnimationPath();
         enemyShipDestructionAtlasPath = spaceshipEnemy.getSkeleton().getDestructionAnimationPath();
         mainAnimationIndex = 1;
-        standingPlayerShipAnimationIndex = 2;
-
-        playerShipSoundType = spaceshipPlayer.getSoundType();
 
         isKillAttack = spaceshipPlayer.getDamage() >= spaceshipEnemy.getHealthPoints();
     }
@@ -46,8 +41,12 @@ public class AttackSpaceshipAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath) {
         //init static enemy spaceship
         AnimationData staticEnemyShip = new AnimationData();
-        IdleAnimation enemyShipStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP,
-                0, 0, (int) (180 - defaultRotation));
+        IdleAnimation enemyShipStanding = new IdleAnimation(
+                enemyShipAtlasPath,
+                Animation.PlayMode.LOOP,
+                screenPath.getSource(),
+                180 - defaultRotation
+        );
 
         enemyShipStanding.setAnimated();
 
@@ -67,11 +66,11 @@ public class AttackSpaceshipAnimation extends AnimationType {
         datas.get(mainAnimationIndex).rotation *= Math.signum(datas.get(mainAnimationIndex).rotation - defaultRotation);
 
         SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath,
-                getInstance().CONTENT_SPRITE_SIZE, defaultRotation,
+                defaultRotation,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
                         * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
 
-        SimpleAnimation shipRotationToDefault = new RotationAnimation(playerShipAtlasPath, getInstance().CONTENT_SPRITE_SIZE,
+        SimpleAnimation shipRotationToDefault = new RotationAnimation(playerShipAtlasPath,
                 defaultRotation + datas.get(mainAnimationIndex).rotation
                         * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation);
 
@@ -84,10 +83,15 @@ public class AttackSpaceshipAnimation extends AnimationType {
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
         for(Weapon weapon : weaponList){
-            SimpleMovementAnimation simpleMovementAnimation = new SimpleMovementAnimation(weapon.getShotAnimationPath(), getInstance().SHOT_SPRITE_SIZE, weapon.getSound());
-            IdleAnimation explosion = new IdleAnimation(weapon.getExplosionAnimationPath(), Animation.PlayMode.NORMAL, getInstance().SHOT_SPRITE_SIZE,
-                    screenPath.getTarget().x - screenPath.getSource().x,
-                    screenPath.getTarget().y - screenPath.getSource().y);
+            SimpleMovementAnimation simpleMovementAnimation = new SimpleMovementAnimation(
+                    weapon.getShotAnimationPath(), weapon.getSound());
+
+            IdleAnimation explosion = new IdleAnimation(
+                    weapon.getExplosionAnimationPath(),
+                    Animation.PlayMode.NORMAL,
+                    screenPath.getTarget(),
+                    0
+            );
 
             simpleMovementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
                     screenPath.getTarget().x, screenPath.getTarget().y,
@@ -100,9 +104,12 @@ public class AttackSpaceshipAnimation extends AnimationType {
         }
 
         if (isKillAttack) {
-            IdleAnimation destruction = new IdleAnimation(enemyShipDestructionAtlasPath, Animation.PlayMode.NORMAL,
-                    getInstance().CONTENT_SPRITE_SIZE, screenPath.getTarget().x - screenPath.getSource().x,
-                    screenPath.getTarget().y - screenPath.getSource().y, 180 - defaultRotation);
+            IdleAnimation destruction = new IdleAnimation(
+                    enemyShipDestructionAtlasPath,
+                    Animation.PlayMode.NORMAL,
+                    screenPath.getTarget(),
+                    180 - defaultRotation
+            );
             datas.get(mainAnimationIndex).phases.add(destruction);
         }
 
@@ -112,7 +119,10 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         //init player staticPlayerShip
         AnimationData staticPlayerShip = new AnimationData();
-        IdleAnimation playerShipStanding = new IdleAnimation(playerShipAtlasPath, Animation.PlayMode.LOOP, getInstance().CONTENT_SPRITE_SIZE, 0, 0,
+        IdleAnimation playerShipStanding = new IdleAnimation(
+                playerShipAtlasPath,
+                Animation.PlayMode.LOOP,
+                screenPath.getSource(),
                 defaultRotation + datas.get(mainAnimationIndex).rotation
                         * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
         staticPlayerShip.phases = new Array<>(1);
@@ -125,48 +135,10 @@ public class AttackSpaceshipAnimation extends AnimationType {
     }
 
     @Override
-    public void render() {
-        AnimationData mainAnimationData = datas.get(mainAnimationIndex);
-
-        //render standing ship between first and last phases
-        AnimationData standingPlayerShipData = datas.get(standingPlayerShipAnimationIndex);
-
-        if(mainAnimationData.currentPhase > 0 && mainAnimationData.currentPhase < mainAnimationData.phases.size - 1){
-            standingPlayerShipData.getCurrentPhase().setAnimated();
-        }
-        else{
-            standingPlayerShipData.getCurrentPhase().setNotAnimated();
-        }
-
-        //render shots from second to last-1 phases
-        mainAnimationData.phases.get(mainAnimationData.currentPhase).render();
-        standingPlayerShipData.phases.get(standingPlayerShipData.currentPhase).render();
-
-        if (!mainAnimationData.phases.get(mainAnimationData.currentPhase).isAnimated()) {
-            mainAnimationData.currentPhase++;
-            if(mainAnimationData.currentPhase >= mainAnimationData.phases.size){
-                clear();
-            }
-            else {
-                mainAnimationData.phases.get(mainAnimationData.currentPhase).setAnimated();
-            }
-        }
-
-        if(!datas.isEmpty()) {
-            mainAnimationData.offset = mainAnimationData.phases.get(mainAnimationData.currentPhase).getOffset();
-        }
-    }
-
-    @Override
     public boolean isAnimated(Point objectLocation) {
         return datas.size != 0 && datas.get(mainAnimationIndex).getCurrentPhase().isAnimated() && (
                 sourceBoardCell.equals(objectLocation)
                 || targetBoardPoint.equals(objectLocation) );
 
-    }
-
-    @Override
-    public String getAtlasPath() {
-        return null;
     }
 }

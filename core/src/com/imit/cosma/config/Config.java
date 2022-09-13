@@ -21,21 +21,12 @@ public class Config {
 
     public int BLACK_HOLE_MAX_DAMAGE = 10000;
     public int ANIMATION_SPEED;
-    public float ANIMATION_DURATION = 400;
-    public float LONG_ANIMATION_DURATION = 160;
-    public int INFINITY_ANIMATION_DURATION = 9999;
-    public int FRAMES_AMOUNT_SHIPS = 4;
+    public float ANIMATION_DURATION = 100;
     public float ROTATION_VELOCITY = 2f;
-    public int CONTENT_SPRITE_SIZE = 128;
-    public int SHOT_SPRITE_SIZE = 64;
     public double PANEL_TO_SCREEN_RATIO = 0.3;
     public double PANEL_OFFSET = 0.03;
-    public double HEALTH_BAR_WIDTH_TO_PANEL_RATIO = 0.6;
-    public double HEALTH_BAR_HEIGHT_TO_PANEL_RATIO = 0.1;
     public int BOARD_SIZE = 8;
-    public int SPACESHIP_ROWS = 1;
     public int MOVEMENT_ANIMATION_PHASES = 3;
-    public int MOVEMENT_VELOCITY = 2;
     public String BACKGROUND_PATH = "background.png";
     public String GRID_PATH = "grid.png";
     public String SPACESHIP_PATH = "spaceships.png";
