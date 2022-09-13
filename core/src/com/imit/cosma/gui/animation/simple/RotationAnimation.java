@@ -4,7 +4,6 @@ import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -80,16 +79,6 @@ public class RotationAnimation implements SimpleAnimation{
     }
 
     @Override
-    public float getRotation() {
-        return currentRotation;
-    }
-
-    @Override
-    public Point getLocationOnScreen() {
-        return locationOnScreen;
-    }
-
-    @Override
     public boolean isAnimated() {
         return isAnimated;
     }
@@ -99,17 +88,8 @@ public class RotationAnimation implements SimpleAnimation{
         isAnimated = true;
     }
 
-    @Override
-    public void setNotAnimated() {
-        isAnimated = false;
-    }
-
     private boolean isArrived(){
         return rotationVelocity < 0 ? currentRotation > targetRotation : currentRotation < targetRotation;
     }
 
-    @Override
-    public float getElapsedTime(float delta) {
-        return elapsedTime += delta;
-    }
 }

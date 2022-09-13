@@ -48,7 +48,6 @@ public class PlayingField {
     private final ContentAnimation contentAnimation;
 
     private final List<AnimatedSprite> animatedSprites;
-    private List<Point> animatedLocations;
 
     public PlayingField(){
         board = new Board();
@@ -66,8 +65,6 @@ public class PlayingField {
                     board.getIdleAnimationPath(location), toScreenPoint(location),
                     board.getDefaultRotation(location)));
         }
-
-        animatedLocations = new ArrayList<>();
     }
 
     public void render(float delta, Point touchPoint){
@@ -84,7 +81,6 @@ public class PlayingField {
         if(!animationPlays() && !isGameOver() && !board.isLoading()){
             BoardState boardState = board.getCurrentState(selected);
             if(!boardState.isIdle()) {
-                animatedLocations.clear();
                 Path currentPath = board.getCurrentPath();
 
                 if (boardState.affectsManyCells()) {

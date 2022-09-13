@@ -4,12 +4,10 @@ import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.imit.cosma.config.Config;
 import com.imit.cosma.pkg.sound.SoundEffect;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
@@ -113,32 +111,12 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         return traveledDistance >= distance;
     }
 
-    @Override
-    public float getRotation() {
-        return rotation;
-    }
-
-    @Override
-    public float getElapsedTime(float delta) {
-        return elapsedTime += delta;
-    }
-
     public boolean isAnimated() {
         return isAnimated;
     }
 
     public void setAnimated() {
         isAnimated = true;
-    }
-
-    @Override
-    public void setNotAnimated() {
-        isAnimated = false;
-    }
-
-    @Override
-    public Point getLocationOnScreen() {
-        return null;
     }
 
 }

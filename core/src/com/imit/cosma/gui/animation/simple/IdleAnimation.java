@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
-import com.imit.cosma.util.Vector;
 
 //just frames of sprite
 public class IdleAnimation implements SimpleAnimation{
@@ -67,23 +66,8 @@ public class IdleAnimation implements SimpleAnimation{
     }
 
     @Override
-    public float getRotation() {
-        return rotation;
-    }
-
-    @Override
     public boolean isAnimated() {
         return isAnimated;
-    }
-
-    @Override
-    public Point getLocationOnScreen() {
-        return locationOnScreen;
-    }
-
-    @Override
-    public float getElapsedTime(float delta) {
-        return elapsedTime += delta;
     }
 
     @Override
@@ -91,8 +75,4 @@ public class IdleAnimation implements SimpleAnimation{
         isAnimated = true;
     }
 
-    @Override
-    public void setNotAnimated() {
-        isAnimated = false;
-    }
 }

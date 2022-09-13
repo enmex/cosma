@@ -1,7 +1,5 @@
 package com.imit.cosma.gui.animation.compound;
 
-import static com.imit.cosma.config.Config.*;
-
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
@@ -10,7 +8,6 @@ import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
-import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
@@ -44,7 +41,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
         IdleAnimation enemyShipStanding = new IdleAnimation(
                 enemyShipAtlasPath,
                 Animation.PlayMode.LOOP,
-                screenPath.getSource(),
+                screenPath.getTarget(),
                 180 - defaultRotation
         );
 
@@ -83,7 +80,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
         for(Weapon weapon : weaponList){
-            SimpleMovementAnimation simpleMovementAnimation = new SimpleMovementAnimation(
+            SimpleMovementAnimation shotMovement = new SimpleMovementAnimation(
                     weapon.getShotAnimationPath(), weapon.getSound());
 
             IdleAnimation explosion = new IdleAnimation(
@@ -93,13 +90,13 @@ public class AttackSpaceshipAnimation extends AnimationType {
                     0
             );
 
-            simpleMovementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
+            shotMovement.init(screenPath.getSource().x, screenPath.getSource().y,
                     screenPath.getTarget().x, screenPath.getTarget().y,
                     defaultRotation
                             + datas.get(mainAnimationIndex).rotation
                             * Math.signum(screenPath.getSource().x
                             - screenPath.getTarget().x));
-            datas.get(mainAnimationIndex).phases.add(simpleMovementAnimation);
+            datas.get(mainAnimationIndex).phases.add(shotMovement);
             datas.get(mainAnimationIndex).phases.add(explosion);
         }
 

@@ -45,19 +45,6 @@ public class ContentAnimation {
 
     public void render(float delta){
         animationType.render(delta);
-        /*
-        for(AnimationData data : animationType.getDatas()) {
-            if(data.getCurrentPhase().isAnimated()) {
-                data.getCurrentPhase().render(delta);
-            }
-        }
-
-        setAnimationType(animationType);
-        if(isAnimated()) {
-            animationType.render(delta);
-        }
-
-         */
     }
 
     public boolean isAnimated(){

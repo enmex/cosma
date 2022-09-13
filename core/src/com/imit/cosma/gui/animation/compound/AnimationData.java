@@ -17,14 +17,9 @@ public class AnimationData {
     public Path getPath() {
         return path;
     }
-    public float getCurrentRotation(){
-        return phases.get(currentPhase).getRotation();
-    }
+
     public SimpleAnimation getCurrentPhase(){
         return phases.get(currentPhase);
     }
 
-    public float getElapsedTime(float delta) {
-        return phases.get(currentPhase).getElapsedTime(delta);
-    }
 }
