@@ -28,19 +28,17 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private float moveVelocityX, moveVelocityY;
     private boolean isAnimated;
 
-    private final Vector offset;
-    private Point departure, destination;
-
+    private Point targetLocation;
     private Point currentLocation;
 
     public SimpleMovementAnimation(String atlasPath, SoundType soundType){
-        offset = new Vector();
         movementSound = new SoundEffect(soundType);
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
 
-        animation = new Animation<TextureRegion>(getInstance().ANIMATION_DURATION,
-                atlas.findRegions(getInstance().MOVEMENT_ANIMATION_REGION_NAME));
+        animation = new Animation<TextureRegion>(getInstance().FRAME_DURATION,
+                atlas.findRegions(getInstance().MOVEMENT_ANIMATION_REGION_NAME),
+                Animation.PlayMode.LOOP);
 
         sprite = new Sprite();
         sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
@@ -75,8 +73,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         moveVelocityX = (float) (Math.abs(Math.cos(radians)) * velocity * Math.signum(destinationVector.getX()));
         moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity * Math.signum(destinationVector.getY()));
 
-        departure = new Point(fromX, fromY);
-        destination = new Point(toX, toY);
+        targetLocation = new Point(toX, toY);
 
         movementSound.playLoop();
     }
@@ -86,13 +83,11 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         elapsedTime += delta;
 
         if(isArrived()){
-            offset.set(destination.x - departure.x, destination.y - departure.y);
-            currentLocation.set(currentLocation.x + (int) offset.getX(), currentLocation.y + (int) offset.getY());
+            currentLocation.set(targetLocation);
             isAnimated = false;
             movementSound.stop();
         }
         else {
-            offset.add(moveVelocityX, moveVelocityY);
             currentLocation.add((int) moveVelocityX, (int) moveVelocityY);
             traveledDistance += Math.sqrt(moveVelocityX * moveVelocityX + moveVelocityY * moveVelocityY);
         }
@@ -113,6 +108,11 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
     public boolean isAnimated() {
         return isAnimated;
+    }
+
+    @Override
+    public void setNotAnimated() {
+        isAnimated = false;
     }
 
     public void setAnimated() {

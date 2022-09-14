@@ -37,8 +37,9 @@ public class IdleAnimation implements SimpleAnimation{
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
 
-        animation = new Animation<TextureRegion>(Config.getInstance().ANIMATION_DURATION,
-                atlas.findRegions(Config.getInstance().IDLE_ANIMATION_REGION_NAME));
+        animation = new Animation<TextureRegion>(getInstance().FRAME_DURATION,
+                atlas.findRegions(Config.getInstance().IDLE_ANIMATION_REGION_NAME),
+                playMode);
         batch = new SpriteBatch();
         sprite = new Sprite();
         sprite.setSize(Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
@@ -63,6 +64,10 @@ public class IdleAnimation implements SimpleAnimation{
         sprite.setRotation(rotation);
         sprite.draw(batch);
         batch.end();
+
+        if (animation.isAnimationFinished(elapsedTime)) {
+            isAnimated = false;
+        }
     }
 
     @Override
@@ -75,4 +80,8 @@ public class IdleAnimation implements SimpleAnimation{
         isAnimated = true;
     }
 
+    @Override
+    public void setNotAnimated() {
+        isAnimated = false;
+    }
 }

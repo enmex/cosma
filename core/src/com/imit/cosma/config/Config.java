@@ -19,6 +19,8 @@ public class Config {
     public int DEFAULT_SHIPS_NUMBER = 2;
     private static Config instance;
 
+    public float FRAME_DURATION = 1 / 8f;
+
     public int BLACK_HOLE_MAX_DAMAGE = 10000;
     public int ANIMATION_SPEED;
     public float ANIMATION_DURATION = 100;

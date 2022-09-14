@@ -6,4 +6,6 @@ public interface SimpleAnimation {
 
     boolean isAnimated();
     void setAnimated();
+
+    void setNotAnimated();
 }

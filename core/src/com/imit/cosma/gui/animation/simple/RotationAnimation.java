@@ -39,8 +39,9 @@ public class RotationAnimation implements SimpleAnimation{
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
 
-        animation = new Animation<TextureRegion>(getInstance().ANIMATION_DURATION,
-                atlas.findRegions(getInstance().IDLE_ANIMATION_REGION_NAME));
+        animation = new Animation<TextureRegion>(getInstance().FRAME_DURATION,
+                atlas.findRegions(getInstance().IDLE_ANIMATION_REGION_NAME),
+                Animation.PlayMode.LOOP);
 
         sprite = new Sprite();
         sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
@@ -86,6 +87,11 @@ public class RotationAnimation implements SimpleAnimation{
     @Override
     public void setAnimated(){
         isAnimated = true;
+    }
+
+    @Override
+    public void setNotAnimated() {
+        isAnimated = false;
     }
 
     private boolean isArrived(){

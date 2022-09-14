@@ -18,8 +18,10 @@ public class AttackSpaceshipAnimation extends AnimationType {
     private final boolean isKillAttack;
 
     private final List<Weapon> weaponList;
-    private final String playerShipAtlasPath, enemyShipAtlasPath, enemyShipDestructionAtlasPath;
+    private final String playerShipAtlasPath;
+    private final String enemyShipDestructionAtlasPath;
     private final int mainAnimationIndex;
+    private final int standingPlayerShipAnimationIndex;
 
     private Point sourceBoardCell;
 
@@ -27,34 +29,15 @@ public class AttackSpaceshipAnimation extends AnimationType {
         super(spaceshipPlayer.getWeapons().size() + 2, spaceshipPlayer.getSide().getDefaultRotation());
         this.weaponList = spaceshipPlayer.getWeapons();
         playerShipAtlasPath = spaceshipPlayer.getIdleAnimationPath();
-        enemyShipAtlasPath = spaceshipEnemy.getIdleAnimationPath();
         enemyShipDestructionAtlasPath = spaceshipEnemy.getSkeleton().getDestructionAnimationPath();
-        mainAnimationIndex = 1;
+        mainAnimationIndex = 0;
+        standingPlayerShipAnimationIndex = 1;
 
         isKillAttack = spaceshipPlayer.getDamage() >= spaceshipEnemy.getHealthPoints();
     }
 
     @Override
     public void init(Path boardPath, Path screenPath) {
-        //init static enemy spaceship
-        AnimationData staticEnemyShip = new AnimationData();
-        IdleAnimation enemyShipStanding = new IdleAnimation(
-                enemyShipAtlasPath,
-                Animation.PlayMode.LOOP,
-                screenPath.getTarget(),
-                180 - defaultRotation
-        );
-
-        enemyShipStanding.setAnimated();
-
-        staticEnemyShip.phases = new Array<>(1);
-        staticEnemyShip.phases.add(enemyShipStanding);
-        staticEnemyShip.offset = new Vector(screenPath.getTarget(), screenPath.getTarget());
-        staticEnemyShip.path = new Path(screenPath.getTarget(), screenPath.getTarget());
-        staticEnemyShip.currentPhase = 0;
-
-        datas.add(staticEnemyShip);
-
         super.init(boardPath, screenPath);
 
         this.sourceBoardCell = boardPath.getSource().clone();
@@ -132,10 +115,39 @@ public class AttackSpaceshipAnimation extends AnimationType {
     }
 
     @Override
+    public void render(float delta) {
+        AnimationData mainAnimationData = datas.get(mainAnimationIndex);
+
+        //render standing ship between first and last phases
+        AnimationData standingPlayerShipData = datas.get(standingPlayerShipAnimationIndex);
+        if(mainAnimationData.currentPhase > 0 && mainAnimationData.currentPhase < mainAnimationData.phases.size - 1){
+            standingPlayerShipData.getCurrentPhase().setAnimated();
+        }
+        else{
+            standingPlayerShipData.getCurrentPhase().setNotAnimated();
+
+        }
+        //render shots from second to last-1 phases
+        //standingEnemyShipData.phases.get(standingEnemyShipData.currentPhase).render(delta);
+        standingPlayerShipData.phases.get(standingPlayerShipData.currentPhase).render(delta);
+        mainAnimationData.phases.get(mainAnimationData.currentPhase).render(delta);
+
+        if (!mainAnimationData.phases.get(mainAnimationData.currentPhase).isAnimated()) {
+            mainAnimationData.currentPhase++;
+            if(mainAnimationData.currentPhase >= mainAnimationData.phases.size){
+                clear();
+            }
+            else {
+                mainAnimationData.phases.get(mainAnimationData.currentPhase).setAnimated();
+            }
+        }
+    }
+
+    @Override
     public boolean isAnimated(Point objectLocation) {
-        return datas.size != 0 && datas.get(mainAnimationIndex).getCurrentPhase().isAnimated() && (
-                sourceBoardCell.equals(objectLocation)
-                || targetBoardPoint.equals(objectLocation) );
+        return datas.size != 0
+                && datas.get(mainAnimationIndex).getCurrentPhase().isAnimated()
+                && sourceBoardCell.equals(objectLocation);
 
     }
 }
