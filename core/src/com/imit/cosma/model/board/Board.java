@@ -83,7 +83,7 @@ public class Board implements Cloneable {
         sides.add(enemySide);
 
         selectedPoint = new Point();
-
+        /*
         Point pShip = new Point(4, 4);
         Point eShip = new Point(0, 7);
 
@@ -108,9 +108,10 @@ public class Board implements Cloneable {
                 }
             }
         }
-        /*
+         */
+
         //initialise player ships
-        for (int y = 0; y < getInstance().SPACESHIP_ROWS; y++) {
+        for (int y = 0; y < 1; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
                         .addSkeleton()
@@ -122,7 +123,7 @@ public class Board implements Cloneable {
         }
 
         //initialise space cells
-        for (int y = getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE - getInstance().SPACESHIP_ROWS; y++) {
+        for (int y = 1; y < getInstance().BOARD_SIZE - 1; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
                 objectController.addSpace(x, y);
@@ -130,7 +131,7 @@ public class Board implements Cloneable {
         }
 
         //initialise enemy ships
-        for (int y = getInstance().BOARD_SIZE - getInstance().SPACESHIP_ROWS; y < getInstance().BOARD_SIZE; y++) {
+        for (int y = getInstance().BOARD_SIZE - 1; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
                         .addSkeleton()
@@ -139,7 +140,7 @@ public class Board implements Cloneable {
                 cells[y][x] = new Cell(spaceship);
                 objectController.addSpaceship(x, y);
             }
-        }*/
+        }
 
         turn = playerSide;
         interactedCells = new HashSet<>();
@@ -175,13 +176,13 @@ public class Board implements Cloneable {
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.MOVE);
                 setSelected(selectedPoint);
-                return new ShipMovingBoardState(turn.isPlayer() ? getCell(selectedPoint) : selected);
+                return new ShipMovingBoardState(turn.isPlayer() ? getCell(selectedPoint) : selected, currentPath);
             } else if (selectedCanFireTo(selectedPoint)) {
                 damageShip(selectedPoint, selected.getDamageAmount());
 
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.ATTACK);
-                return new ShipAttackingOneTargetBoardState(selected, interacted);
+                return new ShipAttackingOneTargetBoardState(selected, interacted, currentPath);
             }
         }
         setSelected(selectedPoint);
@@ -212,12 +213,12 @@ public class Board implements Cloneable {
 
                 setSelectedEnemyTurn(target);
 
-                return new ShipMovingBoardState(selected);
+                return new ShipMovingBoardState(selected, currentPath);
             } else if (selectedCanFireTo(target)) {
                 damageShip(target, selected.getDamageAmount());
                 turn.updateTurns();
 
-                return new ShipAttackingOneTargetBoardState(selected, interacted);
+                return new ShipAttackingOneTargetBoardState(selected, interacted, currentPath);
             }
         }
         return new IdleBoardState();

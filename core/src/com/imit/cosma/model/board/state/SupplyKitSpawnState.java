@@ -3,6 +3,7 @@ package com.imit.cosma.model.board.state;
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.gui.animation.compound.SupplyKitSpawnAnimation;
 import com.imit.cosma.model.board.content.SupplyKit;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 public class SupplyKitSpawnState implements BoardState {
@@ -27,5 +28,15 @@ public class SupplyKitSpawnState implements BoardState {
     @Override
     public boolean affectsManyCells() {
         return false;
+    }
+
+    @Override
+    public boolean isSpawnState() {
+        return true;
+    }
+
+    @Override
+    public Path getUpdatedObjectLocation() {
+        return new Path(spawnPoint, spawnPoint);
     }
 }

@@ -83,14 +83,14 @@ public class PlayingField {
             if(!boardState.isIdle()) {
                 Path currentPath = board.getCurrentPath();
 
-                if (boardState.affectsManyCells()) {
-                    for (AnimatedSprite sprite : animatedSprites) {
-                        if (sprite.getLocationOnScreen().equals(toScreenPoint(currentPath.getSource()))) {
-                            sprite.setLocationOnScreen(toScreenPoint(currentPath.getTarget()));
-                            break;
-                        }
+                for (AnimatedSprite sprite : animatedSprites) {
+                    if (sprite.getLocationOnScreen().equals(toScreenPoint(boardState.getUpdatedObjectLocation().getSource()))) {
+                        sprite.setLocationOnScreen(toScreenPoint(boardState.getUpdatedObjectLocation().getTarget()));
+                        break;
                     }
+                }
 
+                if (boardState.affectsManyCells()) {
                     contentAnimation.init(boardState.getAnimationType(), currentPath, cellWidth, cellHeight, boardY);
                 } else {
                     contentAnimation.init(boardState.getAnimationType(), board.getCurrentContentSpawnPoint(), cellWidth, cellHeight, boardY);

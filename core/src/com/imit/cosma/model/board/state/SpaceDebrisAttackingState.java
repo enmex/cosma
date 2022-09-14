@@ -3,6 +3,7 @@ package com.imit.cosma.model.board.state;
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
+import com.imit.cosma.util.Path;
 
 public class SpaceDebrisAttackingState implements BoardState {
     private SpaceDebris spaceDebris;
@@ -24,5 +25,15 @@ public class SpaceDebrisAttackingState implements BoardState {
     @Override
     public boolean affectsManyCells() {
         return true;
+    }
+
+    @Override
+    public boolean isSpawnState() {
+        return false;
+    }
+
+    @Override
+    public Path getUpdatedObjectLocation() {
+        return null;
     }
 }

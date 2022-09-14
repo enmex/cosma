@@ -4,12 +4,15 @@ import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.gui.animation.compound.ShipMovementAnimation;
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.spaceship.Spaceship;
+import com.imit.cosma.util.Path;
 
 public class ShipMovingBoardState implements BoardState{
     private Cell cell;
+    private Path updatedLocation;
 
-    public ShipMovingBoardState(Cell cell) {
+    public ShipMovingBoardState(Cell cell, Path updatedLocation) {
         this.cell = cell;
+        this.updatedLocation = updatedLocation;
     }
 
     @Override
@@ -25,5 +28,15 @@ public class ShipMovingBoardState implements BoardState{
     @Override
     public boolean affectsManyCells() {
         return true;
+    }
+
+    @Override
+    public boolean isSpawnState() {
+        return false;
+    }
+
+    @Override
+    public Path getUpdatedObjectLocation() {
+        return updatedLocation;
     }
 }

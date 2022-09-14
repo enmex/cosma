@@ -3,6 +3,7 @@ package com.imit.cosma.model.board.state;
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.gui.animation.compound.BlackHoleSpawnAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 public class BlackHoleSpawnState implements BoardState {
@@ -33,5 +34,15 @@ public class BlackHoleSpawnState implements BoardState {
     @Override
     public boolean affectsManyCells() {
         return false;
+    }
+
+    @Override
+    public Path getUpdatedObjectLocation() {
+        return null;
+    }
+
+    @Override
+    public boolean isSpawnState() {
+        return true;
     }
 }

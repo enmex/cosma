@@ -16,7 +16,7 @@ import com.imit.cosma.model.rules.move.QueenMovingStyle;
 import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
 
 public class Config {
-    public int DEFAULT_SHIPS_NUMBER = 2;
+    public int DEFAULT_SHIPS_NUMBER = 8;
     private static Config instance;
 
     public float FRAME_DURATION = 1 / 8f;
