@@ -41,7 +41,7 @@ public class Board implements Cloneable {
 
     private Cell[][] cells;
     private Cell selected;
-    private Cell interacted;
+    private final Cell interacted;
     private Set<Point> interactedCells;
 
     private int turnCount;
@@ -58,8 +58,10 @@ public class Board implements Cloneable {
 
     private Set<Point> availableForMove, availableForAttack;
 
-    private Side playerSide, enemySide, neutralSide;
-    private PingPongList<Side> sides;
+    private Side playerSide;
+    private Side enemySide;
+    private final Side neutralSide;
+    private final PingPongList<Side> sides;
 
     public Board() {
         cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
@@ -160,7 +162,7 @@ public class Board implements Cloneable {
             } else if (turn instanceof EnemySide) {
                 return calculateCurrentEnemyState();
             } else {
-                return new IdleBoardState();
+                return calculateCurrentOtherState();
             }
         }
         return new IdleBoardState();

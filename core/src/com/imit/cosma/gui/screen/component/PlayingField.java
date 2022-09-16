@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.ContentAnimation;
@@ -48,8 +49,10 @@ public class PlayingField {
     private final ContentAnimation contentAnimation;
 
     private final List<AnimatedSprite> animatedSprites;
+    private final ShapeRenderer shapeRenderer;
 
     public PlayingField(){
+        shapeRenderer = new ShapeRenderer();
         board = new Board();
         board.initAI();
         contentAnimation = new ContentAnimation();
@@ -114,6 +117,19 @@ public class PlayingField {
         batch.begin();
         batch.draw(grid, boardX,  boardY, boardWidth, boardHeight);
         batch.end();
+
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Point screenLocation = toScreenPoint(new Point(x, y));
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(Color.YELLOW);
+                shapeRenderer.rect(
+                        screenLocation.x + cellWidth / 2f,
+                        screenLocation.y + cellHeight / 2f,
+                        5, 5);
+                shapeRenderer.end();
+            }
+        }
     }
 
     private void drawSelected(Point touchPoint){

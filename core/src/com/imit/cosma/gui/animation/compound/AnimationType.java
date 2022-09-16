@@ -68,6 +68,7 @@ public abstract class AnimationType {
             }
         }
     }
+
     public abstract boolean isAnimated(Point objectLocation);
     public boolean isAnimated(){
         return datas.size != 0 && targetBoardPoint.x != -1 && targetBoardPoint.y != -1;
