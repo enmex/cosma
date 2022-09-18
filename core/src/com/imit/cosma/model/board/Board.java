@@ -35,14 +35,12 @@ import java.util.Set;
 public class Board implements Cloneable {
     private Set<IntegerPoint> emptySet;
 
-    private ObjectController objectController;
+    private final ObjectController objectController;
 
     private Cell[][] cells;
     private Cell selected;
     private final Cell interacted;
     private Set<IntegerPoint> interactedCells;
-
-    private int turnCount;
 
     private Side turn;
 
@@ -166,26 +164,26 @@ public class Board implements Cloneable {
         return new IdleBoardState();
     }
 
-    public BoardState calculateCurrentPlayerState(IntegerPoint selectedPoint){
-        currentPath = new Path(this.selectedPoint.clone(), selectedPoint);
+    public BoardState calculateCurrentPlayerState(IntegerPoint targetPoint){
+        currentPath = new Path(this.selectedPoint, targetPoint);
 
         if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
-            if (selectedCanMoveTo(selectedPoint)) {
-                setSelectedPosition(selectedPoint);
+            if (selectedCanMoveTo(targetPoint)) {
+                setSelectedPosition(targetPoint);
 
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.MOVE);
-                setSelected(selectedPoint);
-                return new ShipMovingBoardState(turn.isPlayer() ? getCell(selectedPoint) : selected, currentPath);
-            } else if (selectedCanFireTo(selectedPoint)) {
-                damageShip(selectedPoint, selected.getDamageAmount());
+                setSelected(targetPoint);
+                return new ShipMovingBoardState(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
+            } else if (selectedCanFireTo(targetPoint)) {
+                damageShip(targetPoint, selected.getDamageAmount());
 
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.ATTACK);
                 return new ShipAttackingOneTargetBoardState(selected, interacted, currentPath);
             }
         }
-        setSelected(selectedPoint);
+        setSelected(targetPoint);
         return new IdleBoardState();
     }
 
@@ -225,7 +223,7 @@ public class Board implements Cloneable {
     }
 
     public void updateSide(){
-        if(sideCompletedTurn()){
+        if(turn.completedTurn()){
             changeTurn();
 
             for(IntegerPoint point : interactedCells){
@@ -241,10 +239,6 @@ public class Board implements Cloneable {
 
     public boolean isShip(int x, int y) {
         return cells[y][x].isShip();
-    }
-
-    public boolean containsContent(int x, int y) {
-        return !objectController.isEmpty(x, y);
     }
 
     public boolean isShipSelected() {
@@ -419,8 +413,12 @@ public class Board implements Cloneable {
         selectedPoint.set(target);
 
         if(selected.isShip()) {
-            availableForAttack = selected.getStepMode() == StepMode.ATTACK ? Attack.getAvailable(this, selectedPoint) : emptySet;
-            availableForMove = selected.getStepMode() == StepMode.MOVE ? selected.getMoveType().getMove().getAvailable(this, selectedPoint) : emptySet;
+            availableForAttack = selected.getStepMode() == StepMode.ATTACK
+                    ? Attack.getAvailable(this, selectedPoint)
+                    : emptySet;
+            availableForMove = selected.getStepMode() == StepMode.MOVE
+                    ? selected.getMoveType().getMove().getAvailable(this, selectedPoint)
+                    : emptySet;
         }
     }
 
@@ -446,10 +444,6 @@ public class Board implements Cloneable {
 
     public int getDamagePoints(int x, int y) {
         return cells[y][x].getDamageAmount();
-    }
-
-    public boolean isGameObject(int x, int y) {
-        return cells[y][x].isGameObject();
     }
 
     public void set(Board board){
@@ -499,23 +493,22 @@ public class Board implements Cloneable {
         return board;
     }
 
-    //TODO refactor
     public BoardState calculateCurrentOtherState() {
-        double spaceWeatherSpawnChance = 0.2; //TODO config
-        double supplyKitSpawnChance = 0.7;
+        turn.updateTurns();
+
         double generatedValue = Math.random();
-        if (Math.random() < 0.5) {
-            if (generatedValue < spaceWeatherSpawnChance) {
-                return calculateSpawnBlackHoleState();
-            } else {
-                objectController.clearGameObjects();
-            }
-        } else {
-            if (generatedValue < supplyKitSpawnChance) {
-                return calculateSupplyKitSpawnState();
-            } else {
-                objectController.clearGameObjects();
-            }
+        if (generatedValue < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
+            return calculateSpaceDebrisSpawnState();
+        }
+
+        generatedValue = Math.random();
+        if (generatedValue < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
+            return calculateSpawnBlackHoleState();
+        }
+
+        generatedValue = Math.random();
+        if (generatedValue < getInstance().SUPPLY_KIT_SPAWN_CHANCE) {
+            return calculateSupplyKitSpawnState();
         }
 
         return new IdleBoardState();
@@ -580,8 +573,7 @@ public class Board implements Cloneable {
         supplyKit = randomValue == 0 ? new HealthKit() : new DamageKit();
         Cell cell = new Cell(supplyKit);
         setCell(spawnPoint, cell);
-        
-        //return new SupplyKitSpawnState(spawnPoint, supplyKit);
+
         return new IdleBoardState();
     }
 
@@ -593,10 +585,6 @@ public class Board implements Cloneable {
         turn.resetTurns();
         sides.next();
         turn = sides.get();
-    }
-
-    public boolean sideCompletedTurn() {
-        return turn.getTurns() == 2 || turn.getTurns() == 1 && (turn.getShipsNumber() == 1 && availableForAttack.isEmpty() || turn instanceof NeutralSide);
     }
 
     public boolean isGameOver() {
@@ -623,7 +611,7 @@ public class Board implements Cloneable {
     public int hashCode() {
         int result = Objects.hash(emptySet, selected, interacted,
                 interactedCells,
-                turnCount, turn, selectedPoint, playerAdvantagePoints,
+                turn, selectedPoint, playerAdvantagePoints,
                 enemyAdvantagePoints, enemy, currentPath, availableForMove,
                 availableForAttack, playerSide, enemySide, neutralSide);
         result = 31 * result + Arrays.hashCode(cells);

@@ -15,20 +15,17 @@ import com.imit.cosma.gui.screen.component.infopanel.InfoComponent;
 import com.imit.cosma.gui.screen.component.PlayingField;
 
 public class GameScreen implements Screen {
-    private Player player;
+    private final Player player;
 
-    private PlayingField playingField;
-    private InfoComponent infoPanel;
-    private ScoreComponent scoreComponent;
+    private final PlayingField playingField;
+    private final InfoComponent infoPanel;
+    private final ScoreComponent scoreComponent;
 
-    private Texture background;
+    private final Texture background;
 
-    private SpriteBatch batch;
+    private final SpriteBatch batch;
 
-    private int worldWidth;
-    private int worldHeight;
-
-    private BitmapFont font;
+    private final BitmapFont font;
 
     public GameScreen(){
         player = new Player();
@@ -37,9 +34,6 @@ public class GameScreen implements Screen {
         background = new Texture(getInstance().BACKGROUND_PATH);
 
         batch = new SpriteBatch();
-
-        worldWidth = Gdx.graphics.getWidth();
-        worldHeight = Gdx.graphics.getHeight();
 
         scoreComponent = new ScoreComponent();
 
@@ -53,9 +47,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
         batch.begin();
-        batch.draw(background, 0, 0, worldWidth, worldHeight);
+        batch.draw(background, 0, 0, getInstance().WORLD_WIDTH, getInstance().WORLD_HEIGHT);
         batch.end();
 
         if(player.touchedScreen() || playingField.isEnemyTurn()){
@@ -76,12 +69,7 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-        worldWidth = width;
-        worldHeight = height;
-        infoPanel.resize(width, height);
-        scoreComponent.resize(width, height);
-    }
+    public void resize(int width, int height) {}
 
     @Override
     public void pause() {}
@@ -101,8 +89,8 @@ public class GameScreen implements Screen {
     private void drawFont() {
         batch.begin();
         font.draw(batch, "GAME OVER",
-                0, (float) worldHeight / 2,
-                worldWidth, 1, true);
+                0, (float) getInstance().WORLD_HEIGHT / 2,
+                getInstance().WORLD_WIDTH, 1, true);
         batch.end();
     }
 }

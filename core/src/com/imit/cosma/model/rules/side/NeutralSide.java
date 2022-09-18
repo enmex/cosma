@@ -15,4 +15,9 @@ public class NeutralSide extends Side{
     public Side clone() {
         return new NeutralSide();
     }
+
+    @Override
+    public boolean completedTurn() {
+        return turns == 1;
+    }
 }

@@ -49,6 +49,9 @@ public class Config {
     public TextureRegion GAME_OBJECTS_ATLAS;
 
     public Space SPACE;
+    public float SPACE_DEBRIS_SPAWN_CHANCE = 0.05f;
+    public float BLACK_HOLE_SPAWN_CHANCE = 0.1f;
+    public float SUPPLY_KIT_SPAWN_CHANCE = 0.4f;
 
     public int WORLD_WIDTH = Gdx.graphics.getWidth();
     public int WORLD_HEIGHT = Gdx.graphics.getHeight();

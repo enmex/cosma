@@ -11,8 +11,8 @@ public class Path {
         to = new IntegerPoint(toX, toY);
     }
     public Path(IntegerPoint from, IntegerPoint to){
-        this.from = from;
-        this.to = to;
+        this.from = new IntegerPoint(from);
+        this.to = new IntegerPoint(to);
     }
     public Path(){
         from = new IntegerPoint();
