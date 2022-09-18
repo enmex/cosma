@@ -2,41 +2,41 @@ package com.imit.cosma.util;
 
 import java.util.Objects;
 
-public class Point {
+public class FloatPoint {
+    public float x;
+    public float y;
 
-    public int x, y;
-
-    public Point(){
-        x = 0;
-        y = 0;
+    public FloatPoint(){
+        x = 0f;
+        y = 0f;
     }
 
-    public Point(Point another) {
+    public FloatPoint(FloatPoint another) {
         this.x = another.x;
         this.y = another.y;
     }
 
-    public Point(int x, int y){
+    public FloatPoint(float x, float y){
         this.x = x;
         this.y = y;
     }
 
-    public void move(int x, int y){
+    public void move(float x, float y){
         this.x += x;
         this.y += y;
     }
 
-    public void set(int x, int y){
+    public void set(float x, float y){
         this.x = x;
         this.y = y;
     }
 
-    public void add(int x, int y) {
+    public void add(float x, float y) {
         this.x += x;
         this.y += y;
     }
 
-    public void set(Point newPoint) {
+    public void set(FloatPoint newPoint) {
         set(newPoint.x, newPoint.y);
     }
 
@@ -45,15 +45,15 @@ public class Point {
     }
 
 
-    public Point clone() {
-        return new Point(x, y);
+    public FloatPoint clone() {
+        return new FloatPoint(x, y);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Point point = (Point) o;
+        FloatPoint point = (FloatPoint) o;
         return x == point.x && y == point.y;
     }
 

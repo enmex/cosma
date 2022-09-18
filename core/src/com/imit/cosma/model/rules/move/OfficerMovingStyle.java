@@ -1,7 +1,7 @@
 package com.imit.cosma.model.rules.move;
 
 import com.imit.cosma.ai.ArtificialBoard;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.Direction;
 
@@ -11,8 +11,8 @@ import java.util.Set;
 public final class OfficerMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailable(Board board, Point target) {
-        Set<Point> availableCells = new HashSet<>();
+    public Set<IntegerPoint> getAvailable(Board board, IntegerPoint target) {
+        Set<IntegerPoint> availableCells = new HashSet<>();
 
         int x = target.x;
         int y = target.y;
@@ -21,7 +21,7 @@ public final class OfficerMovingStyle implements MovingStyle {
             int fromX = x;
             int fromY = y;
             while(board.isPassable(fromX + direction.getOffsetX(), fromY + direction.getOffsetY())){
-                availableCells.add(new Point(fromX + direction.getOffsetX(), fromY + direction.getOffsetY()));
+                availableCells.add(new IntegerPoint(fromX + direction.getOffsetX(), fromY + direction.getOffsetY()));
                 fromX += direction.getOffsetX();
                 fromY += direction.getOffsetY();
             }
@@ -31,8 +31,8 @@ public final class OfficerMovingStyle implements MovingStyle {
     }
 
     @Override
-    public Set<Point> getAvailable(ArtificialBoard board, Point target) {
-        Set<Point> availableCells = new HashSet<>();
+    public Set<IntegerPoint> getAvailable(ArtificialBoard board, IntegerPoint target) {
+        Set<IntegerPoint> availableCells = new HashSet<>();
 
         int x = target.x;
         int y = target.y;
@@ -41,7 +41,7 @@ public final class OfficerMovingStyle implements MovingStyle {
             int fromX = x;
             int fromY = y;
             while(board.isPassable(fromX + direction.getOffsetX(), fromY + direction.getOffsetY())){
-                availableCells.add(new Point(fromX + direction.getOffsetX(), fromY + direction.getOffsetY()));
+                availableCells.add(new IntegerPoint(fromX + direction.getOffsetX(), fromY + direction.getOffsetY()));
                 fromX += direction.getOffsetX();
                 fromY += direction.getOffsetY();
             }

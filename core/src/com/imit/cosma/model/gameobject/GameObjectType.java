@@ -1,17 +1,17 @@
 package com.imit.cosma.model.gameobject;
 
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public enum GameObjectType {
-    HEALTH_KIT(new Point(0, 128)),
-    DAMAGE_KIT(new Point(0, 256));
+    HEALTH_KIT(new IntegerPoint(0, 128)),
+    DAMAGE_KIT(new IntegerPoint(0, 256));
 
-    private Point atlasPoint;
-    GameObjectType(Point atlasPoint) {
+    private IntegerPoint atlasPoint;
+    GameObjectType(IntegerPoint atlasPoint) {
         this.atlasPoint = atlasPoint;
     }
 
-    public Point getAtlasPoint() {
+    public IntegerPoint getAtlasPoint() {
         return atlasPoint;
     }
 }

@@ -1,30 +1,25 @@
 package com.imit.cosma.gui.animation.compound;
 
-import static com.imit.cosma.config.Config.getInstance;
-
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public class BlackHoleSpawnAnimation extends AnimationType{
-    private Point spawnPoint;
+    private IntegerPoint spawnPoint;
     private Spaceship victimSpaceship;
 
-    public BlackHoleSpawnAnimation(Point spawnPoint) {
+    public BlackHoleSpawnAnimation(IntegerPoint spawnPoint) {
         super(2, 0);
         this.spawnPoint = spawnPoint;
     }
 
-    public BlackHoleSpawnAnimation(Point spawnPoint, Spaceship victimSpaceship) {
+    public BlackHoleSpawnAnimation(IntegerPoint spawnPoint, Spaceship victimSpaceship) {
         super(3, 0);
         this.victimSpaceship = victimSpaceship;
         this.spawnPoint = spawnPoint;
     }
 
     @Override
-    public boolean isAnimated(Point objectLocation) {
+    public boolean isAnimated(IntegerPoint objectLocation) {
         return spawnPoint.equals(objectLocation) && datas.get(0).getCurrentPhase().isAnimated();
     }
 
@@ -34,7 +29,7 @@ public class BlackHoleSpawnAnimation extends AnimationType{
     }
 
     @Override
-    public void init(Point boardPoint, Point screenPoint) {
+    public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
         super.init(boardPoint, screenPoint);
 
         AnimationData blackHoleSpawnAnimation = datas.get(0);

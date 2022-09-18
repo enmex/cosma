@@ -2,7 +2,6 @@ package com.imit.cosma.model.board.content;
 
 import com.imit.cosma.model.gameobject.GameObjectType;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.util.Point;
 
 public class HealthKit extends SupplyKit {
     private int healthPoints;

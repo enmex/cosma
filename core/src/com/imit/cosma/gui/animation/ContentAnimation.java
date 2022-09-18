@@ -3,7 +3,7 @@ package com.imit.cosma.gui.animation;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public class ContentAnimation {
     private AnimationType animationType;
@@ -21,11 +21,11 @@ public class ContentAnimation {
 
     public void init(AnimationType animationType, Path boardPath, Path screenPath){
         Path originCenterScreenPath = new Path(
-                new Point(
+                new IntegerPoint(
                         screenPath.getSource().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
                         screenPath.getSource().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
                 ),
-                new Point(
+                new IntegerPoint(
                         screenPath.getTarget().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
                         screenPath.getTarget().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
                 )
@@ -36,8 +36,8 @@ public class ContentAnimation {
 
     }
 
-    public void init(AnimationType animationType, Point boardPoint, Point screenPoint) {
-        Point originBasedScreenPoint = new Point(
+    public void init(AnimationType animationType, IntegerPoint boardPoint, IntegerPoint screenPoint) {
+        IntegerPoint originBasedScreenPoint = new IntegerPoint(
                 screenPoint.x + Config.getInstance().BOARD_CELL_WIDTH / 2,
                 screenPoint.y + + Config.getInstance().BOARD_CELL_HEIGHT / 2
         );
@@ -54,7 +54,7 @@ public class ContentAnimation {
         return animationType != null && animationType.isAnimated();
     }
 
-    public boolean isAnimatedObject(Point objectLocation){
+    public boolean isAnimatedObject(IntegerPoint objectLocation){
         return animationType != null && animationType.isAnimated(objectLocation);
     }
 }

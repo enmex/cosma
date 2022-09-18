@@ -9,7 +9,7 @@ import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
     private final int mainAnimationIndex;
     private final int standingPlayerShipAnimationIndex;
 
-    private Point sourceBoardCell;
+    private IntegerPoint sourceBoardCell;
 
     public AttackSpaceshipAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
         super(spaceshipPlayer.getWeapons().size() + 2, spaceshipPlayer.getSide().getDefaultRotation());
@@ -144,7 +144,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
     }
 
     @Override
-    public boolean isAnimated(Point objectLocation) {
+    public boolean isAnimated(IntegerPoint objectLocation) {
         return datas.size != 0
                 && datas.get(mainAnimationIndex).getCurrentPhase().isAnimated()
                 && sourceBoardCell.equals(objectLocation);

@@ -12,7 +12,7 @@ import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.state.BoardState;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -40,25 +40,25 @@ public class PlayingField {
         batch = new SpriteBatch();
 
         animatedSprites = new ArrayList<>(Config.getInstance().BOARD_SIZE * Config.getInstance().BOARD_SIZE);
-        for (Point location : board.getNonEmptyLocations()) {
+        for (IntegerPoint location : board.getNonEmptyLocations()) {
             animatedSprites.add(new AnimatedSprite(1/3f,
                     board.getIdleAnimationPath(location), toScreenPoint(location),
                     board.getDefaultRotation(location)));
         }
     }
 
-    public void render(float delta, Point touchPoint){
-        if(!touchPoint.hasZero() && !animationPlays() && !isEnemyTurn()) {
+    public void render(float delta, IntegerPoint touchPoint){
+        if(!touchPoint.hasZero() && boardIsNotAnimated() && !isEnemyTurn()) {
             drawSelected(touchPoint);
         }
         drawGrid();
         drawBoardObjects(delta);
     }
 
-    public void updateField(Point touchPoint) {
-        Point selected = getSelectedBoardPoint(touchPoint);
+    public void updateField(IntegerPoint touchPoint) {
+        IntegerPoint selected = getSelectedBoardPoint(touchPoint);
 
-        if(!animationPlays() && !isGameOver() && !board.isLoading()){
+        if(boardIsNotAnimated() && !isGameOver() && !board.isLoading()){
             BoardState boardState = board.getCurrentState(selected);
             if(!boardState.isIdle()) {
                 Path currentPath = board.getCurrentPath();
@@ -86,8 +86,8 @@ public class PlayingField {
         }
     }
 
-    private Point getSelectedBoardPoint(Point touchPoint) {
-        return new Point(getBoardX(touchPoint.x)/Config.getInstance().BOARD_CELL_WIDTH,
+    private IntegerPoint getSelectedBoardPoint(IntegerPoint touchPoint) {
+        return new IntegerPoint(getBoardX(touchPoint.x)/Config.getInstance().BOARD_CELL_WIDTH,
                 (getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y)
                         - Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT);
     }
@@ -105,7 +105,7 @@ public class PlayingField {
         batch.end();
     }
 
-    private void drawSelected(Point touchPoint){
+    private void drawSelected(IntegerPoint touchPoint){
         if(inBoard(touchPoint)) {
             batch.begin();
             batch.draw(selectedCell, getBoardX(touchPoint.x),
@@ -135,7 +135,7 @@ public class PlayingField {
     private void drawAvailableCells() {
         batch.begin();
 
-        for (Point point : board.getAvailableCellsForMove()) {
+        for (IntegerPoint point : board.getAvailableCellsForMove()) {
             selectedCell.setColor(Color.GREEN);
             selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,
                     point.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y,
@@ -143,7 +143,7 @@ public class PlayingField {
             selectedCell.draw(batch);
         }
 
-        for(Point point : board.getAvailableCellsForFire()){
+        for(IntegerPoint point : board.getAvailableCellsForFire()){
             selectedCell.setColor(Color.RED);
             selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,
                     point.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y,
@@ -166,7 +166,7 @@ public class PlayingField {
         }
     }
 
-    private boolean inBoard(Point touchPoint){
+    private boolean inBoard(IntegerPoint touchPoint){
         return touchPoint.x >= 0 && touchPoint.x <= Config.getInstance().BOARD_WIDTH
                 && Config.getInstance().WORLD_HEIGHT - touchPoint.y >=
                 Config.getInstance().BOARD_Y && Config.getInstance().WORLD_HEIGHT - touchPoint.y
@@ -182,8 +182,8 @@ public class PlayingField {
                 * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y;
     }
 
-    private boolean animationPlays(){
-        return contentAnimation.isAnimated();
+    private boolean boardIsNotAnimated(){
+        return !contentAnimation.isAnimated();
     }
 
     public boolean isEnemyTurn(){
@@ -194,14 +194,14 @@ public class PlayingField {
         return board.isGameOver();
     }
 
-    private Point toScreenPoint(Point boardPoint) {
-        return new Point(boardPoint.x * Config.getInstance().BOARD_CELL_WIDTH,
+    private IntegerPoint toScreenPoint(IntegerPoint boardPoint) {
+        return new IntegerPoint(boardPoint.x * Config.getInstance().BOARD_CELL_WIDTH,
                 boardPoint.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y
         );
     }
 
-    private Point toBoardPoint(Point screenPoint) {
-        return new Point(
+    private IntegerPoint toBoardPoint(IntegerPoint screenPoint) {
+        return new IntegerPoint(
                 screenPoint.x / Config.getInstance().BOARD_CELL_WIDTH,
                 (screenPoint.y - Config.getInstance().BOARD_Y) / Config.getInstance().BOARD_CELL_HEIGHT
         );

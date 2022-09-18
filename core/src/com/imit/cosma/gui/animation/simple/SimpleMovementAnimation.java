@@ -12,7 +12,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.imit.cosma.pkg.sound.SoundEffect;
 import com.imit.cosma.pkg.sound.SoundType;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.FloatPoint;
+import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 
 public class SimpleMovementAnimation implements SimpleAnimation{
@@ -30,14 +31,10 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private float moveVelocityX, moveVelocityY;
     private boolean isAnimated;
 
-    private Point sourceLocation;
-    private Point targetLocation;
-    private Point currentLocation;
-
-    private ShapeRenderer shapeRenderer;
+    private FloatPoint targetLocation;
+    private FloatPoint currentLocation;
 
     public SimpleMovementAnimation(String atlasPath, SoundType soundType){
-        shapeRenderer = new ShapeRenderer();
         movementSound = new SoundEffect(soundType);
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
@@ -58,8 +55,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     public void init(int fromX, int fromY, int toX, int toY, float rotation) {
         this.rotation = rotation;
 
-        currentLocation = new Point(fromX, fromY);
-        sourceLocation = new Point(fromX, fromY);
+        currentLocation = new FloatPoint(fromX, fromY);
 
         Vector destinationVector = new Vector(
                 toX - fromX,
@@ -80,7 +76,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         moveVelocityX = (float) (Math.abs(Math.cos(radians)) * velocity * Math.signum(destinationVector.getX()));
         moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity * Math.signum(destinationVector.getY()));
 
-        targetLocation = new Point(toX, toY);
+        targetLocation = new FloatPoint(toX, toY);
 
         movementSound.playLoop();
     }
@@ -95,7 +91,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
             movementSound.stop();
         }
         else {
-            currentLocation.add((int) moveVelocityX, (int) moveVelocityY);
+            currentLocation.move(moveVelocityX, moveVelocityY);
             traveledDistance += Math.sqrt(moveVelocityX * moveVelocityX + moveVelocityY * moveVelocityY);
         }
 
@@ -107,14 +103,6 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         sprite.setRotation(rotation);
         sprite.draw(batch);
         batch.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        /*shapeRenderer.rect((float) sourceLocation.x, (float) sourceLocation.y, (float) sourceLocation.x,
-                (float) sourceLocation.y, 5f, (float) distance, 1f, 1f, 0);
-        */
-        shapeRenderer.line(sourceLocation.x, sourceLocation.y, targetLocation.x, targetLocation.y);
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.end();
     }
 
     private boolean isArrived(){

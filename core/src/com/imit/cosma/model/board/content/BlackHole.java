@@ -4,7 +4,6 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.pkg.sound.SoundType;
-import com.imit.cosma.util.Point;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 

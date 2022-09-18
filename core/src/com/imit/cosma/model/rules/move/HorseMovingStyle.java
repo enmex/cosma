@@ -1,7 +1,7 @@
 package com.imit.cosma.model.rules.move;
 
 import com.imit.cosma.ai.ArtificialBoard;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.model.board.Board;
 
@@ -25,15 +25,15 @@ public class HorseMovingStyle implements MovingStyle {
     }
 
     @Override
-    public Set<Point> getAvailable(Board board, Point target) {
-        Set<Point> availablePoints = new HashSet<>();
+    public Set<IntegerPoint> getAvailable(Board board, IntegerPoint target) {
+        Set<IntegerPoint> availablePoints = new HashSet<>();
 
         int x = target.x;
         int y = target.y;
 
         for(Vector vector : offsets){
             if(board.isPassable((int) (x + vector.getX()), (int) (y + vector.getY()))){
-                availablePoints.add(new Point((int)(x + vector.getX()), (int)(y + vector.getY())));
+                availablePoints.add(new IntegerPoint((int)(x + vector.getX()), (int)(y + vector.getY())));
             }
         }
 
@@ -41,15 +41,15 @@ public class HorseMovingStyle implements MovingStyle {
     }
 
     @Override
-    public Set<Point> getAvailable(ArtificialBoard board, Point target) {
-        Set<Point> availablePoints = new HashSet<>();
+    public Set<IntegerPoint> getAvailable(ArtificialBoard board, IntegerPoint target) {
+        Set<IntegerPoint> availablePoints = new HashSet<>();
 
         int x = target.x;
         int y = target.y;
 
         for(Vector vector : offsets){
             if(board.isPassable((int)(x + vector.getX()), (int)(y + vector.getY()))){
-                availablePoints.add(new Point((int)(x + vector.getX()), (int)(y + vector.getY())));
+                availablePoints.add(new IntegerPoint((int)(x + vector.getX()), (int)(y + vector.getY())));
             }
         }
 

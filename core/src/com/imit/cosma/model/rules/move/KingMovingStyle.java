@@ -2,7 +2,7 @@ package com.imit.cosma.model.rules.move;
 
 import com.imit.cosma.ai.ArtificialBoard;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.Direction;
 
@@ -13,8 +13,8 @@ import java.util.Set;
 public final class KingMovingStyle implements MovingStyle {
 
     @Override
-    public Set<Point> getAvailable(Board board, Point target) {
-        Set<Point> points = new HashSet<>();
+    public Set<IntegerPoint> getAvailable(Board board, IntegerPoint target) {
+        Set<IntegerPoint> points = new HashSet<>();
 
         int x = target.x;
         int y = target.y;
@@ -27,15 +27,15 @@ public final class KingMovingStyle implements MovingStyle {
 
             if(inBoard(neighborX, neighborY)
                 && board.isPassable(neighborX, neighborY)){
-                points.add(new Point(neighborX, neighborY));
+                points.add(new IntegerPoint(neighborX, neighborY));
             }
         }
         return points;
     }
 
     @Override
-    public Set<Point> getAvailable(ArtificialBoard board, Point target) {
-        Set<Point> points = new HashSet<>();
+    public Set<IntegerPoint> getAvailable(ArtificialBoard board, IntegerPoint target) {
+        Set<IntegerPoint> points = new HashSet<>();
 
         int x = target.x;
         int y = target.y;
@@ -48,7 +48,7 @@ public final class KingMovingStyle implements MovingStyle {
 
             if(inBoard(neighborX, neighborY)
                     && board.isPassable(neighborX, neighborY)){
-                points.add(new Point(neighborX, neighborY));
+                points.add(new IntegerPoint(neighborX, neighborY));
             }
         }
         return points;

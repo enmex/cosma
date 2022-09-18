@@ -14,7 +14,7 @@ public class Vector {
         this.y = y;
     }
 
-    public Vector(Point source, Point target){
+    public Vector(IntegerPoint source, IntegerPoint target){
         this.x = target.x - source.x;
         this.y = target.y - source.y;
     }

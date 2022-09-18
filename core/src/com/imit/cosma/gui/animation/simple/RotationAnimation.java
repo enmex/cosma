@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public class RotationAnimation implements SimpleAnimation{
     private final SpriteBatch batch;
@@ -21,7 +21,7 @@ public class RotationAnimation implements SimpleAnimation{
     private float currentRotation;
     private final float targetRotation;
 
-    private Point locationOnScreen;
+    private IntegerPoint locationOnScreen;
 
     private final Animation<TextureRegion> animation;
 
@@ -55,7 +55,7 @@ public class RotationAnimation implements SimpleAnimation{
 
     @Override
     public void init(int fromX, int fromY, int toX, int toY, float rotation) {
-        this.locationOnScreen = new Point(fromX, fromY);
+        this.locationOnScreen = new IntegerPoint(fromX, fromY);
     }
 
     @Override

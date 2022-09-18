@@ -4,26 +4,26 @@ import java.util.Objects;
 
 public class Path {
 
-    private Point from, to;
+    private IntegerPoint from, to;
 
     public Path(int fromX, int fromY, int toX, int toY){
-        from = new Point(fromX, fromY);
-        to = new Point(toX, toY);
+        from = new IntegerPoint(fromX, fromY);
+        to = new IntegerPoint(toX, toY);
     }
-    public Path(Point from, Point to){
+    public Path(IntegerPoint from, IntegerPoint to){
         this.from = from;
         this.to = to;
     }
     public Path(){
-        from = new Point();
-        to = new Point();
+        from = new IntegerPoint();
+        to = new IntegerPoint();
     }
 
-    public void setLocation(Point from){
+    public void setLocation(IntegerPoint from){
         this.from = from;
     }
 
-    public Point getTarget(){
+    public IntegerPoint getTarget(){
         return to;
     }
 
@@ -52,7 +52,7 @@ public class Path {
         return Objects.hash(from, to);
     }
 
-    public Point getSource() {
+    public IntegerPoint getSource() {
         return from;
     }
 

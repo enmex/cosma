@@ -1,15 +1,15 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.imit.cosma.model.board.content.SupplyKit;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public class SupplyKitSpawnAnimation extends AnimationType {
-    public SupplyKitSpawnAnimation(Point spawnPoint, SupplyKit supplyKit) {
+    public SupplyKitSpawnAnimation(IntegerPoint spawnPoint, SupplyKit supplyKit) {
         super(1, 0);
     }
 
     @Override
-    public boolean isAnimated(Point objectLocation) {
+    public boolean isAnimated(IntegerPoint objectLocation) {
         return false;
     }
 }

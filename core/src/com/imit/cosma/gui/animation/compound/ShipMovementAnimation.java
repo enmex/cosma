@@ -8,7 +8,7 @@ import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public class ShipMovementAnimation extends AnimationType {
     private final SoundType contentSoundType;
@@ -73,7 +73,7 @@ public class ShipMovementAnimation extends AnimationType {
     }
 
     @Override
-    public boolean isAnimated(Point objectLocation) {
+    public boolean isAnimated(IntegerPoint objectLocation) {
         return targetBoardPoint.equals(objectLocation);
     }
 

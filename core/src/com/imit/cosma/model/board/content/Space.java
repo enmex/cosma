@@ -3,14 +3,14 @@ package com.imit.cosma.model.board.content;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.pkg.sound.SoundType;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 
 public class Space implements Content{
 
     private MoveType moveType;
-    private final Point atlasCoords = new Point(-1, -1);
+    private final IntegerPoint atlasCoords = new IntegerPoint(-1, -1);
     private Side side;
 
     public Space(){

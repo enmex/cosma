@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public class AnimatedSprite {
     private float elapsedTime;
@@ -17,9 +17,9 @@ public class AnimatedSprite {
 
     private final float rotation;
 
-    private Point locationOnScreen;
+    private IntegerPoint locationOnScreen;
 
-    public AnimatedSprite(float frameTime, String atlasPath, Point locationOnScreen, float rotation) {
+    public AnimatedSprite(float frameTime, String atlasPath, IntegerPoint locationOnScreen, float rotation) {
         this.locationOnScreen = locationOnScreen;
         this.rotation = rotation;
 
@@ -51,11 +51,11 @@ public class AnimatedSprite {
         batch.dispose();
     }
 
-    public void setLocationOnScreen(Point locationOnScreen) {
+    public void setLocationOnScreen(IntegerPoint locationOnScreen) {
         this.locationOnScreen = locationOnScreen;
     }
 
-    public Point getLocationOnScreen() {
+    public IntegerPoint getLocationOnScreen() {
         return locationOnScreen;
     }
 }

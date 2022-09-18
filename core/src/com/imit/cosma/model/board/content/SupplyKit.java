@@ -5,14 +5,14 @@ import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.pkg.sound.SoundType;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 public abstract class SupplyKit implements Content {
-    protected Point atlasPoint;
+    protected IntegerPoint atlasPoint;
     private final Side side;
     private final MoveType moveType;
 
-    protected SupplyKit(Point atlasPoint) {
+    protected SupplyKit(IntegerPoint atlasPoint) {
         this.atlasPoint = atlasPoint;
         side = new NeutralSide();
         moveType = MoveType.IDLE;

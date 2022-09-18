@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
 //just frames of sprite
 public class IdleAnimation implements SimpleAnimation{
@@ -26,9 +26,9 @@ public class IdleAnimation implements SimpleAnimation{
 
     private boolean isAnimated;
 
-    private final Point locationOnScreen;
+    private final IntegerPoint locationOnScreen;
 
-    public IdleAnimation(String atlasPath, PlayMode playMode, Point locationOnScreen, float rotation){
+    public IdleAnimation(String atlasPath, PlayMode playMode, IntegerPoint locationOnScreen, float rotation){
         this.playMode = playMode;
         this.rotation = rotation;
         elapsedTime = 0f;

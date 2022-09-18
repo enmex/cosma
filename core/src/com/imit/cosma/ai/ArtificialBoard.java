@@ -2,7 +2,6 @@ package com.imit.cosma.ai;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.Board;
-import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MoveType;
@@ -12,9 +11,8 @@ import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 
-import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,13 +23,13 @@ public class ArtificialBoard implements Cloneable {
     private int[][] healthField, damageField, weaponRangeField, maxHealthField;
     private boolean[][] obstaclesField;
 
-    private final Set<Point> emptySet = new HashSet<>();
+    private final Set<IntegerPoint> emptySet = new HashSet<>();
 
-    private Set<Point> availableForMove, availableForAttack;
+    private Set<IntegerPoint> availableForMove, availableForAttack;
 
     private Side turn, playerSide, enemySide;
 
-    private Point selectedPoint;
+    private IntegerPoint selectedPoint;
 
     public ArtificialBoard() {
         int size = Config.getInstance().BOARD_SIZE;
@@ -47,7 +45,7 @@ public class ArtificialBoard implements Cloneable {
         availableForMove = new HashSet<>();
         availableForAttack = new HashSet<>();
 
-        selectedPoint = new Point();
+        selectedPoint = new IntegerPoint();
 
         playerSide = new PlayerSide(Config.getInstance().DEFAULT_SHIPS_NUMBER);
         enemySide = new EnemySide(Config.getInstance().DEFAULT_SHIPS_NUMBER);
@@ -83,7 +81,7 @@ public class ArtificialBoard implements Cloneable {
         return !(sidesField[y][x] instanceof NeutralSide);
     }
 
-    public boolean isShip(Point target) {
+    public boolean isShip(IntegerPoint target) {
         return isShip(target.x, target.y);
     }
 
@@ -109,8 +107,8 @@ public class ArtificialBoard implements Cloneable {
     public StepMode doTurn(Path path){
         StepMode mode = StepMode.COMPLETED;
 
-        Point source = path.getSource();
-        Point target = path.getTarget();
+        IntegerPoint source = path.getSource();
+        IntegerPoint target = path.getTarget();
 
         setSelected(source);
 
@@ -132,7 +130,7 @@ public class ArtificialBoard implements Cloneable {
         return mode;
     }
 
-    private void setSelected(Point target) {
+    private void setSelected(IntegerPoint target) {
         selectedPoint.set(target);
         if(isShip(selectedPoint)) {
             availableForAttack = getStepMode(selectedPoint) == StepMode.ATTACK
@@ -144,7 +142,7 @@ public class ArtificialBoard implements Cloneable {
         }
     }
 
-    private void damageShip(Point target, int damage) {
+    private void damageShip(IntegerPoint target, int damage) {
         healthField[target.y][target.x] -= damage;
         stepModeField[selectedPoint.y][selectedPoint.x] = StepMode.COMPLETED;
 
@@ -153,7 +151,7 @@ public class ArtificialBoard implements Cloneable {
         }
     }
 
-    private void destroyShip(Point target) {
+    private void destroyShip(IntegerPoint target) {
         if(turn.isPlayer()) {
             enemySide.removeShip();
         }
@@ -171,7 +169,7 @@ public class ArtificialBoard implements Cloneable {
         moveTypeField[target.y][target.x] = MoveType.IDLE;
     }
 
-    private void setSelectedPosition(Point target) {
+    private void setSelectedPosition(IntegerPoint target) {
         Side sideTemp = sidesField[target.y][target.x];
         sidesField[target.y][target.x] = sidesField[selectedPoint.y][selectedPoint.x];
         sidesField[selectedPoint.y][selectedPoint.x] = sideTemp;
@@ -207,7 +205,7 @@ public class ArtificialBoard implements Cloneable {
         stepModeField[target.y][target.x] = StepMode.ATTACK;
     }
 
-    private StepMode getStepMode(Point target) {
+    private StepMode getStepMode(IntegerPoint target) {
         return getStepMode(target.x, target.y);
     }
 
@@ -219,37 +217,37 @@ public class ArtificialBoard implements Cloneable {
         return weaponRangeField[y][x];
     }
 
-    public boolean selectedCanMoveTo(Point target){
+    public boolean selectedCanMoveTo(IntegerPoint target){
         return isShip(selectedPoint)
                 && !target.equals(selectedPoint)
                 && moveTypeField[selectedPoint.y][selectedPoint.x].getMove().canMoveTo(selectedPoint.x, selectedPoint.y, target.x, target.y)
                 && stepModeField[selectedPoint.y][selectedPoint.x] == StepMode.MOVE && isPassable(target);
     }
 
-    public boolean selectedCanFireTo(Point target){
+    public boolean selectedCanFireTo(IntegerPoint target){
         return isShip(selectedPoint) && isShip(target)
                 && sidesField[selectedPoint.y][selectedPoint.x] != sidesField[target.y][target.x]
                 && stepModeField[selectedPoint.y][selectedPoint.x] == StepMode.ATTACK
                 && availableForAttack.contains(target);
     }
 
-    public Set<Point> getAvailableCellsForMove(int x, int y) {
+    public Set<IntegerPoint> getAvailableCellsForMove(int x, int y) {
         return isShip(x, y) && stepModeField[y][x] == StepMode.MOVE
-                ? moveTypeField[y][x].getMove().getAvailable(this, new Point(x, y))
+                ? moveTypeField[y][x].getMove().getAvailable(this, new IntegerPoint(x, y))
                 : emptySet;
     }
 
-    public Set<Point> getAvailableCellsForFire(int x, int y) {
+    public Set<IntegerPoint> getAvailableCellsForFire(int x, int y) {
         return isShip(x, y) && stepModeField[y][x] == StepMode.ATTACK
                 ? Attack.getAvailable(this, x, y)
                 : emptySet;
     }
 
-    public Point getSelectedPoint() {
+    public IntegerPoint getSelectedPoint() {
         return selectedPoint;
     }
 
-    public boolean inBoard(Point target){
+    public boolean inBoard(IntegerPoint target){
         return inBoard(target.x, target.y);
     }
 
@@ -257,7 +255,7 @@ public class ArtificialBoard implements Cloneable {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
 
-    public boolean isEnemyShip(Point target) {
+    public boolean isEnemyShip(IntegerPoint target) {
         return isEnemyShip(target.x, target.y);
     }
 
@@ -265,7 +263,7 @@ public class ArtificialBoard implements Cloneable {
         return sidesField[selectedPoint.y][selectedPoint.x] != sidesField[y][x];
     }
 
-    public boolean isPassable(Point target) {
+    public boolean isPassable(IntegerPoint target) {
         return isPassable(target.x, target.y);
     }
 
@@ -298,15 +296,15 @@ public class ArtificialBoard implements Cloneable {
         return board;
     }
 
-    public int getHealthPoints(Point target) {
+    public int getHealthPoints(IntegerPoint target) {
         return healthField[target.y][target.x];
     }
 
-    public int getDamagePoints(Point target) {
+    public int getDamagePoints(IntegerPoint target) {
         return damageField[target.y][target.x];
     }
 
-    public int getMaxHealthPoints(Point target) {
+    public int getMaxHealthPoints(IntegerPoint target) {
         return maxHealthField[target.y][target.x];
     }
 }

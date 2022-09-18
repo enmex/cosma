@@ -1,7 +1,7 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.utils.Array;
-import com.imit.cosma.util.Point;
+import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
 
@@ -10,7 +10,7 @@ public abstract class AnimationType {
 
     protected Array<AnimationData> datas;
 
-    protected Point targetBoardPoint;
+    protected IntegerPoint targetBoardPoint;
 
     private final int phasesAmount;
 
@@ -42,7 +42,7 @@ public abstract class AnimationType {
         datas.add(data);
     }
 
-    public void init(Point boardPoint, Point screenPoint) {
+    public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
         targetBoardPoint = boardPoint;
 
         AnimationData data = new AnimationData();
@@ -69,7 +69,7 @@ public abstract class AnimationType {
         }
     }
 
-    public abstract boolean isAnimated(Point objectLocation);
+    public abstract boolean isAnimated(IntegerPoint objectLocation);
     public boolean isAnimated(){
         return datas.size != 0 && targetBoardPoint.x != -1 && targetBoardPoint.y != -1;
     }

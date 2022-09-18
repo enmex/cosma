@@ -4,7 +4,6 @@ import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -14,7 +13,6 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.screen.component.ScoreComponent;
 import com.imit.cosma.gui.screen.component.infopanel.InfoComponent;
 import com.imit.cosma.gui.screen.component.PlayingField;
-import com.imit.cosma.util.Point;
 
 public class GameScreen implements Screen {
     private Player player;
@@ -81,7 +79,6 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         worldWidth = width;
         worldHeight = height;
-        playingField.resize(width, height);
         infoPanel.resize(width, height);
         scoreComponent.resize(width, height);
     }
