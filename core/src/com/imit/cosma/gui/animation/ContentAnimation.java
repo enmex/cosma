@@ -1,5 +1,6 @@
 package com.imit.cosma.gui.animation;
 
+import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
@@ -18,27 +19,29 @@ public class ContentAnimation {
         this.animationType = animationType;
     }
 
-    public void init(AnimationType animationType, Path boardPath, int cellWidth, int cellHeight, int boardY){
-        Path screenPath = new Path(
+    public void init(AnimationType animationType, Path boardPath, Path screenPath){
+        Path originCenterScreenPath = new Path(
                 new Point(
-                        boardPath.getSource().x * cellWidth,
-                        boardPath.getSource().y * cellHeight + boardY
+                        screenPath.getSource().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
+                        screenPath.getSource().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
                 ),
                 new Point(
-                        boardPath.getTarget().x * cellWidth,
-                        boardPath.getTarget().y * cellHeight + boardY
+                        screenPath.getTarget().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
+                        screenPath.getTarget().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
                 )
         );
 
-        animationType.init(boardPath, screenPath);
+        animationType.init(boardPath, originCenterScreenPath);
         setAnimationType(animationType);
 
     }
 
-    public void init(AnimationType animationType, Point boardPoint, int cellWidth, int cellHeight, int boardY) {
-        Point screenPoint = new Point(boardPoint.x * cellWidth,
-                boardPoint.y * cellHeight + boardY);
-        animationType.init(boardPoint, screenPoint);
+    public void init(AnimationType animationType, Point boardPoint, Point screenPoint) {
+        Point originBasedScreenPoint = new Point(
+                screenPoint.x + Config.getInstance().BOARD_CELL_WIDTH / 2,
+                screenPoint.y + + Config.getInstance().BOARD_CELL_HEIGHT / 2
+        );
+        animationType.init(boardPoint, originBasedScreenPoint);
         setAnimationType(animationType);
 
     }

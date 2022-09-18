@@ -3,11 +3,13 @@ package com.imit.cosma.gui.animation.simple;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.imit.cosma.pkg.sound.SoundEffect;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Point;
@@ -28,10 +30,14 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private float moveVelocityX, moveVelocityY;
     private boolean isAnimated;
 
+    private Point sourceLocation;
     private Point targetLocation;
     private Point currentLocation;
 
+    private ShapeRenderer shapeRenderer;
+
     public SimpleMovementAnimation(String atlasPath, SoundType soundType){
+        shapeRenderer = new ShapeRenderer();
         movementSound = new SoundEffect(soundType);
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
@@ -53,6 +59,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         this.rotation = rotation;
 
         currentLocation = new Point(fromX, fromY);
+        sourceLocation = new Point(fromX, fromY);
 
         Vector destinationVector = new Vector(
                 toX - fromX,
@@ -96,10 +103,18 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         batch.begin();
         sprite.setRegion(currentFrame);
-        sprite.setPosition(currentLocation.x, currentLocation.y);
+        sprite.setOriginBasedPosition(currentLocation.x, currentLocation.y);
         sprite.setRotation(rotation);
         sprite.draw(batch);
         batch.end();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        /*shapeRenderer.rect((float) sourceLocation.x, (float) sourceLocation.y, (float) sourceLocation.x,
+                (float) sourceLocation.y, 5f, (float) distance, 1f, 1f, 0);
+        */
+        shapeRenderer.line(sourceLocation.x, sourceLocation.y, targetLocation.x, targetLocation.y);
+        shapeRenderer.setColor(Color.YELLOW);
+        shapeRenderer.end();
     }
 
     private boolean isArrived(){

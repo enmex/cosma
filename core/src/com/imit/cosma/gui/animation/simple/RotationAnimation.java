@@ -73,7 +73,7 @@ public class RotationAnimation implements SimpleAnimation{
 
         batch.begin();
         sprite.setRegion(currentFrame);
-        sprite.setPosition(locationOnScreen.x, locationOnScreen.y);
+        sprite.setOriginBasedPosition(locationOnScreen.x, locationOnScreen.y);
         sprite.setRotation(currentRotation);
         sprite.draw(batch);
         batch.end();

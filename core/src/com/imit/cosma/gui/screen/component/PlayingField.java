@@ -1,11 +1,9 @@
 package com.imit.cosma.gui.screen.component;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.ContentAnimation;
@@ -20,39 +18,18 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class PlayingField {
-
-    private final double BOARD_TO_SCREEN_HEIGHT_RATIO = 0.45;
-    private final double SCREEN_OFFSET = 0.35;
-
     private final Texture grid;
 
     private final Sprite selectedCell;
-
-    private final SpriteBatch batch;
-
-    private final int CELL_AMOUNT_WIDTH = 8;
-    private final int CELL_AMOUNT_HEIGHT = 8;
-
-    private int worldWidth = Gdx.graphics.getWidth();
-    private int worldHeight = Gdx.graphics.getHeight();
-
-    private int boardWidth = worldWidth;
-    private int boardHeight = (int) (worldHeight * BOARD_TO_SCREEN_HEIGHT_RATIO);
-
-    private int cellWidth = boardWidth/CELL_AMOUNT_WIDTH;
-    private int cellHeight = boardHeight/CELL_AMOUNT_HEIGHT;
-
-    private int boardX = 0, boardY = (int) (worldHeight*SCREEN_OFFSET);
 
     private final Board board;
 
     private final ContentAnimation contentAnimation;
 
     private final List<AnimatedSprite> animatedSprites;
-    private final ShapeRenderer shapeRenderer;
+    private final SpriteBatch batch;
 
     public PlayingField(){
-        shapeRenderer = new ShapeRenderer();
         board = new Board();
         board.initAI();
         contentAnimation = new ContentAnimation();
@@ -94,9 +71,14 @@ public class PlayingField {
                 }
 
                 if (boardState.affectsManyCells()) {
-                    contentAnimation.init(boardState.getAnimationType(), currentPath, cellWidth, cellHeight, boardY);
+                    contentAnimation.init(
+                            boardState.getAnimationType(),
+                            currentPath,
+                            new Path(toScreenPoint(currentPath.getSource()), toScreenPoint(currentPath.getTarget())));
                 } else {
-                    contentAnimation.init(boardState.getAnimationType(), board.getCurrentContentSpawnPoint(), cellWidth, cellHeight, boardY);
+                    contentAnimation.init(boardState.getAnimationType(),
+                            board.getCurrentContentSpawnPoint(),
+                            toBoardPoint(board.getCurrentContentSpawnPoint()));
                 }
 
             }
@@ -105,8 +87,9 @@ public class PlayingField {
     }
 
     private Point getSelectedBoardPoint(Point touchPoint) {
-        return new Point(getBoardX(touchPoint.x)/cellWidth,
-                (getBoardY(worldHeight - touchPoint.y) - boardY)/cellHeight);
+        return new Point(getBoardX(touchPoint.x)/Config.getInstance().BOARD_CELL_WIDTH,
+                (getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y)
+                        - Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT);
     }
 
     public Side getTurn(){
@@ -115,28 +98,20 @@ public class PlayingField {
 
     private void drawGrid(){
         batch.begin();
-        batch.draw(grid, boardX,  boardY, boardWidth, boardHeight);
+        batch.draw(grid, 0,
+                Config.getInstance().BOARD_Y,
+                Config.getInstance().BOARD_WIDTH,
+                Config.getInstance().BOARD_HEIGHT);
         batch.end();
-
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                Point screenLocation = toScreenPoint(new Point(x, y));
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(Color.YELLOW);
-                shapeRenderer.rect(
-                        screenLocation.x + cellWidth / 2f,
-                        screenLocation.y + cellHeight / 2f,
-                        5, 5);
-                shapeRenderer.end();
-            }
-        }
     }
 
     private void drawSelected(Point touchPoint){
         if(inBoard(touchPoint)) {
             batch.begin();
             batch.draw(selectedCell, getBoardX(touchPoint.x),
-                    getBoardY(worldHeight - touchPoint.y), cellWidth, cellHeight);
+                    getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y),
+                    Config.getInstance().BOARD_CELL_WIDTH,
+                    Config.getInstance().BOARD_CELL_HEIGHT);
             batch.end();
             drawAvailableCells();
         }
@@ -146,7 +121,7 @@ public class PlayingField {
         //draw idle objs
         for (AnimatedSprite sprite : animatedSprites) {
             if (!contentAnimation.isAnimatedObject(toBoardPoint(sprite.getLocationOnScreen()))) {
-                sprite.render(delta, cellWidth, cellHeight);
+                sprite.render(delta, Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
             }
         }
 
@@ -162,15 +137,17 @@ public class PlayingField {
 
         for (Point point : board.getAvailableCellsForMove()) {
             selectedCell.setColor(Color.GREEN);
-            selectedCell.setBounds(point.x * cellWidth,
-                    point.y * cellHeight + boardY, cellWidth, cellHeight);
+            selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,
+                    point.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y,
+                    Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
             selectedCell.draw(batch);
         }
 
         for(Point point : board.getAvailableCellsForFire()){
             selectedCell.setColor(Color.RED);
-            selectedCell.setBounds(point.x * cellWidth,
-                    point.y * cellHeight + boardY, cellWidth, cellHeight);
+            selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,
+                    point.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y,
+                    Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
             selectedCell.draw(batch);
         }
 
@@ -189,30 +166,20 @@ public class PlayingField {
         }
     }
 
-    public void resize(int width, int height){
-        worldWidth = width;
-        worldHeight = height;
-
-        boardWidth = worldWidth;
-        boardHeight = (int) (worldHeight* BOARD_TO_SCREEN_HEIGHT_RATIO);
-
-        cellWidth = boardWidth/CELL_AMOUNT_WIDTH;
-        cellHeight = boardHeight/CELL_AMOUNT_HEIGHT;
-
-        boardX = 0;
-        boardY = (int) (height*SCREEN_OFFSET);
-    }
-
     private boolean inBoard(Point touchPoint){
-        return touchPoint.x >= 0 && touchPoint.x <= boardWidth && worldHeight - touchPoint.y >= boardY && worldHeight - touchPoint.y <= boardY + boardHeight;
+        return touchPoint.x >= 0 && touchPoint.x <= Config.getInstance().BOARD_WIDTH
+                && Config.getInstance().WORLD_HEIGHT - touchPoint.y >=
+                Config.getInstance().BOARD_Y && Config.getInstance().WORLD_HEIGHT - touchPoint.y
+                <= Config.getInstance().BOARD_Y + Config.getInstance().WORLD_HEIGHT;
     }
 
     private int getBoardX(int touchX){
-        return (int) Math.floor((double) touchX/cellWidth) * cellWidth;
+        return (int) Math.floor((double) touchX/Config.getInstance().BOARD_CELL_WIDTH) * Config.getInstance().BOARD_CELL_WIDTH;
     }
 
     private int getBoardY(int touchY){
-        return (int) Math.floor((double) (touchY-boardY)/cellHeight) * cellHeight + boardY;
+        return (int) Math.floor((double) (touchY-Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT)
+                * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y;
     }
 
     private boolean animationPlays(){
@@ -228,13 +195,15 @@ public class PlayingField {
     }
 
     private Point toScreenPoint(Point boardPoint) {
-        return new Point(boardPoint.x * cellWidth, boardPoint.y * cellHeight + boardY);
+        return new Point(boardPoint.x * Config.getInstance().BOARD_CELL_WIDTH,
+                boardPoint.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y
+        );
     }
 
     private Point toBoardPoint(Point screenPoint) {
         return new Point(
-                screenPoint.x / cellWidth,
-                (screenPoint.y - boardY) / cellHeight
+                screenPoint.x / Config.getInstance().BOARD_CELL_WIDTH,
+                (screenPoint.y - Config.getInstance().BOARD_Y) / Config.getInstance().BOARD_CELL_HEIGHT
         );
     }
 }

@@ -49,14 +49,10 @@ public class MainMenuScreen implements Screen {
         int height = (int) (Gdx.graphics.getHeight() * 0.1);
         playButton.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
         playButton.setSize(width, height);
+        playButton.setScale(3f);
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 game.setScreen(gameScreen);
             }
         });
