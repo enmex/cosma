@@ -31,7 +31,7 @@ public class ShipMovementAnimation extends AnimationType {
         super.init(boardPath, screenPath);
         AnimationData animationData = datas.get(mainAnimatedObject);
         
-        SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(movingShipAtlasPath, contentSoundType);
+        SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(movingShipAtlasPath, 128, contentSoundType);
 
         RotationAnimation shipRotationAnimation = new RotationAnimation(idleShipAtlasPath,
                 defaultRotation, defaultRotation + animationData.rotation * getOrientation());

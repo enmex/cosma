@@ -1,58 +1,53 @@
 package com.imit.cosma.gui.screen;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.imit.cosma.CosmaGame;
 
 public class MainMenuScreen implements Screen {
     private Stage stage;
 
-    private Button playButton;
+    private final CosmaGame game;
+    private final GameScreen gameScreen;
 
-    private CosmaGame game;
-    private GameScreen gameScreen;
+    private final SpriteBatch batch;
+    private final Texture background;
 
-    private int width = 1, height = 1;
-
-    private ClickListener clickListener;
+    private boolean buttonClicked;
 
     public MainMenuScreen(CosmaGame game) {
         this.game = game;
         gameScreen = new GameScreen();
+        batch = new SpriteBatch();
+        background = new Texture(Gdx.files.internal("menu_background.png"));
     }
 
     @Override
     public void show() {
         stage = new Stage();
         Skin pixelSkin = new Skin(Gdx.files.internal("skin/widgets-skin.json"));
-        clickListener = new ClickListener();
 
         Gdx.input.setInputProcessor(stage);
 
-        playButton = new ImageButton(pixelSkin);
+        ImageButton playButton = new ImageButton(pixelSkin);
+        playButton.getImage().setFillParent(true);
 
-        int width = (int) (Gdx.graphics.getWidth() * 0.1);
-        int height = (int) (Gdx.graphics.getHeight() * 0.1);
-        playButton.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+        int width = (int) (Gdx.graphics.getWidth() * 0.2);
+        int height = (int) (Gdx.graphics.getHeight() * 0.2);
+
+        playButton.setPosition(Gdx.graphics.getWidth() / 2f - width / 2f - 32, Gdx.graphics.getHeight() / 2f - height / 2f - 32);
         playButton.setSize(width, height);
-        playButton.setScale(3f);
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                //TODO добавить анимацию перехода
                 game.setScreen(gameScreen);
             }
         });
@@ -61,13 +56,15 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        drawBackground();
         stage.act(delta);
-
         stage.draw();
     }
 
-    private void renderBackground() {
-
+    private void drawBackground() {
+        batch.begin();
+        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
     }
 
     @Override

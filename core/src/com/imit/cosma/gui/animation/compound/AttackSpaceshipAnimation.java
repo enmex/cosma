@@ -64,14 +64,13 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         for(Weapon weapon : weaponList){
             SimpleMovementAnimation shotMovement = new SimpleMovementAnimation(
-                    weapon.getShotAnimationPath(), weapon.getSound());
+                    weapon.getShotAnimationPath(), 64, weapon.getSound());
 
             IdleAnimation explosion = new IdleAnimation(
-                    weapon.getExplosionAnimationPath(),
+                    weapon.getExplosionAnimationPath(), 128,
                     Animation.PlayMode.NORMAL,
                     screenPath.getTarget(),
-                    0
-            );
+                    0);
 
             shotMovement.init(screenPath.getSource().x, screenPath.getSource().y,
                     screenPath.getTarget().x, screenPath.getTarget().y,
@@ -85,11 +84,10 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         if (isKillAttack) {
             IdleAnimation destruction = new IdleAnimation(
-                    enemyShipDestructionAtlasPath,
+                    enemyShipDestructionAtlasPath, 128,
                     Animation.PlayMode.NORMAL,
                     screenPath.getTarget(),
-                    180 - defaultRotation
-            );
+                    180 - defaultRotation);
             datas.get(mainAnimationIndex).phases.add(destruction);
         }
 
@@ -100,10 +98,9 @@ public class AttackSpaceshipAnimation extends AnimationType {
         //init player staticPlayerShip
         AnimationData staticPlayerShip = new AnimationData();
         IdleAnimation playerShipStanding = new IdleAnimation(
-                playerShipAtlasPath,
+                playerShipAtlasPath, 128,
                 Animation.PlayMode.LOOP,
-                screenPath.getSource(),
-                defaultRotation + datas.get(mainAnimationIndex).rotation
+                screenPath.getSource(), defaultRotation + datas.get(mainAnimationIndex).rotation
                         * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
         staticPlayerShip.phases = new Array<>(1);
         staticPlayerShip.phases.add(playerShipStanding);

@@ -28,7 +28,7 @@ public class IdleAnimation implements SimpleAnimation{
 
     private final IntegerPoint locationOnScreen;
 
-    public IdleAnimation(String atlasPath, PlayMode playMode, IntegerPoint locationOnScreen, float rotation){
+    public IdleAnimation(String atlasPath, int spriteSize, PlayMode playMode, IntegerPoint locationOnScreen, float rotation){
         this.playMode = playMode;
         this.rotation = rotation;
         elapsedTime = 0f;
@@ -43,8 +43,8 @@ public class IdleAnimation implements SimpleAnimation{
         batch = new SpriteBatch();
         sprite = new Sprite();
         sprite.setSize(Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
-        sprite.setOrigin((float) getInstance().BOARD_CELL_WIDTH / 2,
-                (float) getInstance().BOARD_CELL_HEIGHT / 2);
+        sprite.setOrigin(spriteSize / 2f ,
+                spriteSize / 2f);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class IdleAnimation implements SimpleAnimation{
 
         batch.begin();
         sprite.setRegion(currentFrame);
-        sprite.setPosition(locationOnScreen.x, locationOnScreen.y);
+        sprite.setOriginBasedPosition(locationOnScreen.x, locationOnScreen.y);
         sprite.setRotation(rotation);
         sprite.draw(batch);
         batch.end();
