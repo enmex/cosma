@@ -20,7 +20,7 @@ public enum Skeleton {
             Config.getInstance().BATTLESHIP_IDLE_ATLAS_PATH,
             Config.getInstance().BATTLESHIP_MOVEMENT_ATLAS_PATH,
             SoundType.BATTLESHIP_MOVING),
-    DREADNOUGHT(3,8,400,
+    DREADNOUGHT(3,8,4000,
             Config.getInstance().DREADNOUGHT_DESTRUCTION_ATLAS_PATH,
             Config.getInstance().DREADNOUGHT_IDLE_ATLAS_PATH,
             Config.getInstance().DREADNOUGHT_MOVEMENT_ATLAS_PATH,
