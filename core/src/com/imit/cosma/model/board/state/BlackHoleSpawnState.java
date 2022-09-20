@@ -42,7 +42,17 @@ public class BlackHoleSpawnState implements BoardState {
     }
 
     @Override
-    public boolean isSpawnState() {
+    public IntegerPoint getInteractedObjectLocation() {
+        return null;
+    }
+
+    @Override
+    public boolean addsContent() {
         return true;
+    }
+
+    @Override
+    public boolean removesContent() {
+        return victimSpaceship != null;
     }
 }

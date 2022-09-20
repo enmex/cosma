@@ -170,7 +170,7 @@ public class Board {
                 setSelected(targetPoint);
                 return new ShipMovingBoardState(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
             } else if (selectedCanFireTo(targetPoint)) {
-                damageShip(targetPoint, selected.getDamageAmount());
+                damageShip(targetPoint, selected.getDamagePoints());
 
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.ATTACK);
@@ -207,7 +207,7 @@ public class Board {
 
                 return new ShipMovingBoardState(selected, currentPath);
             } else if (selectedCanFireTo(target)) {
-                damageShip(target, selected.getDamageAmount());
+                damageShip(target, selected.getDamagePoints());
                 turn.updateTurns();
 
                 return new ShipAttackingOneTargetBoardState(selected, interacted, currentPath);
@@ -429,7 +429,7 @@ public class Board {
     }
 
     public int getDamagePoints(int x, int y) {
-        return cells[y][x].getDamageAmount();
+        return cells[y][x].getDamagePoints();
     }
 
     public BoardState calculateCurrentOtherState() {

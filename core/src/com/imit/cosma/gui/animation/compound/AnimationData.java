@@ -6,7 +6,6 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Vector;
 
 public class AnimationData {
-    protected Vector offset;
     protected float rotation;
     protected Path path;
     protected Array<SimpleAnimation> phases;

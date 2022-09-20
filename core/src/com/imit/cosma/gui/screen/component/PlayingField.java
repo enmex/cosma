@@ -63,6 +63,20 @@ public class PlayingField {
             if(!boardState.isIdle()) {
                 Path currentPath = board.getCurrentPath();
 
+                if (boardState.removesContent()) {
+                    IntegerPoint screenLocation = toScreenPoint(boardState.getInteractedObjectLocation());
+                    for (AnimatedSprite sprite : animatedSprites) {
+                        if (sprite.getLocationOnScreen().equals(screenLocation)) {
+                            animatedSprites.remove(sprite);
+                            break;
+                        }
+                    }
+                }
+
+                /*if (boardState.addsContent()) {
+                    IntegerPoint screenLocation = toScreenPoint(boardState.getUpdatedObjectLocation().getSource());
+                }*/
+
                 for (AnimatedSprite sprite : animatedSprites) {
                     if (sprite.getLocationOnScreen().equals(toScreenPoint(boardState.getUpdatedObjectLocation().getSource()))) {
                         sprite.setLocationOnScreen(toScreenPoint(boardState.getUpdatedObjectLocation().getTarget()));

@@ -35,7 +35,6 @@ public abstract class AnimationType {
         AnimationData data = new AnimationData();//main animated object
         data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector))) - defaultRotation;
 
-        data.offset = new Vector();
         data.path = screenPath;
         data.phases = new Array<>(phasesAmount);
 
@@ -47,7 +46,6 @@ public abstract class AnimationType {
 
         AnimationData data = new AnimationData();
         data.rotation = 0;
-        data.offset = new Vector();
         data.path = new Path(screenPoint, screenPoint);
         data.phases = new Array<>(phasesAmount);
 

@@ -3,17 +3,14 @@ package com.imit.cosma.gui.animation.simple;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.imit.cosma.pkg.sound.SoundEffect;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.FloatPoint;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 
 public class SimpleMovementAnimation implements SimpleAnimation{
@@ -29,7 +26,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private float rotation;
     private double distance, traveledDistance;
     private float moveVelocityX, moveVelocityY;
-    private boolean isAnimated;
+    private boolean animated;
 
     private FloatPoint targetLocation;
     private FloatPoint currentLocation;
@@ -77,8 +74,6 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity * Math.signum(destinationVector.getY()));
 
         targetLocation = new FloatPoint(toX, toY);
-
-        movementSound.play();
     }
 
     @Override
@@ -87,7 +82,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         if(isArrived()){
             currentLocation.set(targetLocation);
-            isAnimated = false;
+            animated = false;
             movementSound.stop();
         }
         else {
@@ -110,16 +105,17 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     }
 
     public boolean isAnimated() {
-        return isAnimated;
+        return animated;
     }
 
     @Override
     public void setNotAnimated() {
-        isAnimated = false;
+        animated = false;
     }
 
     public void setAnimated() {
-        isAnimated = true;
+        movementSound.play();
+        animated = true;
     }
 
 }

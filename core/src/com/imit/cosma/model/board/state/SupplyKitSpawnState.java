@@ -31,12 +31,22 @@ public class SupplyKitSpawnState implements BoardState {
     }
 
     @Override
-    public boolean isSpawnState() {
+    public boolean addsContent() {
         return true;
+    }
+
+    @Override
+    public boolean removesContent() {
+        return false;
     }
 
     @Override
     public Path getUpdatedObjectLocation() {
         return new Path(spawnPoint, spawnPoint);
+    }
+
+    @Override
+    public IntegerPoint getInteractedObjectLocation() {
+        return spawnPoint;
     }
 }

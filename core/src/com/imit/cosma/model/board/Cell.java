@@ -70,7 +70,7 @@ public class Cell {
         cell.setContent(temp);
     }
 
-    public int getDamageAmount(){
+    public int getDamagePoints(){
         return content.getDamage();
     }
 

@@ -1,0 +1,48 @@
+
+destruction_dreadnought.png
+size: 1024, 256
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+idle
+  rotate: false
+  xy: 2, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+idle
+  rotate: false
+  xy: 132, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+idle
+  rotate: false
+  xy: 262, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
+idle
+  rotate: false
+  xy: 392, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 4
+idle
+  rotate: false
+  xy: 522, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+idle
+  rotate: false
+  xy: 652, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6

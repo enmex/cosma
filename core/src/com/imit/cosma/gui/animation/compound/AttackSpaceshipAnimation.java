@@ -19,9 +19,11 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
     private final List<Weapon> weaponList;
     private final String playerShipAtlasPath;
+    private final String enemyShipAtlasPath;
     private final String enemyShipDestructionAtlasPath;
     private final int mainAnimationIndex;
     private final int standingPlayerShipAnimationIndex;
+    private final int standingEnemyShipAnimationIndex;
 
     private IntegerPoint sourceBoardCell;
 
@@ -29,9 +31,11 @@ public class AttackSpaceshipAnimation extends AnimationType {
         super(spaceshipPlayer.getWeapons().size() + 2, spaceshipPlayer.getSide().getDefaultRotation());
         this.weaponList = spaceshipPlayer.getWeapons();
         playerShipAtlasPath = spaceshipPlayer.getIdleAnimationPath();
+        enemyShipAtlasPath = spaceshipEnemy.getIdleAnimationPath();
         enemyShipDestructionAtlasPath = spaceshipEnemy.getSkeleton().getDestructionAnimationPath();
         mainAnimationIndex = 0;
         standingPlayerShipAnimationIndex = 1;
+        standingEnemyShipAnimationIndex = 2;
 
         isKillAttack = spaceshipPlayer.getDamage() >= spaceshipEnemy.getHealthPoints();
     }
@@ -52,8 +56,6 @@ public class AttackSpaceshipAnimation extends AnimationType {
         float targetRotation = defaultRotation + rotation;
 
         //init main animation
-       // animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
-
         SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath, defaultRotation, targetRotation);
 
         SimpleAnimation shipRotationToDefault = new RotationAnimation(playerShipAtlasPath,
@@ -72,7 +74,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
                     weapon.getShotAnimationPath(), weapon.getSound());
 
             IdleAnimation explosion = new IdleAnimation(
-                    weapon.getExplosionAnimationPath(), 128,
+                    weapon.getExplosionAnimationPath(),
                     Animation.PlayMode.NORMAL,
                     screenPath.getTarget(),
                     0);
@@ -86,7 +88,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         if (isKillAttack) {
             IdleAnimation destruction = new IdleAnimation(
-                    enemyShipDestructionAtlasPath, 128,
+                    enemyShipDestructionAtlasPath,
                     Animation.PlayMode.NORMAL,
                     screenPath.getTarget(),
                     180 - defaultRotation);
@@ -100,35 +102,56 @@ public class AttackSpaceshipAnimation extends AnimationType {
         //init player staticPlayerShip
         AnimationData staticPlayerShip = new AnimationData();
         IdleAnimation playerShipStanding = new IdleAnimation(
-                playerShipAtlasPath, 128,
+                playerShipAtlasPath,
                 Animation.PlayMode.LOOP,
                 screenPath.getSource(), targetRotation);
         staticPlayerShip.phases = new Array<>(1);
         staticPlayerShip.phases.add(playerShipStanding);
-        staticPlayerShip.offset = new Vector();
         staticPlayerShip.path = new Path(screenPath.getSource(), screenPath.getSource());
         staticPlayerShip.currentPhase = 0;
 
         datas.add(staticPlayerShip);
+
+        //init enemy static ship
+        AnimationData staticEnemyShip = new AnimationData();
+        IdleAnimation enemyStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP, screenPath.getTarget(), 180 - defaultRotation);
+        staticEnemyShip.phases = new Array<>(1);
+        staticEnemyShip.phases.add(enemyStanding);
+        staticEnemyShip.path = new Path(screenPath.getTarget(), screenPath.getTarget());
+        staticEnemyShip.currentPhase = 0;
+
+        staticEnemyShip.getCurrentPhase().setAnimated();
+        datas.add(staticEnemyShip);
     }
 
     @Override
     public void render(float delta) {
         AnimationData mainAnimationData = datas.get(mainAnimationIndex);
 
-        //render standing ship between first and last phases
+        //render standing player ship between first and last phases
         AnimationData standingPlayerShipData = datas.get(standingPlayerShipAnimationIndex);
         if(mainAnimationData.currentPhase > 0 && mainAnimationData.currentPhase < mainAnimationData.phases.size - 1){
             standingPlayerShipData.getCurrentPhase().setAnimated();
         }
         else{
             standingPlayerShipData.getCurrentPhase().setNotAnimated();
-
         }
+
+        //render standing enemy ship except last phase of main if kill attack
+        AnimationData standingEnemyShipData = datas.get(standingEnemyShipAnimationIndex);
+        if(isKillAttack && mainAnimationData.currentPhase == mainAnimationData.phases.size - 2) {
+            standingEnemyShipData.getCurrentPhase().setNotAnimated();
+        }
+
         //render shots from second to last-1 phases
         if (standingPlayerShipData.getCurrentPhase().isAnimated()) {
-            standingPlayerShipData.phases.get(standingPlayerShipData.currentPhase).render(delta);
+            standingPlayerShipData.getCurrentPhase().render(delta);
         }
+
+        if (standingEnemyShipData.getCurrentPhase().isAnimated()) {
+            standingEnemyShipData.getCurrentPhase().render(delta);
+        }
+
         mainAnimationData.phases.get(mainAnimationData.currentPhase).render(delta);
 
         if (!mainAnimationData.phases.get(mainAnimationData.currentPhase).isAnimated()) {
