@@ -34,7 +34,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private FloatPoint targetLocation;
     private FloatPoint currentLocation;
 
-    public SimpleMovementAnimation(String atlasPath, int spriteSize, SoundType soundType){
+    public SimpleMovementAnimation(String atlasPath, SoundType soundType){
         movementSound = new SoundEffect(soundType);
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
@@ -45,8 +45,8 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         sprite = new Sprite();
         sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
-        sprite.setOrigin(spriteSize / 2f,
-                spriteSize / 2f);
+        sprite.setOrigin(getInstance().DEFAULT_SPRITE_SIZE / 2f,
+                getInstance().DEFAULT_SPRITE_SIZE / 2f);
 
         batch = new SpriteBatch();
     }
@@ -78,7 +78,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         targetLocation = new FloatPoint(toX, toY);
 
-        movementSound.playLoop();
+        movementSound.play();
     }
 
     @Override

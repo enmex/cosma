@@ -77,7 +77,7 @@ public class Board {
         selectedPoint = new IntegerPoint();
 
         IntegerPoint pShip = new IntegerPoint(4, 4);
-        IntegerPoint eShip = new IntegerPoint(0, 7);
+        IntegerPoint eShip = new IntegerPoint(1, 5);
 
         for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
@@ -188,7 +188,7 @@ public class Board {
     public BoardState calculateCurrentEnemyState(){
         enemy.update(this);
 
-        currentPath = enemy.getPath(); //TODO bug null path
+        currentPath = enemy.getPath();
         IntegerPoint source = currentPath.getSource();
         IntegerPoint target = currentPath.getTarget();
 

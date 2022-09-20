@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.IntegerPoint;
 
-//just frames of sprite
 public class IdleAnimation implements SimpleAnimation{
     private final SpriteBatch batch;
     private final Sprite sprite;

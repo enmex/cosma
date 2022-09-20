@@ -29,6 +29,7 @@ public class Config {
     public double PANEL_OFFSET = 0.03;
     public int BOARD_SIZE = 8;
     public int MOVEMENT_ANIMATION_PHASES = 3;
+    public int DEFAULT_SPRITE_SIZE = 128;
     public String BACKGROUND_PATH = "background.png";
     public String GRID_PATH = "grid.png";
     public String SPACESHIP_PATH = "spaceships.png";

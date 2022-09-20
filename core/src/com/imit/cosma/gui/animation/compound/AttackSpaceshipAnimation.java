@@ -40,31 +40,36 @@ public class AttackSpaceshipAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath) {
         super.init(boardPath, screenPath);
 
+        AnimationData animationData = datas.get(mainAnimationIndex);
+
         this.sourceBoardCell = boardPath.getSource().clone();
 
-        //init main animation
-        datas.get(mainAnimationIndex).rotation *= Math.signum(datas.get(mainAnimationIndex).rotation - defaultRotation);
+        float rotation = animationData.rotation;
+        if (rotation != 180) {
+            rotation *= getOrientation();
+        }
 
-        SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath,
-                defaultRotation,
-                defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
+        float targetRotation = defaultRotation + rotation;
+
+        //init main animation
+       // animationData.rotation *= Math.signum(animationData.rotation - defaultRotation);
+
+        SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath, defaultRotation, targetRotation);
 
         SimpleAnimation shipRotationToDefault = new RotationAnimation(playerShipAtlasPath,
-                defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x), defaultRotation);
+                targetRotation, defaultRotation);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
-                screenPath.getTarget().y, datas.get(mainAnimationIndex).rotation);
+                screenPath.getTarget().y, animationData.rotation);
 
         shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
-                screenPath.getTarget().y, datas.get(mainAnimationIndex).rotation);
+                screenPath.getTarget().y, animationData.rotation);
 
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
         for(Weapon weapon : weaponList){
             SimpleMovementAnimation shotMovement = new SimpleMovementAnimation(
-                    weapon.getShotAnimationPath(), 64, weapon.getSound());
+                    weapon.getShotAnimationPath(), weapon.getSound());
 
             IdleAnimation explosion = new IdleAnimation(
                     weapon.getExplosionAnimationPath(), 128,
@@ -74,12 +79,9 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
             shotMovement.init(screenPath.getSource().x, screenPath.getSource().y,
                     screenPath.getTarget().x, screenPath.getTarget().y,
-                    defaultRotation
-                            + datas.get(mainAnimationIndex).rotation
-                            * Math.signum(screenPath.getSource().x
-                            - screenPath.getTarget().x));
-            datas.get(mainAnimationIndex).phases.add(shotMovement);
-            datas.get(mainAnimationIndex).phases.add(explosion);
+                    targetRotation);
+            animationData.phases.add(shotMovement);
+            animationData.phases.add(explosion);
         }
 
         if (isKillAttack) {
@@ -88,20 +90,19 @@ public class AttackSpaceshipAnimation extends AnimationType {
                     Animation.PlayMode.NORMAL,
                     screenPath.getTarget(),
                     180 - defaultRotation);
-            datas.get(mainAnimationIndex).phases.add(destruction);
+            animationData.phases.add(destruction);
         }
 
-        datas.get(mainAnimationIndex).phases.add(shipRotationToDefault);
+        animationData.phases.add(shipRotationToDefault);
 
-        datas.get(mainAnimationIndex).phases.get(0).setAnimated();
+        animationData.phases.get(0).setAnimated();
 
         //init player staticPlayerShip
         AnimationData staticPlayerShip = new AnimationData();
         IdleAnimation playerShipStanding = new IdleAnimation(
                 playerShipAtlasPath, 128,
                 Animation.PlayMode.LOOP,
-                screenPath.getSource(), defaultRotation + datas.get(mainAnimationIndex).rotation
-                        * Math.signum(screenPath.getSource().x - screenPath.getTarget().x));
+                screenPath.getSource(), targetRotation);
         staticPlayerShip.phases = new Array<>(1);
         staticPlayerShip.phases.add(playerShipStanding);
         staticPlayerShip.offset = new Vector();
@@ -125,8 +126,9 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         }
         //render shots from second to last-1 phases
-        //standingEnemyShipData.phases.get(standingEnemyShipData.currentPhase).render(delta);
-        standingPlayerShipData.phases.get(standingPlayerShipData.currentPhase).render(delta);
+        if (standingPlayerShipData.getCurrentPhase().isAnimated()) {
+            standingPlayerShipData.phases.get(standingPlayerShipData.currentPhase).render(delta);
+        }
         mainAnimationData.phases.get(mainAnimationData.currentPhase).render(delta);
 
         if (!mainAnimationData.phases.get(mainAnimationData.currentPhase).isAnimated()) {
@@ -146,5 +148,9 @@ public class AttackSpaceshipAnimation extends AnimationType {
                 && datas.get(mainAnimationIndex).getCurrentPhase().isAnimated()
                 && sourceBoardCell.equals(objectLocation);
 
+    }
+
+    private int getOrientation(){
+        return (int) Math.signum(datas.get(mainAnimationIndex).path.getSource().x - datas.get(mainAnimationIndex).path.getTarget().x);
     }
 }

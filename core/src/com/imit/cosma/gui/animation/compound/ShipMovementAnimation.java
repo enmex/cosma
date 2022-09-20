@@ -16,34 +16,41 @@ public class ShipMovementAnimation extends AnimationType {
     private final String movingShipAtlasPath;
     private final String idleShipAtlasPath;
 
-    private final int mainAnimatedObject;
+    private final int mainAnimationIndex;
 
     public ShipMovementAnimation(Spaceship spaceship){
         super(getInstance().MOVEMENT_ANIMATION_PHASES, spaceship.getSide().getDefaultRotation());
         movingShipAtlasPath = spaceship.getSkeleton().getMovementAnimationPath();
         idleShipAtlasPath = spaceship.getSkeleton().getIdleAnimationPath();
-        mainAnimatedObject = 0;
+        mainAnimationIndex = 0;
         contentSoundType = spaceship.getSoundType();
     }
 
     @Override
     public void init(Path boardPath, Path screenPath){
         super.init(boardPath, screenPath);
-        AnimationData animationData = datas.get(mainAnimatedObject);
+        AnimationData animationData = datas.get(mainAnimationIndex);
+
+        float rotation = animationData.rotation;
+        if (rotation != 180) {
+            rotation *= getOrientation();
+        }
+
+        float targetRotation = defaultRotation + rotation;
         
-        SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(movingShipAtlasPath, 128, contentSoundType);
+        SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(movingShipAtlasPath, contentSoundType);
 
         RotationAnimation shipRotationAnimation = new RotationAnimation(idleShipAtlasPath,
-                defaultRotation, defaultRotation + animationData.rotation * getOrientation());
+                defaultRotation, targetRotation);
 
         RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(idleShipAtlasPath,
-                defaultRotation + animationData.rotation * getOrientation(), defaultRotation);
+                targetRotation, defaultRotation);
 
         shipRotationAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
 
         shipSimpleMovementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
-                screenPath.getTarget().x, screenPath.getTarget().y, defaultRotation + animationData.rotation * getOrientation());
+                screenPath.getTarget().x, screenPath.getTarget().y, targetRotation);
 
         shipRotationAnimationToDefault.init(screenPath.getTarget().x, screenPath.getTarget().y,
                 screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
@@ -54,7 +61,7 @@ public class ShipMovementAnimation extends AnimationType {
 
         animationData.currentPhase = 0;
 
-        animationData.phases.get(mainAnimatedObject).setAnimated();
+        animationData.phases.get(mainAnimationIndex).setAnimated();
     }
 
     @Override
@@ -63,7 +70,7 @@ public class ShipMovementAnimation extends AnimationType {
             return false;
         }
 
-        AnimationData animationData = datas.get(mainAnimatedObject);
+        AnimationData animationData = datas.get(mainAnimationIndex);
         for(SimpleAnimation simpleAnimation : animationData.phases) {
             if(simpleAnimation.isAnimated()) {
                 return true;
@@ -78,6 +85,6 @@ public class ShipMovementAnimation extends AnimationType {
     }
 
     private int getOrientation(){
-        return (int) Math.signum(datas.get(mainAnimatedObject).path.getSource().x - datas.get(mainAnimatedObject).path.getTarget().x);
+        return (int) Math.signum(datas.get(mainAnimationIndex).path.getSource().x - datas.get(mainAnimationIndex).path.getTarget().x);
     }
 }

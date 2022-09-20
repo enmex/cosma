@@ -32,6 +32,7 @@ public class Spaceship implements Content {
         weapons = new ArrayList<>();
         selectedWeapons = new ArrayList<>();
         damagePoints = 0;
+        damageBonus = 1.0;
     }
 
     @Override

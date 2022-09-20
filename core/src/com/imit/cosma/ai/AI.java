@@ -10,13 +10,12 @@ import com.imit.cosma.util.Path;
 
 public class AI {
     private final MoveGenerator generator;
-    private final int depth = 3; //TODO config
 
-    private DecisionTree cachedTree;
+    private final DecisionTree cachedTree;
 
-    private MutualLinkedMap<Path, StepMode> playerTurns;
+    private final MutualLinkedMap<Path, StepMode> playerTurns;
 
-    private ArtificialBoard board;
+    private final ArtificialBoard board;
 
     private MutualLinkedMap<Path, StepMode> currentPaths;
 

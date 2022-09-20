@@ -58,7 +58,7 @@ public class GameScreen implements Screen {
 
         playingField.render(delta, player.getTouchPoint());
 
-        //infoPanel.render();
+        infoPanel.render();
         //scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());
 
         if(playingField.isGameOver()) {
@@ -69,7 +69,9 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {}
+    public void resize(int width, int height) {
+        infoPanel.resize(width, height);
+    }
 
     @Override
     public void pause() {}
