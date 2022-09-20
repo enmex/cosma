@@ -30,6 +30,8 @@ public abstract class Side implements Cloneable{
 
     public abstract boolean isPlayer();
 
+    public abstract boolean isPlayingSide();
+
     public boolean completedTurn() {
         return turns == 2 || shipsNumber == 1 && turns == 1;
     }

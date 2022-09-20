@@ -1,7 +1,5 @@
 package com.imit.cosma.ai;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Tree;
-import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.Path;
@@ -12,14 +10,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import sun.security.util.Cache;
-
 public class DecisionTree{
     private TreeNode root;
 
-    private final int SEARCH_LIMIT = 100;
+    private final int SEARCH_LIMIT = 3;
 
-    private boolean isCaching;
+    private final boolean isCaching;
 
     public DecisionTree(){
         root = new TreeNode();

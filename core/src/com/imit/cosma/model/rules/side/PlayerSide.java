@@ -15,6 +15,11 @@ public class PlayerSide extends Side{
     }
 
     @Override
+    public boolean isPlayingSide() {
+        return true;
+    }
+
+    @Override
     public Side clone() {
         Side player = new PlayerSide(shipsNumber);
         player.turns = turns;

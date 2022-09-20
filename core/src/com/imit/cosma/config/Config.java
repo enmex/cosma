@@ -16,7 +16,7 @@ import com.imit.cosma.model.rules.move.QueenMovingStyle;
 import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
 
 public class Config {
-    public int DEFAULT_SHIPS_NUMBER = 8;
+    public int DEFAULT_SHIPS_NUMBER = 1;
     private static Config instance;
 
     public float FRAME_DURATION = 1 / 8f;
@@ -64,7 +64,7 @@ public class Config {
     public int BOARD_Y = (int) (WORLD_HEIGHT * 0.35);
 
     private final String SPACESHIP_ANIMATIONS_DIRECTORY = "animation\\spaceship\\";
-    private final String GAME_OBJECT_ANIMATIONS_DIRECTORY = "";
+    private final String GAME_OBJECT_ANIMATIONS_DIRECTORY = "animation\\game_object\\";
     private final String WEAPON_ANIMATIONS_DIRECTORY = "animation\\weapon\\";
 
     public String CORVETTE_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_corvette.atlas";
@@ -82,9 +82,13 @@ public class Config {
     public String DREADNOUGHT_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_dreadnought.atlas";
     public String BATTLESHIP_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_battleship.atlas";
 
-    public String BLACK_HOLE_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_black_hole.atlas";
-    public String HEALTH_KIT_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_health_kit.atlas";
-    public String DAMAGE_KIT_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_damage_kit.atlas";
+    public String BLACK_HOLE_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_black_hole.atlas";
+    public String HEALTH_KIT_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_health_kit.atlas";
+    public String DAMAGE_KIT_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_damage_kit.atlas";
+
+    public String BLACK_HOLE_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_black_hole.atlas";
+    public String HEALTH_KIT_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_health_kit.atlas";
+    public String DAMAGE_KIT_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_damage_kit.atlas";
 
     public String MACHINE_GUN_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_machine_gun.atlas";
     public String LASER_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_laser.atlas";
@@ -99,12 +103,7 @@ public class Config {
     public String IDLE_ANIMATION_REGION_NAME = "idle";
     public String MOVEMENT_ANIMATION_REGION_NAME = "move";
 
-    public String BLACK_HOLE_SPAWN_ATLAS_PATH = "";
-
     private Config(){
-        Element element = getElement();
-        //ANIMATION_SPEED = element.getInt("animation_speed");
-
         KING_MOVING_STYLE = new KingMovingStyle();
         QUEEN_MOVING_STYLE = new QueenMovingStyle();
         OFFICER_MOVING_STYLE = new OfficerMovingStyle();

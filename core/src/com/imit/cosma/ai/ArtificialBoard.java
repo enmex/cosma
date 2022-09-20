@@ -17,17 +17,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ArtificialBoard implements Cloneable {
-    private Side[][] sidesField;
-    private StepMode[][] stepModeField;
-    private MoveType[][] moveTypeField;
-    private int[][] healthField, damageField, weaponRangeField, maxHealthField;
-    private boolean[][] obstaclesField;
+    private final Side[][] sidesField;
+    private final StepMode[][] stepModeField;
+    private final MoveType[][] moveTypeField;
+    private final int[][] healthField, damageField, weaponRangeField, maxHealthField;
+    private final boolean[][] obstaclesField;
 
     private final Set<IntegerPoint> emptySet = new HashSet<>();
 
     private Set<IntegerPoint> availableForMove, availableForAttack;
 
-    private Side turn, playerSide, enemySide;
+    private Side turn;
+    private final Side playerSide;
+    private final Side enemySide;
 
     private IntegerPoint selectedPoint;
 
@@ -96,7 +98,7 @@ public class ArtificialBoard implements Cloneable {
     }
 
     private boolean sideCompletedTurn() {
-        return turn.getTurns() == 2 || turn.getTurns() == 1 && turn.getShipsNumber() == 1 && availableForAttack.isEmpty();
+        return turn.completedTurn() && stepModeField[selectedPoint.y][selectedPoint.x] == StepMode.COMPLETED;
     }
 
     private void changeTurn() {
@@ -260,7 +262,9 @@ public class ArtificialBoard implements Cloneable {
     }
 
     public boolean isEnemyShip(int x, int y) {
-        return sidesField[selectedPoint.y][selectedPoint.x] != sidesField[y][x];
+        return isShip(x, y)
+                && (sidesField[selectedPoint.y][selectedPoint.x].isPlayer() && !sidesField[y][x].isPlayer()
+                || !sidesField[selectedPoint.y][selectedPoint.x].isPlayer() && sidesField[y][x].isPlayer());
     }
 
     public boolean isPassable(IntegerPoint target) {
@@ -277,7 +281,7 @@ public class ArtificialBoard implements Cloneable {
 
         for (int y = 0; y < size; y++) {
             for(int x = 0; x < size; x++) {
-                board.sidesField[y][x] = sidesField[y][x];
+                board.sidesField[y][x] = sidesField[y][x].clone();
                 board.healthField[y][x] = healthField[y][x];
                 board.damageField[y][x] = damageField[y][x];
                 board.stepModeField[y][x] = stepModeField[y][x];

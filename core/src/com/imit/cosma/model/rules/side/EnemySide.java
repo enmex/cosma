@@ -15,6 +15,11 @@ public class EnemySide extends Side{
     }
 
     @Override
+    public boolean isPlayingSide() {
+        return true;
+    }
+
+    @Override
     public Side clone() {
         Side enemy = new EnemySide(shipsNumber);
         enemy.turns = turns;

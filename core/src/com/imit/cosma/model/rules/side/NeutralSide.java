@@ -12,6 +12,11 @@ public class NeutralSide extends Side{
     }
 
     @Override
+    public boolean isPlayingSide() {
+        return false;
+    }
+
+    @Override
     public Side clone() {
         return new NeutralSide();
     }
