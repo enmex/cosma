@@ -62,10 +62,10 @@ public class AttackSpaceshipAnimation extends AnimationType {
                 targetRotation, defaultRotation);
 
         shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
-                screenPath.getTarget().y, animationData.rotation);
+                screenPath.getTarget().y, rotation);
 
         shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
-                screenPath.getTarget().y, animationData.rotation);
+                screenPath.getTarget().y, rotation);
 
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
@@ -143,16 +143,16 @@ public class AttackSpaceshipAnimation extends AnimationType {
             standingEnemyShipData.getCurrentPhase().setNotAnimated();
         }
 
-        //render shots from second to last-1 phases
-        if (standingPlayerShipData.getCurrentPhase().isAnimated()) {
-            standingPlayerShipData.getCurrentPhase().render(delta);
-        }
-
         if (standingEnemyShipData.getCurrentPhase().isAnimated()) {
             standingEnemyShipData.getCurrentPhase().render(delta);
         }
 
         mainAnimationData.phases.get(mainAnimationData.currentPhase).render(delta);
+
+        //render shots from second to last-1 phases
+        if (standingPlayerShipData.getCurrentPhase().isAnimated()) {
+            standingPlayerShipData.getCurrentPhase().render(delta);
+        }
 
         if (!mainAnimationData.phases.get(mainAnimationData.currentPhase).isAnimated()) {
             mainAnimationData.currentPhase++;

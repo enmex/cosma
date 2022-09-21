@@ -51,7 +51,7 @@ public class GameScreen implements Screen {
         batch.draw(background, 0, 0, getInstance().WORLD_WIDTH, getInstance().WORLD_HEIGHT);
         batch.end();
 
-        if(player.touchedScreen() || playingField.isEnemyTurn()){
+        if(player.touchedScreen() || !playingField.isPlayerTurn()){
             playingField.updateField(player.getTouchPoint());
             infoPanel.updateContent(playingField.getSelectedContent(), playingField.getTurn());
         }

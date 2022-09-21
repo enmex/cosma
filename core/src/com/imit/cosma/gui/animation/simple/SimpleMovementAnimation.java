@@ -64,9 +64,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         traveledDistance = 0;
 
-        float duration = getInstance().ANIMATION_DURATION;
-
-        double velocity = distance / duration; //x
+        double velocity = distance / getInstance().ANIMATION_DURATION; //x
 
         double radians = Math.toRadians(rotation < 0 ? rotation - 90 : rotation + 90);
 

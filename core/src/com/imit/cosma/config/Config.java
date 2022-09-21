@@ -16,14 +16,12 @@ import com.imit.cosma.model.rules.move.QueenMovingStyle;
 import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
 
 public class Config {
-    public int DEFAULT_SHIPS_NUMBER = 1;
+    public int DEFAULT_SHIPS_NUMBER = 2;
     private static Config instance;
 
     public float FRAME_DURATION = 1 / 8f;
 
-    public int BLACK_HOLE_MAX_DAMAGE = 10000;
-    public int ANIMATION_SPEED;
-    public float ANIMATION_DURATION = 100;
+    public float ANIMATION_DURATION = 60;
     public float ROTATION_VELOCITY = 2f;
     public double PANEL_TO_SCREEN_RATIO = 0.3;
     public double PANEL_OFFSET = 0.03;

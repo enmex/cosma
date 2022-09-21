@@ -25,6 +25,8 @@ public class ArtificialBoard implements Cloneable {
 
     private final Set<IntegerPoint> emptySet = new HashSet<>();
 
+    private final Set<IntegerPoint> interacted = new HashSet<>();
+
     private Set<IntegerPoint> availableForMove, availableForAttack;
 
     private Side turn;
@@ -94,11 +96,13 @@ public class ArtificialBoard implements Cloneable {
     public void updateSide() {
         if (sideCompletedTurn()) {
             changeTurn();
+
+
         }
     }
 
     private boolean sideCompletedTurn() {
-        return turn.completedTurn() && stepModeField[selectedPoint.y][selectedPoint.x] == StepMode.COMPLETED;
+        return turn.completedTurn() && (stepModeField[selectedPoint.y][selectedPoint.x] == StepMode.COMPLETED);
     }
 
     private void changeTurn() {

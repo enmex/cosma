@@ -67,17 +67,17 @@ public class Board {
 
         playerSide = new PlayerSide(getInstance().DEFAULT_SHIPS_NUMBER);
         enemySide = new EnemySide(getInstance().DEFAULT_SHIPS_NUMBER);
-        Side neutralSide = new NeutralSide();
 
         sides = new PingPongList<>(3);
         sides.add(playerSide);
-        sides.add(neutralSide);
+        sides.add(new NeutralSide());
         sides.add(enemySide);
 
         selectedPoint = new IntegerPoint();
 
         IntegerPoint pShip = new IntegerPoint(4, 4);
-        IntegerPoint eShip = new IntegerPoint(1, 5);
+        IntegerPoint eShip1 = new IntegerPoint(1, 5);
+        IntegerPoint eShip2 = new IntegerPoint(2, 5);
 
         for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
@@ -85,13 +85,19 @@ public class Board {
                 if (point.equals(pShip)) {
                     cells[y][x] = new Cell(spaceshipBuilder.setSide(playerSide)
                             .addSkeleton(Skeleton.DREADNOUGHT)
-                            .addWeapon(ShipRandomizer.getRandomAmount())
+                            .addWeapon(8)
                             .setMoveType(MoveType.QUEEN).build());
                     objectController.addSpaceship(x, y);
-                } else if (point.equals(eShip)) {
+                } else if (point.equals(eShip1)) {
                     cells[y][x] = new Cell(spaceshipBuilder.setSide(enemySide)
                             .addSkeleton(Skeleton.DREADNOUGHT)
-                            .addWeapon(ShipRandomizer.getRandomAmount())
+                            .addWeapon(2)
+                            .setMoveType(MoveType.OFFICER).build());
+                    objectController.addSpaceship(x, y);
+                } else if (point.equals(eShip2)) {
+                    cells[y][x] = new Cell(spaceshipBuilder.setSide(enemySide)
+                            .addSkeleton(Skeleton.DREADNOUGHT)
+                            .addWeapon(2)
                             .setMoveType(MoveType.OFFICER).build());
                     objectController.addSpaceship(x, y);
                 } else {
@@ -228,8 +234,7 @@ public class Board {
     }
 
     private boolean sideCompletedTurn() {
-        return turn.completedTurn() && (turn.isPlayingSide() && selected.getStepMode() == StepMode.COMPLETED
-                || !turn.isPlayingSide());
+        return turn.completedTurn() && (!turn.isPlayingSide() || turn.isPlayingSide() && selected.getStepMode() == StepMode.COMPLETED);
     }
 
     public boolean isShip(IntegerPoint target) {
@@ -405,6 +410,10 @@ public class Board {
             availableForMove = selected.getStepMode() == StepMode.MOVE
                     ? selected.getMoveType().getMove().getAvailable(this, selectedPoint)
                     : emptySet;
+
+            if (selected.getStepMode() == StepMode.ATTACK && availableForAttack.isEmpty()) {
+                selected.setStepMode(StepMode.COMPLETED);
+            }
         }
     }
 

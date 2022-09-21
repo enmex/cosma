@@ -48,7 +48,7 @@ public class PlayingField {
     }
 
     public void render(float delta, IntegerPoint touchPoint){
-        if(!touchPoint.hasZero() && boardIsNotAnimated() && !isEnemyTurn()) {
+        if(!touchPoint.hasZero() && boardIsNotAnimated() && isPlayerTurn()) {
             drawSelected(touchPoint);
         }
         drawGrid();
@@ -72,10 +72,6 @@ public class PlayingField {
                         }
                     }
                 }
-
-                /*if (boardState.addsContent()) {
-                    IntegerPoint screenLocation = toScreenPoint(boardState.getUpdatedObjectLocation().getSource());
-                }*/
 
                 for (AnimatedSprite sprite : animatedSprites) {
                     if (sprite.getLocationOnScreen().equals(toScreenPoint(boardState.getUpdatedObjectLocation().getSource()))) {
@@ -200,8 +196,8 @@ public class PlayingField {
         return !contentAnimation.isAnimated();
     }
 
-    public boolean isEnemyTurn(){
-        return !board.getTurn().isPlayer();
+    public boolean isPlayerTurn(){
+        return board.getTurn().isPlayer();
     }
 
     public boolean isGameOver() {
