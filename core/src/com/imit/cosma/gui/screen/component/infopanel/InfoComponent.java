@@ -5,18 +5,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.screen.component.Component;
 import com.imit.cosma.model.board.content.Content;
-import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.model.rules.side.Side;
 
+import static com.imit.cosma.config.Config.*;
+
 public class InfoComponent extends Component {
+    private final TextureRegion panel;
+    private final SelectedCellDetails selectedCellDetails;
 
-    private TextureRegion panel;
-    private SelectedCellDetails selectedCellDetails;
-
-    private int panelLeft, panelBottom;
-    private int panelWidth, panelHeight;
-
-    private Content currentContent;
+    private final Content currentContent;
 
     public InfoComponent(){
         super();
@@ -27,7 +24,10 @@ public class InfoComponent extends Component {
 
     public void render(){
         batch.begin();
-        batch.draw(panel, panelLeft, panelBottom, panelWidth, panelHeight);
+        batch.draw(panel, 0,
+                getInstance().INFO_PANEL_BOTTOM,
+                getInstance().INFO_PANEL_WIDTH,
+                getInstance().INFO_PANEL_HEIGHT);
         batch.end();
         selectedCellDetails.render();
     }
@@ -35,17 +35,10 @@ public class InfoComponent extends Component {
     public void updateContent(Content selected, Side turn){
         if(currentContent != selected && turn.isPlayer()) {
             selectedCellDetails.update(selected);
-            selectedCellDetails.init(panelLeft, panelBottom, panelWidth, panelHeight);
+            selectedCellDetails.init(0,
+                    getInstance().INFO_PANEL_BOTTOM,
+                    getInstance().INFO_PANEL_WIDTH,
+                    getInstance().INFO_PANEL_HEIGHT);
         }
     }
-
-    public void resize(int width, int height){
-        panelLeft = 0;
-        panelBottom = (int) (height * Config.getInstance().PANEL_OFFSET);
-        panelWidth = width;
-        panelHeight = (int) (height * Config.getInstance().PANEL_TO_SCREEN_RATIO);
-
-        selectedCellDetails.init(panelLeft, panelBottom, panelWidth, panelHeight);
-    }
-
 }

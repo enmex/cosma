@@ -18,7 +18,6 @@ import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.spaceship.ShipRandomizer;
 import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
@@ -65,8 +64,8 @@ public class Board {
 
         SpaceshipBuilder spaceshipBuilder = new SpaceshipBuilder();
 
-        playerSide = new PlayerSide(getInstance().DEFAULT_SHIPS_NUMBER);
-        enemySide = new EnemySide(getInstance().DEFAULT_SHIPS_NUMBER);
+        playerSide = new PlayerSide(1);
+        enemySide = new EnemySide();
 
         sides = new PingPongList<>(3);
         sides.add(playerSide);

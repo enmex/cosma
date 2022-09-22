@@ -62,6 +62,10 @@ public class Config {
     public int BOARD_CELL_HEIGHT = BOARD_HEIGHT / BOARD_SIZE;
     public int BOARD_Y = (int) (WORLD_HEIGHT * 0.35);
 
+    public int INFO_PANEL_WIDTH = Gdx.graphics.getWidth();
+    public int INFO_PANEL_HEIGHT = (int) (WORLD_HEIGHT * PANEL_TO_SCREEN_RATIO);
+    public int INFO_PANEL_BOTTOM = (int) (WORLD_HEIGHT * PANEL_OFFSET);
+
     private final String SPACESHIP_ANIMATIONS_DIRECTORY = "animation\\spaceship\\";
     private final String GAME_OBJECT_ANIMATIONS_DIRECTORY = "animation\\game_object\\";
     private final String WEAPON_ANIMATIONS_DIRECTORY = "animation\\weapon\\";
