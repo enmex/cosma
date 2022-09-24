@@ -119,7 +119,7 @@ public class Board {
         for (int y = 0; y < 1; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
-                        .addSkeleton()
+                        .addSkeleton(Skeleton.CORVETTE)
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType().build();
                 cells[y][x] = new Cell(spaceship);
@@ -139,7 +139,7 @@ public class Board {
         for (int y = getInstance().BOARD_SIZE - 1; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
-                        .addSkeleton()
+                        .addSkeleton(Skeleton.CORVETTE)
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType().build();
                 cells[y][x] = new Cell(spaceship);

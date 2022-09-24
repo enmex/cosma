@@ -6,7 +6,6 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.pkg.BoardToScreenConverter;
 import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
@@ -24,7 +23,7 @@ public class SpaceDebrisAnimation extends AnimationType {
     private final List<Integer> damages;
     private final List<Spaceship> spaceships;
 
-    private Array<AnimationData> idleSpaceshipsAnimations;
+    private final Array<AnimationData> idleSpaceshipsAnimations;
 
     public SpaceDebrisAnimation(List<IntegerPoint> targets, List<Integer> damages, List<Spaceship> spaceships) {
         super(2, 0);
@@ -120,15 +119,13 @@ public class SpaceDebrisAnimation extends AnimationType {
         }
 
         for (AnimationData spaceshipData : idleSpaceshipsAnimations) {
-            if (spaceshipData.currentPhase != spaceshipData.phases.size && spaceshipData.getCurrentPhase().isAnimated()) {
+            if (spaceshipData.currentPhase != spaceshipData.phases.size) {
                 spaceshipData.getCurrentPhase().render(delta);
-
                 AnimationData debris = getByPath(spaceshipData.path);
-                if (debris != null && debris.animationIsCompleted()) {
+                if (debris != null && debris.animationIsCompleted() && spaceshipData.currentPhase != 1) {
+                    spaceshipData.getCurrentPhase().setNotAnimated();
                     spaceshipData.currentPhase++;
-                    if (spaceshipData.currentPhase != spaceshipData.phases.size) {
-                        spaceshipData.getCurrentPhase().setAnimated();
-                    }
+                    spaceshipData.getCurrentPhase().setAnimated();
                 }
             }
         }
@@ -154,6 +151,12 @@ public class SpaceDebrisAnimation extends AnimationType {
 
     @Override
     public boolean isAnimated() {
+        for (AnimationData data : idleSpaceshipsAnimations) {
+            if (!data.animationIsCompleted()) {
+                return true;
+            }
+        }
+
         for (AnimationData data : datas) {
             if (!data.animationIsCompleted()) {
                 return true;
