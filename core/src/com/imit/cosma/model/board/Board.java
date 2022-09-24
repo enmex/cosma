@@ -489,24 +489,28 @@ public class Board {
     private BoardEvent calculateSpaceDebrisSpawnState() {
         turn.updateTurns();
 
-        Map<IntegerPoint, Boolean> targets = new HashMap<>();
+        List<IntegerPoint> targets = new ArrayList<>();
+        List<Integer> damages = new ArrayList<>();
+        List<Spaceship> spaceships = new ArrayList<>();
+
         SpaceWeather debris = new SpaceDebris();
 
         List<IntegerPoint> spaceshipLocations = new ArrayList<>(objectController.getSpaceshipsLocations());
 
         for (int i = 0; i < debris.getPiecesNumber(); i++) {
             IntegerPoint target = Randomizer.getRandom(spaceshipLocations);
-
             int damage = debris.generateDamage();
 
-            damageShip(target, damage);
+            targets.add(target);
+            damages.add(damage);
+            spaceships.add((Spaceship) getCell(target).getContent().clone());
 
-            targets.put(target, !isShip(target));
+            damageShip(target, damage);
 
             spaceshipLocations.remove(target);
         }
 
-        return new SpaceDebrisAttackEvent(targets);
+        return new SpaceDebrisAttackEvent(targets, damages, spaceships);
     }
 
     private BoardEvent calculateSupplyKitSpawnState() {
