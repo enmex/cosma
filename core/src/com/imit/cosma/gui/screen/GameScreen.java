@@ -19,7 +19,6 @@ public class GameScreen implements Screen {
 
     private final PlayingField playingField;
     private final InfoComponent infoPanel;
-    private final ScoreComponent scoreComponent;
 
     private final Texture background;
 
@@ -35,10 +34,8 @@ public class GameScreen implements Screen {
 
         batch = new SpriteBatch();
 
-        scoreComponent = new ScoreComponent();
-
         font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
-        font.getData().setScale(8);
+        font.getData().setScale(6);
         font.setColor(Color.RED);
     }
 
@@ -60,12 +57,11 @@ public class GameScreen implements Screen {
 
         infoPanel.render();
         //scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());
+        //scoreComponent.render();
 
         if(playingField.isGameOver()) {
             drawFont();
         }
-
-        scoreComponent.render();
     }
 
     @Override
@@ -91,7 +87,7 @@ public class GameScreen implements Screen {
     private void drawFont() {
         batch.begin();
         font.draw(batch, "GAME OVER",
-                0, (float) getInstance().WORLD_HEIGHT / 2,
+                0, getInstance().WORLD_HEIGHT * 0.9f,
                 getInstance().WORLD_WIDTH, 1, true);
         batch.end();
     }

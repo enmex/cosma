@@ -9,13 +9,15 @@ import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.content.Content;
-import com.imit.cosma.model.board.state.BoardState;
+import com.imit.cosma.model.board.state.BoardEvent;
+import com.imit.cosma.model.board.state.GlobalBoardEvent;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class PlayingField {
     private final Texture grid;
@@ -59,12 +61,21 @@ public class PlayingField {
         IntegerPoint selected = getSelectedBoardPoint(touchPoint);
 
         if(boardIsNotAnimated() && !isGameOver() && !board.isLoading()){
-            BoardState boardState = board.getCurrentState(selected);
-            if(!boardState.isIdle()) {
+            BoardEvent boardEvent = board.getCurrentState(selected);
+            if(!boardEvent.isIdle()) {
                 Path currentPath = board.getCurrentPath();
 
-                if (boardState.removesContent()) {
-                    IntegerPoint screenLocation = toScreenPoint(boardState.getInteractedObjectLocation());
+                for (Map.Entry<IntegerPoint, String> locationOfAddedContent : boardEvent.getLocationsOfAddedContents().entrySet()) {
+                    IntegerPoint screenLocation = toScreenPoint(locationOfAddedContent.getKey());
+                    animatedSprites.add(new AnimatedSprite(1/3f,
+                            locationOfAddedContent.getValue(),
+                            screenLocation,
+                            board.getDefaultRotation(locationOfAddedContent.getKey())));
+                }
+
+                for (IntegerPoint locationOfRemovedContent : boardEvent.getLocationsOfRemovedContents()) {
+                    IntegerPoint screenLocation = toScreenPoint(locationOfRemovedContent);
+
                     for (AnimatedSprite sprite : animatedSprites) {
                         if (sprite.getLocationOnScreen().equals(screenLocation)) {
                             animatedSprites.remove(sprite);
@@ -73,22 +84,26 @@ public class PlayingField {
                     }
                 }
 
-                for (AnimatedSprite sprite : animatedSprites) {
-                    if (sprite.getLocationOnScreen().equals(toScreenPoint(boardState.getUpdatedObjectLocation().getSource()))) {
-                        sprite.setLocationOnScreen(toScreenPoint(boardState.getUpdatedObjectLocation().getTarget()));
-                        break;
-                    }
-                }
+                if (boardEvent.isGlobal()) {
+                    GlobalBoardEvent globalBoardEvent = (GlobalBoardEvent) boardEvent;
+                    for (Path updatedObjectLocation : globalBoardEvent.getUpdatedMainObjectLocations()) {
+                        Path screenPath = new Path(toScreenPoint(updatedObjectLocation.getSource()), toScreenPoint(updatedObjectLocation.getTarget()));
 
-                if (boardState.affectsManyCells()) {
+                        for (AnimatedSprite sprite : animatedSprites) {
+                            if (sprite.getLocationOnScreen().equals(screenPath.getSource())) {
+                                sprite.setLocationOnScreen(screenPath.getTarget());
+                            }
+                        }
+                    }
+
                     contentAnimation.init(
-                            boardState.getAnimationType(),
+                            boardEvent.getAnimationType(),
                             currentPath,
                             new Path(toScreenPoint(currentPath.getSource()), toScreenPoint(currentPath.getTarget())));
                 } else {
-                    contentAnimation.init(boardState.getAnimationType(),
+                    contentAnimation.init(boardEvent.getAnimationType(),
                             board.getCurrentContentSpawnPoint(),
-                            toBoardPoint(board.getCurrentContentSpawnPoint()));
+                            toScreenPoint(board.getCurrentContentSpawnPoint()));
                 }
 
             }

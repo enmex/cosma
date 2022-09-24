@@ -14,9 +14,15 @@ import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.move.OfficerMovingStyle;
 import com.imit.cosma.model.rules.move.QueenMovingStyle;
 import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
+import com.imit.cosma.util.IntegerPoint;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Config {
-    public int DEFAULT_SHIPS_NUMBER = 2;
+    public int DEFAULT_SHIPS_NUMBER = 8;
     private static Config instance;
 
     public float FRAME_DURATION = 1 / 8f;
@@ -48,6 +54,8 @@ public class Config {
     public TextureRegion GAME_OBJECTS_ATLAS;
 
     public Space SPACE;
+    public List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
+    public Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
     public float SPACE_DEBRIS_SPAWN_CHANCE = 0.05f;
     public float BLACK_HOLE_SPAWN_CHANCE = 0.1f;
     public float SUPPLY_KIT_SPAWN_CHANCE = 0.4f;

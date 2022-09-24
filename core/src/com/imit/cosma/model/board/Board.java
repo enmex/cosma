@@ -6,11 +6,11 @@ import com.imit.cosma.ai.AI;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.HealthKit;
 import com.imit.cosma.model.board.content.SupplyKit;
-import com.imit.cosma.model.board.state.BlackHoleSpawnState;
-import com.imit.cosma.model.board.state.BoardState;
-import com.imit.cosma.model.board.state.IdleBoardState;
-import com.imit.cosma.model.board.state.ShipAttackingOneTargetBoardState;
-import com.imit.cosma.model.board.state.ShipMovingBoardState;
+import com.imit.cosma.model.board.state.BlackHoleSpawnEvent;
+import com.imit.cosma.model.board.state.BoardEvent;
+import com.imit.cosma.model.board.state.IdleBoardEvent;
+import com.imit.cosma.model.board.state.ShipAttackBoardEvent;
+import com.imit.cosma.model.board.state.ShipMovementBoardEvent;
 import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
@@ -18,6 +18,7 @@ import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.spaceship.ShipRandomizer;
 import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
@@ -64,7 +65,7 @@ public class Board {
 
         SpaceshipBuilder spaceshipBuilder = new SpaceshipBuilder();
 
-        playerSide = new PlayerSide(1);
+        playerSide = new PlayerSide();
         enemySide = new EnemySide();
 
         sides = new PingPongList<>(3);
@@ -74,6 +75,7 @@ public class Board {
 
         selectedPoint = new IntegerPoint();
 
+        /*
         IntegerPoint pShip = new IntegerPoint(4, 4);
         IntegerPoint eShip1 = new IntegerPoint(1, 5);
         IntegerPoint eShip2 = new IntegerPoint(2, 5);
@@ -104,9 +106,9 @@ public class Board {
                     objectController.addSpace(x, y);
                 }
             }
-        }
+        }*/
 
-        /*
+
         //initialise player ships
         for (int y = 0; y < 1; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
@@ -137,7 +139,7 @@ public class Board {
                 cells[y][x] = new Cell(spaceship);
                 objectController.addSpaceship(x, y);
             }
-        }*/
+        }
 
         turn = playerSide;
         interactedCells = new HashSet<>();
@@ -150,7 +152,7 @@ public class Board {
         enemy = new AI(this);
     }
 
-    public BoardState getCurrentState(IntegerPoint selected) {
+    public BoardEvent getCurrentState(IntegerPoint selected) {
         if(inBoard(selected)){
             if (turn.isPlayer()) {
                 return calculateCurrentPlayerState(selected);
@@ -160,10 +162,10 @@ public class Board {
                 return calculateCurrentOtherState();
             }
         }
-        return new IdleBoardState();
+        return new IdleBoardEvent();
     }
 
-    public BoardState calculateCurrentPlayerState(IntegerPoint targetPoint){
+    public BoardEvent calculateCurrentPlayerState(IntegerPoint targetPoint){
         currentPath = new Path(this.selectedPoint, targetPoint);
 
         if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
@@ -173,24 +175,24 @@ public class Board {
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.MOVE);
                 setSelected(targetPoint);
-                return new ShipMovingBoardState(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
+                return new ShipMovementBoardEvent(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
             } else if (selectedCanFireTo(targetPoint)) {
                 damageShip(targetPoint, selected.getDamagePoints());
 
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.ATTACK);
-                return new ShipAttackingOneTargetBoardState(selected, interacted, currentPath);
+                return new ShipAttackBoardEvent(selected, interacted, currentPath);
             }
         }
         setSelected(targetPoint);
-        return new IdleBoardState();
+        return new IdleBoardEvent();
     }
 
     public Path getCurrentPath() {
         return currentPath;
     }
 
-    public BoardState calculateCurrentEnemyState(){
+    public BoardEvent calculateCurrentEnemyState(){
         enemy.update(this);
 
         currentPath = enemy.getPath();
@@ -210,15 +212,15 @@ public class Board {
 
                 setSelectedEnemyTurn(target);
 
-                return new ShipMovingBoardState(selected, currentPath);
+                return new ShipMovementBoardEvent(selected, currentPath);
             } else if (selectedCanFireTo(target)) {
                 damageShip(target, selected.getDamagePoints());
                 turn.updateTurns();
 
-                return new ShipAttackingOneTargetBoardState(selected, interacted, currentPath);
+                return new ShipAttackBoardEvent(selected, interacted, currentPath);
             }
         }
-        return new IdleBoardState();
+        return new IdleBoardEvent();
     }
 
     public void updateSide(){
@@ -440,23 +442,23 @@ public class Board {
         return cells[y][x].getDamagePoints();
     }
 
-    public BoardState calculateCurrentOtherState() {
-        turn.updateTurns();
-
-        /*double generatedValue = Math.random();
+    public BoardEvent calculateCurrentOtherState() {
+        double generatedValue = Math.random();
         if (generatedValue < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
             return calculateSpawnBlackHoleState();
-        }*/
+        }
 
-        return new IdleBoardState();
+        return new IdleBoardEvent();
     }
 
-    private BoardState calculateSpawnBlackHoleState() {
+    private BoardEvent calculateSpawnBlackHoleState() {
         currentContentSpawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE - 1);
         objectController.addGameObject(currentContentSpawnPoint);
 
         IntegerPoint blackHoleSpawnPoint = currentContentSpawnPoint.clone();
         Cell cellWithBlackHole = Cell.initWithBlackHole();
+
+        currentPath = new Path(blackHoleSpawnPoint, blackHoleSpawnPoint);
 
         turn.updateTurns();
         if (isShip(blackHoleSpawnPoint)) {
@@ -465,16 +467,16 @@ public class Board {
             destroyShip(blackHoleSpawnPoint, cellWithBlackHole);
             setCell(blackHoleSpawnPoint, cellWithBlackHole);
 
-            return new BlackHoleSpawnState(blackHoleSpawnPoint, victimSpaceship);
+            return new BlackHoleSpawnEvent(blackHoleSpawnPoint, victimSpaceship);
         } else {
             setCell(blackHoleSpawnPoint, cellWithBlackHole);
             objectController.setGameObject(blackHoleSpawnPoint);
 
-            return new BlackHoleSpawnState(blackHoleSpawnPoint);
+            return new BlackHoleSpawnEvent(blackHoleSpawnPoint);
         }
     }
 
-    private BoardState calculateSpaceDebrisSpawnState() {
+    private BoardEvent calculateSpaceDebrisSpawnState() {
         /*
         Map<Point, Integer> targets = new HashMap<>();
         SpaceWeather debris = new SpaceDebris();
@@ -494,10 +496,10 @@ public class Board {
         return new SpaceDebrisAttackingState();
 
          */
-        return new IdleBoardState();
+        return new IdleBoardEvent();
     }
 
-    private BoardState calculateSupplyKitSpawnState() {
+    private BoardEvent calculateSupplyKitSpawnState() {
         IntegerPoint spawnPoint = Randomizer.getRandom(objectController.getSpaceLocations());
         SupplyKit supplyKit;
 
@@ -507,7 +509,7 @@ public class Board {
         Cell cell = new Cell(supplyKit);
         setCell(spawnPoint, cell);
 
-        return new IdleBoardState();
+        return new IdleBoardEvent();
     }
 
     private void setCell(IntegerPoint target, Cell newCell) {

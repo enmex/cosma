@@ -19,4 +19,7 @@ public class AnimationData {
         return phases.get(currentPhase);
     }
 
+    public boolean animationIsCompleted() {
+        return currentPhase > phases.size - 1;
+    }
 }
