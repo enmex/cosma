@@ -2,9 +2,7 @@ package com.imit.cosma.model.board.state;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.ShipMovementAnimation;
-import com.imit.cosma.model.board.Cell;
-import com.imit.cosma.model.spaceship.Spaceship;
+import com.imit.cosma.gui.animation.compound.SpaceDebrisAnimation;
 import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
 
@@ -14,18 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ShipMovementBoardEvent implements GlobalBoardEvent {
-    private final Cell cell;
-    private final Path updatedLocation;
+public class SpaceDebrisAttackEvent implements GlobalBoardEvent {
+    private final Map<IntegerPoint, Boolean> targets;
 
-    public ShipMovementBoardEvent(Cell cell, Path updatedLocation) {
-        this.cell = cell;
-        this.updatedLocation = updatedLocation;
+    public SpaceDebrisAttackEvent(Map<IntegerPoint, Boolean> targets) {
+        this.targets = targets;
     }
 
     @Override
     public AnimationType getAnimationType() {
-        return new ShipMovementAnimation((Spaceship) cell.getContent());
+        return new SpaceDebrisAnimation(targets);
     }
 
     @Override
@@ -45,27 +41,28 @@ public class ShipMovementBoardEvent implements GlobalBoardEvent {
 
     @Override
     public List<IntegerPoint> getLocationsOfRemovedContents() {
-        return Config.getInstance().EMPTY_LIST;
+        List<IntegerPoint> removedContents = new ArrayList<>();
+        for (Map.Entry<IntegerPoint, Boolean> entry : targets.entrySet()) {
+            if (entry.getValue()) {
+                removedContents.add(entry.getKey());
+            }
+        }
+
+        return removedContents;
     }
 
     @Override
     public Set<Path> getUpdatedMainObjectLocations() {
-        Set<Path> updatedMainObjectLocations = new HashSet<>();
-        updatedMainObjectLocations.add(updatedLocation);
-
-        return updatedMainObjectLocations;
+        return new HashSet<>();
     }
 
     @Override
     public Set<IntegerPoint> getInteractedMainObjectLocations() {
-        Set<IntegerPoint> interactedMainObjectLocations = new HashSet<>();
-        interactedMainObjectLocations.add(updatedLocation.getTarget());
-
-        return interactedMainObjectLocations;
+        return targets.keySet();
     }
 
     @Override
     public boolean isExternal() {
-        return false;
+        return true;
     }
 }

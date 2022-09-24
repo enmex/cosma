@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.imit.cosma.pkg.BoardToScreenConverter.*;
+
 public class PlayingField {
     private final Texture grid;
 
@@ -96,10 +98,14 @@ public class PlayingField {
                         }
                     }
 
-                    contentAnimation.init(
-                            boardEvent.getAnimationType(),
-                            currentPath,
-                            new Path(toScreenPoint(currentPath.getSource()), toScreenPoint(currentPath.getTarget())));
+                    if (globalBoardEvent.isExternal()) {
+                        contentAnimation.init(globalBoardEvent.getAnimationType());
+                    } else {
+                        contentAnimation.init(
+                                globalBoardEvent.getAnimationType(),
+                                currentPath,
+                                new Path(toScreenPoint(currentPath.getSource()), toScreenPoint(currentPath.getTarget())));
+                    }
                 } else {
                     contentAnimation.init(boardEvent.getAnimationType(),
                             board.getCurrentContentSpawnPoint(),
@@ -217,19 +223,6 @@ public class PlayingField {
 
     public boolean isGameOver() {
         return board.isGameOver();
-    }
-
-    private IntegerPoint toScreenPoint(IntegerPoint boardPoint) {
-        return new IntegerPoint(boardPoint.x * Config.getInstance().BOARD_CELL_WIDTH,
-                boardPoint.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y
-        );
-    }
-
-    private IntegerPoint toBoardPoint(IntegerPoint screenPoint) {
-        return new IntegerPoint(
-                screenPoint.x / Config.getInstance().BOARD_CELL_WIDTH,
-                (screenPoint.y - Config.getInstance().BOARD_Y) / Config.getInstance().BOARD_CELL_HEIGHT
-        );
     }
 }
 

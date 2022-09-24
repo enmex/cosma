@@ -5,6 +5,9 @@ import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ContentAnimation {
     private AnimationType animationType;
 
@@ -13,10 +16,6 @@ public class ContentAnimation {
     }
     public ContentAnimation(){
         this(null);
-    }
-
-    private void setAnimationType(AnimationType animationType){
-        this.animationType = animationType;
     }
 
     public void init(AnimationType animationType, Path boardPath, Path screenPath){
@@ -32,7 +31,7 @@ public class ContentAnimation {
         );
 
         animationType.init(boardPath, originCenterScreenPath);
-        setAnimationType(animationType);
+        this.animationType = animationType;
 
     }
 
@@ -42,8 +41,13 @@ public class ContentAnimation {
                 screenPoint.y + + Config.getInstance().BOARD_CELL_HEIGHT / 2
         );
         animationType.init(boardPoint, originBasedScreenPoint);
-        setAnimationType(animationType);
+        this.animationType = animationType;
 
+    }
+
+    public void init(AnimationType animationType) {
+        animationType.init();
+        this.animationType = animationType;
     }
 
     public void render(float delta){

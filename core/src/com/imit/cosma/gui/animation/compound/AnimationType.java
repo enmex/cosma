@@ -5,6 +5,8 @@ import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
 
+import java.util.List;
+
 public abstract class AnimationType {
     protected float defaultRotation;
 
@@ -51,6 +53,8 @@ public abstract class AnimationType {
 
         datas.add(data);
     }
+
+    public void init() { }
 
     public void render(float delta){
         for(AnimationData data : datas){

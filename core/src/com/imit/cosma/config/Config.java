@@ -56,7 +56,7 @@ public class Config {
     public Space SPACE;
     public List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
     public Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
-    public float SPACE_DEBRIS_SPAWN_CHANCE = 0.05f;
+    public float SPACE_DEBRIS_SPAWN_CHANCE = 0.95f;
     public float BLACK_HOLE_SPAWN_CHANCE = 0.1f;
     public float SUPPLY_KIT_SPAWN_CHANCE = 0.4f;
 
@@ -96,6 +96,10 @@ public class Config {
     public String BLACK_HOLE_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_black_hole.atlas";
     public String HEALTH_KIT_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_health_kit.atlas";
     public String DAMAGE_KIT_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_damage_kit.atlas";
+    public String SPACE_DEBRIS_1_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_1.atlas";
+    public String SPACE_DEBRIS_2_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_2.atlas";
+    public String SPACE_DEBRIS_3_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_3.atlas";
+    public String SPACE_DEBRIS_4_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_4.atlas";
 
     public String BLACK_HOLE_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_black_hole.atlas";
     public String HEALTH_KIT_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_health_kit.atlas";

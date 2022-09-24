@@ -11,6 +11,9 @@ import com.imit.cosma.model.board.state.BoardEvent;
 import com.imit.cosma.model.board.state.IdleBoardEvent;
 import com.imit.cosma.model.board.state.ShipAttackBoardEvent;
 import com.imit.cosma.model.board.state.ShipMovementBoardEvent;
+import com.imit.cosma.model.board.state.SpaceDebrisAttackEvent;
+import com.imit.cosma.model.board.weather.SpaceDebris;
+import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
@@ -27,8 +30,11 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.PingPongList;
 import com.imit.cosma.util.IntegerPoint;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Board {
@@ -265,7 +271,7 @@ public class Board {
 
         if(cells[target.y][target.x].getContent().getHealthPoints() <= 0){
             destroyShip(target, Cell.initWithSpace());
-            objectController.setEmpty(target);
+            objectController.setEmpty(new IntegerPoint(target));
         }
     }
 
@@ -352,8 +358,8 @@ public class Board {
         swapCells(selectedPoint, destination);
         cells[destination.y][destination.x].setStepMode(StepMode.ATTACK);
 
-        objectController.setSpaceship(destination);
-        objectController.setEmpty(selectedPoint);
+        objectController.setSpaceship(new IntegerPoint(destination));
+        objectController.setEmpty(new IntegerPoint(selectedPoint));
 
         interactedCells.add(destination.clone());
     }
@@ -443,15 +449,21 @@ public class Board {
     }
 
     public BoardEvent calculateCurrentOtherState() {
-        double generatedValue = Math.random();
-        if (generatedValue < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
+        if (Math.random() < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
+            return calculateSpaceDebrisSpawnState();
+        }
+
+        if (Math.random() < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
             return calculateSpawnBlackHoleState();
         }
 
+        turn.updateTurns();
         return new IdleBoardEvent();
     }
 
     private BoardEvent calculateSpawnBlackHoleState() {
+        turn.updateTurns();
+
         currentContentSpawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE - 1);
         objectController.addGameObject(currentContentSpawnPoint);
 
@@ -459,8 +471,6 @@ public class Board {
         Cell cellWithBlackHole = Cell.initWithBlackHole();
 
         currentPath = new Path(blackHoleSpawnPoint, blackHoleSpawnPoint);
-
-        turn.updateTurns();
         if (isShip(blackHoleSpawnPoint)) {
             Spaceship victimSpaceship = (Spaceship) cells[blackHoleSpawnPoint.y][blackHoleSpawnPoint.x].getContent();
 
@@ -477,26 +487,26 @@ public class Board {
     }
 
     private BoardEvent calculateSpaceDebrisSpawnState() {
-        /*
-        Map<Point, Integer> targets = new HashMap<>();
+        turn.updateTurns();
+
+        Map<IntegerPoint, Boolean> targets = new HashMap<>();
         SpaceWeather debris = new SpaceDebris();
 
+        List<IntegerPoint> spaceshipLocations = new ArrayList<>(objectController.getSpaceshipsLocations());
+
         for (int i = 0; i < debris.getPiecesNumber(); i++) {
-            Point target = Randomizer.generatePoint(0, getInstance().BOARD_SIZE);
-            int damage = 0;
+            IntegerPoint target = Randomizer.getRandom(spaceshipLocations);
 
-            if(isShip(target)) {
-                damage = debris.generateDamage();
-                damageShip(target, damage);
-            }
+            int damage = debris.generateDamage();
 
-            targets.put(target, damage);
+            damageShip(target, damage);
+
+            targets.put(target, !isShip(target));
+
+            spaceshipLocations.remove(target);
         }
 
-        return new SpaceDebrisAttackingState();
-
-         */
-        return new IdleBoardEvent();
+        return new SpaceDebrisAttackEvent(targets);
     }
 
     private BoardEvent calculateSupplyKitSpawnState() {

@@ -9,8 +9,10 @@ import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ShipAttackBoardEvent implements GlobalBoardEvent {
     private final Cell source, target;
@@ -57,18 +59,23 @@ public class ShipAttackBoardEvent implements GlobalBoardEvent {
     }
 
     @Override
-    public List<Path> getUpdatedMainObjectLocations() {
-        List<Path> updatedLocations = new ArrayList<>();
+    public Set<Path> getUpdatedMainObjectLocations() {
+        Set<Path> updatedLocations = new HashSet<>();
         updatedLocations.add(updatedLocation);
 
         return updatedLocations;
     }
 
     @Override
-    public List<IntegerPoint> getInteractedMainObjectLocations() {
-        List<IntegerPoint> interactedLocations = new ArrayList<>();
+    public Set<IntegerPoint> getInteractedMainObjectLocations() {
+        Set<IntegerPoint> interactedLocations = new HashSet<>();
         interactedLocations.add(interactedLocation);
 
         return interactedLocations;
+    }
+
+    @Override
+    public boolean isExternal() {
+        return false;
     }
 }
