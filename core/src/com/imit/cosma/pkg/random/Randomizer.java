@@ -14,4 +14,8 @@ public class Randomizer {
     public static <T> T getRandom(List<T> list) {
         return list.get((int) (Math.random() * (list.size() - 1)));
     }
+
+    public static float generateInLine(float a, float b) {
+        return (float) (Math.random() % b + a);
+    }
 }

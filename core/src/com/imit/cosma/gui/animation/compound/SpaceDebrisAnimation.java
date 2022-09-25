@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.imit.cosma.pkg.BoardToScreenConverter.*;
+import static com.imit.cosma.pkg.random.Randomizer.*;
 
 public class SpaceDebrisAnimation extends AnimationType {
     private float elapsedTime = 0f;
@@ -47,7 +48,8 @@ public class SpaceDebrisAnimation extends AnimationType {
         for (int index = 0; index < targets.size(); index++) {
             SimpleMovementAnimation spaceDebrisMovement = new SimpleMovementAnimation(
                     Config.getInstance().SPACE_DEBRIS_1_MOVEMENT_ATLAS_PATH,
-                    SoundType.BATTLESHIP_MOVING
+                    SoundType.BATTLESHIP_MOVING,
+                    generateInLine(0.25f, 1f)
             );
 
             IntegerPoint targetScreenPoint = toOriginCenterScreenPoint(targets.get(index));
@@ -119,12 +121,13 @@ public class SpaceDebrisAnimation extends AnimationType {
         }
 
         for (AnimationData spaceshipData : idleSpaceshipsAnimations) {
-            if (spaceshipData.currentPhase != spaceshipData.phases.size) {
+            if (spaceshipData.getCurrentPhase().isAnimated()) {
                 spaceshipData.getCurrentPhase().render(delta);
                 AnimationData debris = getByPath(spaceshipData.path);
-                if (debris != null && debris.animationIsCompleted() && spaceshipData.currentPhase != 1) {
+
+                if (debris != null && debris.animationIsCompleted()) {
                     spaceshipData.getCurrentPhase().setNotAnimated();
-                    spaceshipData.currentPhase++;
+                    spaceshipData.currentPhase = 1;
                     spaceshipData.getCurrentPhase().setAnimated();
                 }
             }

@@ -46,8 +46,8 @@ public class RotationAnimation implements SimpleAnimation{
 
         sprite = new Sprite();
         sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
-        sprite.setOrigin((float) getInstance().BOARD_CELL_WIDTH / 2,
-                (float) getInstance().BOARD_CELL_HEIGHT / 2);
+        sprite.setOrigin(getInstance().BOARD_CELL_WIDTH / 2f,
+                getInstance().BOARD_CELL_HEIGHT / 2f);
 
         batch = new SpriteBatch();
 

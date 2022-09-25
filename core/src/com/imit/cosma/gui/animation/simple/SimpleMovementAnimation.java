@@ -25,13 +25,13 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
     private float rotation;
     private double distance, traveledDistance;
-    private float moveVelocityX, moveVelocityY;
+    private float velocity, moveVelocityX, moveVelocityY;
     private boolean animated;
 
     private FloatPoint targetLocation;
     private FloatPoint currentLocation;
 
-    public SimpleMovementAnimation(String atlasPath, SoundType soundType){
+    public SimpleMovementAnimation(String atlasPath, SoundType soundType, float velocity){
         movementSound = new SoundEffect(soundType);
 
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
@@ -42,10 +42,16 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         sprite = new Sprite();
         sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
-        sprite.setOrigin(getInstance().DEFAULT_SPRITE_SIZE / 2f,
-                getInstance().DEFAULT_SPRITE_SIZE / 2f);
+        sprite.setOrigin(getInstance().BOARD_CELL_WIDTH / 2f ,
+                getInstance().BOARD_CELL_HEIGHT / 2f);
 
         batch = new SpriteBatch();
+
+        this.velocity = velocity;
+    }
+
+    public SimpleMovementAnimation(String atlasPath, SoundType soundType) {
+        this(atlasPath, soundType, 1f);
     }
 
     @Override
@@ -64,7 +70,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         traveledDistance = 0;
 
-        double velocity = distance / getInstance().ANIMATION_DURATION; //x
+        double velocity = this.velocity * distance / getInstance().ANIMATION_DURATION; //x
 
         double radians = Math.toRadians(rotation < 0 ? rotation - 90 : rotation + 90);
 

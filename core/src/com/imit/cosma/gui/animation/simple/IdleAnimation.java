@@ -42,8 +42,8 @@ public class IdleAnimation implements SimpleAnimation{
         batch = new SpriteBatch();
         sprite = new Sprite();
         sprite.setSize(Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
-        sprite.setOrigin(getInstance().DEFAULT_SPRITE_SIZE / 2f ,
-                getInstance().DEFAULT_SPRITE_SIZE / 2f);
+        sprite.setOrigin(getInstance().BOARD_CELL_WIDTH / 2f ,
+                getInstance().BOARD_CELL_HEIGHT / 2f);
     }
 
     @Override
@@ -63,6 +63,10 @@ public class IdleAnimation implements SimpleAnimation{
         sprite.setRotation(rotation);
         sprite.draw(batch);
         batch.end();
+
+        if (playMode == PlayMode.NORMAL) {
+            System.out.println();
+        }
 
         if (playMode == PlayMode.NORMAL && animation.isAnimationFinished(elapsedTime)) {
             isAnimated = false;
