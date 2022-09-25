@@ -10,6 +10,7 @@ public class AnimationData {
     protected Path path;
     protected Array<SimpleAnimation> phases;
     protected int currentPhase;
+    protected boolean completed;
 
     public Path getPath() {
         return path;
@@ -20,6 +21,6 @@ public class AnimationData {
     }
 
     public boolean animationIsCompleted() {
-        return currentPhase > phases.size - 1;
+        return completed;
     }
 }

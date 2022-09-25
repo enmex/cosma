@@ -125,10 +125,14 @@ public class SpaceDebrisAnimation extends AnimationType {
                 spaceshipData.getCurrentPhase().render(delta);
                 AnimationData debris = getByPath(spaceshipData.path);
 
-                if (debris != null && debris.animationIsCompleted()) {
+                if (debris != null && debris.animationIsCompleted() && spaceshipData.currentPhase == 0) {
                     spaceshipData.getCurrentPhase().setNotAnimated();
                     spaceshipData.currentPhase = 1;
                     spaceshipData.getCurrentPhase().setAnimated();
+                }
+
+                if (spaceshipData.currentPhase == 1 && !spaceshipData.getCurrentPhase().isAnimated()) {
+                    spaceshipData.completed = true;
                 }
             }
         }
@@ -141,6 +145,8 @@ public class SpaceDebrisAnimation extends AnimationType {
                     data.currentPhase++;
                     if (data.currentPhase != data.phases.size) {
                         data.getCurrentPhase().setAnimated();
+                    } else {
+                        data.completed = true;
                     }
                 }
             }
@@ -171,6 +177,7 @@ public class SpaceDebrisAnimation extends AnimationType {
 
     @Override
     public void clear() {
+        idleSpaceshipsAnimations.clear();
         datas.clear();
     }
 
