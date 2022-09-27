@@ -5,7 +5,7 @@ import com.imit.cosma.pkg.sound.SoundType;
 
 public enum Skeleton {
 
-    CORVETTE(0, 2,25,
+    CORVETTE(0, 2,500,
             Config.getInstance().CORVETTE_DESTRUCTION_ATLAS_PATH,
             Config.getInstance().CORVETTE_IDLE_ATLAS_PATH,
             Config.getInstance().CORVETTE_MOVEMENT_ATLAS_PATH,

@@ -56,8 +56,8 @@ public class Config {
     public Space SPACE;
     public List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
     public Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
-    public float SPACE_DEBRIS_SPAWN_CHANCE = 0.95f;
-    public float BLACK_HOLE_SPAWN_CHANCE = 0.1f;
+    public float SPACE_DEBRIS_SPAWN_CHANCE = 0.1f;
+    public float BLACK_HOLE_SPAWN_CHANCE = 0.2f;
     public float SUPPLY_KIT_SPAWN_CHANCE = 0.4f;
 
     public int WORLD_WIDTH = Gdx.graphics.getWidth();
@@ -117,6 +117,21 @@ public class Config {
 
     public String IDLE_ANIMATION_REGION_NAME = "idle";
     public String MOVEMENT_ANIMATION_REGION_NAME = "move";
+
+    public boolean SOUNDS_ON = true;
+    public boolean MUSIC_ON = true;
+    public String SOUNDS_DIRECTORY = "sound\\";
+    public String ROTATION_SOUND = SOUNDS_DIRECTORY + "rotation.ogg";
+
+    public String MACHINE_GUN_SHOT_SOUND = SOUNDS_DIRECTORY + "machine_gun_shot.ogg";
+    public String LASER_SHOT_SOUND = SOUNDS_DIRECTORY + "laser_shot.ogg";
+    public String ION_CANNON_SHOT_SOUND = SOUNDS_DIRECTORY + "ion_cannon_shot.ogg";
+    public String TORPEDO_LAUNCHER_SHOT_SOUND = SOUNDS_DIRECTORY + "torpedo_launcher_shot.ogg";
+
+    public String MACHINE_GUN_EXPLOSION_SOUND = SOUNDS_DIRECTORY + "machine_gun_explosion.ogg";
+    public String LASER_EXPLOSION_SOUND = SOUNDS_DIRECTORY + "laser_explosion.ogg";
+    public String ION_CANNON_EXPLOSION_SOUND = SOUNDS_DIRECTORY + "ion_cannon_explosion.ogg";
+    public String TORPEDO_LAUNCHER_EXPLOSION_SOUND = SOUNDS_DIRECTORY + "torpedo_launcher_explosion.ogg";
 
     private Config(){
         KING_MOVING_STYLE = new KingMovingStyle();

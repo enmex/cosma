@@ -4,21 +4,29 @@ import com.badlogic.gdx.audio.Sound;
 
 public class SoundEffect {
     private long soundId;
-    private final Sound sound;
+    private Sound sound;
 
     public SoundEffect(SoundType soundType) {
         sound = SoundConfig.getInstance().soundBank.get(soundType);
     }
 
+    public SoundEffect() {}
+
     public void playLoop() {
-        soundId = sound.loop();
+        if (sound != null) {
+            soundId = sound.loop();
+        }
     }
 
     public void play() {
-        soundId = sound.play();
+        if (sound != null) {
+            soundId = sound.play();
+        }
     }
 
     public void stop() {
-        sound.stop(soundId);
+        if (sound != null) {
+            sound.stop(soundId);
+        }
     }
 }

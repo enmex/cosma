@@ -8,9 +8,9 @@ import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
-import com.imit.cosma.util.Vector;
 
 import java.util.List;
 
@@ -71,11 +71,12 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         for(Weapon weapon : weaponList){
             SimpleMovementAnimation shotMovement = new SimpleMovementAnimation(
-                    weapon.getShotAnimationPath(), weapon.getSound());
+                    weapon.getShotAnimationPath(), weapon.getSoundAttack());
 
             IdleAnimation explosion = new IdleAnimation(
                     weapon.getExplosionAnimationPath(),
                     Animation.PlayMode.NORMAL,
+                    weapon.getSoundExplosion(),
                     screenPath.getTarget(),
                     0);
 
@@ -90,6 +91,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
             IdleAnimation destruction = new IdleAnimation(
                     enemyShipDestructionAtlasPath,
                     Animation.PlayMode.NORMAL,
+                    SoundType.ION_CANNON_EXPLOSION,
                     screenPath.getTarget(),
                     180 - defaultRotation);
             animationData.phases.add(destruction);

@@ -15,7 +15,6 @@ import com.imit.cosma.model.board.state.SpaceDebrisAttackEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Attack;
-import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
@@ -31,10 +30,8 @@ import com.imit.cosma.util.PingPongList;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Board {
@@ -119,7 +116,7 @@ public class Board {
         for (int y = 0; y < 1; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
-                        .addSkeleton(Skeleton.CORVETTE)
+                        .addSkeleton()
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType().build();
                 cells[y][x] = new Cell(spaceship);
@@ -139,7 +136,7 @@ public class Board {
         for (int y = getInstance().BOARD_SIZE - 1; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
-                        .addSkeleton(Skeleton.CORVETTE)
+                        .addSkeleton()
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType().build();
                 cells[y][x] = new Cell(spaceship);
@@ -176,10 +173,9 @@ public class Board {
 
         if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
             if (selectedCanMoveTo(targetPoint)) {
-                setSelectedPosition(targetPoint);
-
                 turn.updateTurns();
                 enemy.savePlayerTurn(currentPath, StepMode.MOVE);
+                setSelectedPosition(targetPoint);
                 setSelected(targetPoint);
                 return new ShipMovementBoardEvent(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
             } else if (selectedCanFireTo(targetPoint)) {
@@ -200,7 +196,7 @@ public class Board {
 
     public BoardEvent calculateCurrentEnemyState(){
         enemy.update(this);
-
+        System.out.println("Enemy`s turn");
         currentPath = enemy.getPath();
         IntegerPoint source = currentPath.getSource();
         IntegerPoint target = currentPath.getTarget();
@@ -275,14 +271,6 @@ public class Board {
         }
     }
 
-    public void healShip(IntegerPoint target, int healthPoints) {
-        interacted.setContent(cells[target.y][target.x].getContent().clone());
-
-        cells[target.y][target.x].addHealthPoints(healthPoints);
-        selected.setStepMode(StepMode.COMPLETED);
-        interactedCells.add(selectedPoint);
-    }
-
     private void destroyShip(IntegerPoint target, Cell replacement) {
         if (cells[target.y][target.x].getSide().isPlayer()) {
             playerSide.removeShip();
@@ -299,6 +287,10 @@ public class Board {
 
     public boolean isPassable(int x, int y) {
         return inBoard(x, y) && cells[y][x].isPassable();
+    }
+
+    private boolean isSupplyKit(IntegerPoint target) {
+        return cells[target.y][target.x].getContent() instanceof SupplyKit;
     }
 
     public Cell getSelected() {
@@ -497,7 +489,9 @@ public class Board {
 
         List<IntegerPoint> spaceshipLocations = new ArrayList<>(objectController.getSpaceshipsLocations());
 
-        for (int i = 0; i < debris.getPiecesNumber(); i++) {
+        int piecesNumber = Math.min(spaceshipLocations.size(), debris.getPiecesNumber());
+
+        for (int i = 0; i < piecesNumber; i++) {
             IntegerPoint target = Randomizer.getRandom(spaceshipLocations);
             int damage = debris.generateDamage();
 

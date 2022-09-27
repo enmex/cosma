@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.pkg.sound.SoundEffect;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.IntegerPoint;
 
 public class IdleAnimation implements SimpleAnimation{
@@ -19,6 +21,8 @@ public class IdleAnimation implements SimpleAnimation{
 
     private final PlayMode playMode;
 
+    private final SoundEffect soundEffect;
+
     private float elapsedTime;
 
     private float rotation;
@@ -27,10 +31,33 @@ public class IdleAnimation implements SimpleAnimation{
 
     private final IntegerPoint locationOnScreen;
 
+    public IdleAnimation(String atlasPath, PlayMode playMode, SoundType soundType, IntegerPoint locationOnScreen, float rotation){
+        this.playMode = playMode;
+        this.rotation = rotation;
+        elapsedTime = 0f;
+
+        this.soundEffect = new SoundEffect(soundType);
+
+        this.locationOnScreen = locationOnScreen;
+
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
+
+        animation = new Animation<TextureRegion>(getInstance().FRAME_DURATION,
+                atlas.findRegions(Config.getInstance().IDLE_ANIMATION_REGION_NAME),
+                playMode);
+        batch = new SpriteBatch();
+        sprite = new Sprite();
+        sprite.setSize(Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
+        sprite.setOrigin(getInstance().BOARD_CELL_WIDTH / 2f ,
+                getInstance().BOARD_CELL_HEIGHT / 2f);
+    }
+
     public IdleAnimation(String atlasPath, PlayMode playMode, IntegerPoint locationOnScreen, float rotation){
         this.playMode = playMode;
         this.rotation = rotation;
         elapsedTime = 0f;
+
+        this.soundEffect = new SoundEffect();
 
         this.locationOnScreen = locationOnScreen;
 
@@ -64,10 +91,6 @@ public class IdleAnimation implements SimpleAnimation{
         sprite.draw(batch);
         batch.end();
 
-        if (playMode == PlayMode.NORMAL) {
-            System.out.println();
-        }
-
         if (playMode == PlayMode.NORMAL && animation.isAnimationFinished(elapsedTime)) {
             isAnimated = false;
         }
@@ -80,11 +103,17 @@ public class IdleAnimation implements SimpleAnimation{
 
     @Override
     public void setAnimated() {
+        if (playMode == PlayMode.LOOP) {
+            soundEffect.playLoop();
+        } else {
+            soundEffect.play();
+        }
         isAnimated = true;
     }
 
     @Override
     public void setNotAnimated() {
+        soundEffect.stop();
         isAnimated = false;
     }
 }

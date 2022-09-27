@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.pkg.sound.SoundEffect;
+import com.imit.cosma.pkg.sound.SoundType;
 import com.imit.cosma.util.FloatPoint;
 import com.imit.cosma.util.IntegerPoint;
 
@@ -25,6 +27,8 @@ public class RotationAnimation implements SimpleAnimation{
     private FloatPoint locationOnScreen;
 
     private final Animation<TextureRegion> animation;
+
+    private final SoundEffect soundEffect = new SoundEffect(SoundType.ROTATION);
 
     private boolean isAnimated;
     //initialRotation - текущий поворот
@@ -67,7 +71,7 @@ public class RotationAnimation implements SimpleAnimation{
             currentRotation += rotationVelocity;
         } else {
             currentRotation = targetRotation;
-            isAnimated = false;
+            setNotAnimated();
         }
 
         TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
@@ -87,11 +91,13 @@ public class RotationAnimation implements SimpleAnimation{
 
     @Override
     public void setAnimated(){
+        soundEffect.play();
         isAnimated = true;
     }
 
     @Override
     public void setNotAnimated() {
+        soundEffect.stop();
         isAnimated = false;
     }
 
