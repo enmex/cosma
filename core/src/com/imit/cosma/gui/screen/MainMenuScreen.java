@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.CosmaGame;
+import com.imit.cosma.config.Config;
 
 public class MainMenuScreen implements Screen {
     private Stage stage;
@@ -19,8 +20,6 @@ public class MainMenuScreen implements Screen {
 
     private final SpriteBatch batch;
     private final Texture background;
-
-    private boolean buttonClicked;
 
     public MainMenuScreen(CosmaGame game) {
         this.game = game;
@@ -32,15 +31,30 @@ public class MainMenuScreen implements Screen {
     @Override
     public void show() {
         stage = new Stage();
-        Skin pixelSkin = new Skin(Gdx.files.internal("skin/widgets-skin.json"));
-
-        Gdx.input.setInputProcessor(stage);
-
-        ImageButton playButton = new ImageButton(pixelSkin);
-        playButton.getImage().setFillParent(true);
 
         int width = (int) (Gdx.graphics.getWidth() * 0.2);
         int height = (int) (Gdx.graphics.getHeight() * 0.2);
+
+        Skin playButtonSkin = new Skin(Gdx.files.internal("skin/widgets-skin.json"));
+        //Skin soundSwitcherSkin = new Skin(Gdx.files.internal("skin/sound-switch-skin.json"));
+
+        Gdx.input.setInputProcessor(stage);
+
+        ImageButton soundSwitcher = new ImageButton(playButtonSkin);
+        soundSwitcher.getImage().setFillParent(true);
+
+        soundSwitcher.setPosition(width, height);
+        soundSwitcher.setSize(width, height);
+        soundSwitcher.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Config.getInstance().SOUNDS_ON = !Config.getInstance().SOUNDS_ON;
+                System.out.println(Config.getInstance().SOUNDS_ON);
+            }
+        });
+
+        ImageButton playButton = new ImageButton(playButtonSkin);
+        playButton.getImage().setFillParent(true);
 
         playButton.setPosition(Gdx.graphics.getWidth() / 2f - width / 2f - 32, Gdx.graphics.getHeight() / 2f - height / 2f - 32);
         playButton.setSize(width, height);
@@ -52,6 +66,7 @@ public class MainMenuScreen implements Screen {
             }
         });
         stage.addActor(playButton);
+        stage.addActor(soundSwitcher);
     }
 
     @Override

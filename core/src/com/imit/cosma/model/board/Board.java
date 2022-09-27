@@ -1,8 +1,7 @@
 package com.imit.cosma.model.board;
 
-import static com.imit.cosma.config.Config.getInstance;
-
 import com.imit.cosma.ai.AI;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.HealthKit;
 import com.imit.cosma.model.board.content.SupplyKit;
@@ -21,7 +20,6 @@ import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.spaceship.ShipRandomizer;
-import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.pkg.random.Randomizer;
@@ -59,10 +57,10 @@ public class Board {
     private final PingPongList<Side> sides;
 
     public Board() {
-        cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
+        cells = new Cell[Config.getInstance().BOARD_SIZE][Config.getInstance().BOARD_SIZE];
         emptySet = new HashSet<>();
-        selected = new Cell(getInstance().SPACE);
-        interacted = new Cell(getInstance().SPACE);
+        selected = new Cell(Config.getInstance().SPACE);
+        interacted = new Cell(Config.getInstance().SPACE);
 
         objectController = new ObjectController();
 
@@ -114,7 +112,7 @@ public class Board {
 
         //initialise player ships
         for (int y = 0; y < 1; y++) {
-            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
+            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
                         .addSkeleton()
                         .addWeapon(ShipRandomizer.getRandomAmount())
@@ -125,16 +123,16 @@ public class Board {
         }
 
         //initialise space cells
-        for (int y = 1; y < getInstance().BOARD_SIZE - 1; y++) {
-            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
+        for (int y = 1; y < Config.getInstance().BOARD_SIZE - 1; y++) {
+            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
                 objectController.addSpace(x, y);
             }
         }
 
         //initialise enemy ships
-        for (int y = getInstance().BOARD_SIZE - 1; y < getInstance().BOARD_SIZE; y++) {
-            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
+        for (int y = Config.getInstance().BOARD_SIZE - 1; y < Config.getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
                         .addSkeleton()
                         .addWeapon(ShipRandomizer.getRandomAmount())
@@ -441,11 +439,11 @@ public class Board {
     }
 
     public BoardEvent calculateCurrentOtherState() {
-        if (Math.random() < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
+        if (Math.random() < Config.getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
             return calculateSpaceDebrisSpawnState();
         }
 
-        if (Math.random() < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
+        if (Math.random() < Config.getInstance().BLACK_HOLE_SPAWN_CHANCE) {
             return calculateSpawnBlackHoleState();
         }
 
@@ -456,7 +454,7 @@ public class Board {
     private BoardEvent calculateSpawnBlackHoleState() {
         turn.updateTurns();
 
-        currentContentSpawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE - 1);
+        currentContentSpawnPoint = Randomizer.generatePoint(0, Config.getInstance().BOARD_SIZE - 1);
         objectController.addGameObject(currentContentSpawnPoint);
 
         IntegerPoint blackHoleSpawnPoint = currentContentSpawnPoint.clone();
