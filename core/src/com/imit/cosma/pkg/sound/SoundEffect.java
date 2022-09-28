@@ -15,21 +15,18 @@ public class SoundEffect {
     public SoundEffect() {}
 
     public void playLoop() {
-        System.out.println(getInstance().SOUNDS_ON);
         if (sound != null && getInstance().SOUNDS_ON) {
             soundId = sound.loop();
         }
     }
 
     public void play() {
-        System.out.println(getInstance().SOUNDS_ON);
         if (sound != null && getInstance().SOUNDS_ON) {
             soundId = sound.play();
         }
     }
 
     public void stop() {
-        System.out.println(getInstance().SOUNDS_ON);
         if (sound != null && getInstance().SOUNDS_ON) {
             sound.stop(soundId);
         }

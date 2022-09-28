@@ -8,6 +8,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.Player;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.screen.component.ScoreComponent;
@@ -26,6 +31,8 @@ public class GameScreen implements Screen {
 
     private final BitmapFont font;
 
+    private final Stage stage;
+
     public GameScreen(){
         player = new Player();
         playingField = new PlayingField();
@@ -37,10 +44,34 @@ public class GameScreen implements Screen {
         font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         font.getData().setScale(6);
         font.setColor(Color.RED);
+
+        stage = new Stage();
     }
 
     @Override
-    public void show() {}
+    public void show() {
+        int width = (int) (Gdx.graphics.getWidth() * 0.105);
+        int height = (int) (Gdx.graphics.getHeight() * 0.105);
+
+        Skin soundSwitcherSkin = new Skin(Gdx.files.internal("skin/sound-switch-widget.json"));
+
+        Gdx.input.setInputProcessor(stage);
+
+        ImageButton soundSwitcher = new ImageButton(soundSwitcherSkin);
+        soundSwitcher.setChecked(!getInstance().SOUNDS_ON);
+        soundSwitcher.getImage().setFillParent(true);
+
+        soundSwitcher.setPosition(getInstance().WORLD_WIDTH / 2f - width / 2f, getInstance().WORLD_HEIGHT - height);
+        soundSwitcher.setSize(width, height);
+        soundSwitcher.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Config.getInstance().SOUNDS_ON = !Config.getInstance().SOUNDS_ON;
+            }
+        });
+
+        stage.addActor(soundSwitcher);
+    }
 
     @Override
     public void render(float delta) {
@@ -62,6 +93,9 @@ public class GameScreen implements Screen {
         if(playingField.isGameOver()) {
             drawFont();
         }
+
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override

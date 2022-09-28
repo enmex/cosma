@@ -1,0 +1,11 @@
+{
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {
+		imageUp: imageUp
+		imageDown: imageDown
+		imageDisabled: disabledUp
+		imageChecked: disabledUp
+		imageCheckedDown: disabledDown
+	}
+}
+}

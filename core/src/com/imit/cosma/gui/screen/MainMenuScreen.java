@@ -36,20 +36,19 @@ public class MainMenuScreen implements Screen {
         int height = (int) (Gdx.graphics.getHeight() * 0.2);
 
         Skin playButtonSkin = new Skin(Gdx.files.internal("skin/widgets-skin.json"));
-        //Skin soundSwitcherSkin = new Skin(Gdx.files.internal("skin/sound-switch-skin.json"));
+        Skin soundSwitcherSkin = new Skin(Gdx.files.internal("skin/sound-switch-widget.json"));
 
         Gdx.input.setInputProcessor(stage);
 
-        ImageButton soundSwitcher = new ImageButton(playButtonSkin);
+        ImageButton soundSwitcher = new ImageButton(soundSwitcherSkin);
         soundSwitcher.getImage().setFillParent(true);
 
-        soundSwitcher.setPosition(width, height);
+        soundSwitcher.setPosition(0, 0);
         soundSwitcher.setSize(width, height);
         soundSwitcher.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Config.getInstance().SOUNDS_ON = !Config.getInstance().SOUNDS_ON;
-                System.out.println(Config.getInstance().SOUNDS_ON);
             }
         });
 
