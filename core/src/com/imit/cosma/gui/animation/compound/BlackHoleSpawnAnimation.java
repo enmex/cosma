@@ -86,7 +86,7 @@ public class BlackHoleSpawnAnimation extends AnimationType{
 
             if (victimShipAnimation.currentPhase == 0 && blackHoleAnimation.currentPhase == 1) {
                 victimShipAnimation.getCurrentPhase().setNotAnimated();
-                victimShipAnimation.currentPhase++;
+                blackHoleAnimation.nextPhase();
                 victimShipAnimation.getCurrentPhase().setAnimated();
             }
 
@@ -100,7 +100,8 @@ public class BlackHoleSpawnAnimation extends AnimationType{
         }
 
         if (!blackHoleAnimation.getCurrentPhase().isAnimated()) {
-            blackHoleAnimation.currentPhase++;
+            blackHoleAnimation.nextPhase();
+
             if (blackHoleAnimation.animationIsCompleted() || spawnedOnShip && datas.get(1).animationIsCompleted()) {
                 clear();
             } else {

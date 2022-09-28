@@ -49,7 +49,7 @@ public class Config {
     public final List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
     public final Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
     public final float SPACE_DEBRIS_SPAWN_CHANCE = 0.1f;
-    public final float BLACK_HOLE_SPAWN_CHANCE = 0.2f;
+    public final float BLACK_HOLE_SPAWN_CHANCE = 0.9f;
     public final float SUPPLY_KIT_SPAWN_CHANCE = 0.4f;
 
     public final int WORLD_WIDTH = Gdx.graphics.getWidth();

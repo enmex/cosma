@@ -157,7 +157,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
         }
 
         if (!mainAnimationData.phases.get(mainAnimationData.currentPhase).isAnimated()) {
-            mainAnimationData.currentPhase++;
+            mainAnimationData.nextPhase();
             if(mainAnimationData.currentPhase >= mainAnimationData.phases.size){
                 clear();
             }

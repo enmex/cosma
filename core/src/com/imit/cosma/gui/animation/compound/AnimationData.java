@@ -23,4 +23,11 @@ public class AnimationData {
     public boolean animationIsCompleted() {
         return completed;
     }
+
+    public void nextPhase() {
+        currentPhase++;
+        if (currentPhase > phases.size - 1) {
+            completed = true;
+        }
+    }
 }
