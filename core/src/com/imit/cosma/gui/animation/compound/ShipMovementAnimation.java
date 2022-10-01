@@ -6,7 +6,7 @@ import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
@@ -46,14 +46,11 @@ public class ShipMovementAnimation extends AnimationType {
         RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(idleShipAtlasPath,
                 targetRotation, defaultRotation);
 
-        shipRotationAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
-                screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
+        shipRotationAnimation.init(screenPath, animationData.rotation);
 
-        shipSimpleMovementAnimation.init(screenPath.getSource().x, screenPath.getSource().y,
-                screenPath.getTarget().x, screenPath.getTarget().y, targetRotation);
+        shipSimpleMovementAnimation.init(screenPath, targetRotation);
 
-        shipRotationAnimationToDefault.init(screenPath.getTarget().x, screenPath.getTarget().y,
-                screenPath.getTarget().x, screenPath.getTarget().y, animationData.rotation);
+        shipRotationAnimationToDefault.init(new Path(screenPath.getTarget(), screenPath.getTarget()), animationData.rotation);
 
         animationData.phases.add(shipRotationAnimation);
         animationData.phases.add(shipSimpleMovementAnimation);

@@ -9,10 +9,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.pkg.sound.SoundEffect;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.FloatPoint;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Path;
 
 public class RotationAnimation implements SimpleAnimation{
     private final SpriteBatch batch;
@@ -59,8 +59,8 @@ public class RotationAnimation implements SimpleAnimation{
     }
 
     @Override
-    public void init(int fromX, int fromY, int toX, int toY, float rotation) {
-        this.locationOnScreen = new FloatPoint(fromX, fromY);
+    public void init(Path path, float rotation) {
+        this.locationOnScreen = new FloatPoint(path.getSource());
     }
 
     @Override

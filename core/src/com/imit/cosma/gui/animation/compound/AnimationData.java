@@ -17,6 +17,7 @@ public class AnimationData {
     }
 
     public SimpleAnimation getCurrentPhase(){
+
         return phases.get(currentPhase);
     }
 

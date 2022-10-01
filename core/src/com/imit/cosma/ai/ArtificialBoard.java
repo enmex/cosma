@@ -122,13 +122,13 @@ public class ArtificialBoard implements Cloneable {
             setSelectedPosition(target);
 
             setSelected(target);
-            turn.updateTurns();
+            turn.scoreMove();
 
             mode = StepMode.MOVE;
         }
         else if(selectedCanFireTo(target)){
             damageShip(target, damageField[selectedPoint.y][selectedPoint.x]);
-            turn.updateTurns();
+            turn.scoreMove();
 
             mode = StepMode.ATTACK;
         }

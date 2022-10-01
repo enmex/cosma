@@ -1,18 +1,22 @@
 package com.imit.cosma.model.board.content;
 
-import com.imit.cosma.model.gameobject.GameObjectType;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.pkg.random.Randomizer;
 
-public class HealthKit extends SupplyKit {
+public class HealthKit extends Loot {
     private int healthPoints;
 
     public HealthKit() {
-        super(GameObjectType.HEALTH_KIT.getAtlasPoint());
-        healthPoints = (int) (Math.random() * 499 + 1); // TODO config
+        super(LootType.HEALTH_KIT);
+        healthPoints = Randomizer.generateInLine(
+                Config.getInstance().MIN_HEALTH_KIT_HEALTH_POINTS,
+                Config.getInstance().MAX_HEALTH_KIT_HEALTH_POINTS
+        );
     }
 
     @Override
-    public int getDamage() {
+    public int getDamagePoints() {
         return -healthPoints;
     }
 
@@ -23,7 +27,13 @@ public class HealthKit extends SupplyKit {
     public void setDamage(int damage) {}
 
     @Override
-    public void addHealthPoints(int healthPoints) {
+    public void addHealthPoints(int healthPoints) {}
 
+    @Override
+    public Content clone() {
+        HealthKit healthKit = new HealthKit();
+        healthKit.healthPoints = healthPoints;
+
+        return healthKit;
     }
 }

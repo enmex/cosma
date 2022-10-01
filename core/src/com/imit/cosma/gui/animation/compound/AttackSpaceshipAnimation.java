@@ -8,7 +8,7 @@ import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
@@ -37,7 +37,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
         standingPlayerShipAnimationIndex = 1;
         standingEnemyShipAnimationIndex = 2;
 
-        isKillAttack = spaceshipPlayer.getDamage() >= spaceshipEnemy.getHealthPoints();
+        isKillAttack = spaceshipPlayer.getDamagePoints() >= spaceshipEnemy.getHealthPoints();
     }
 
     @Override
@@ -61,11 +61,9 @@ public class AttackSpaceshipAnimation extends AnimationType {
         SimpleAnimation shipRotationToDefault = new RotationAnimation(playerShipAtlasPath,
                 targetRotation, defaultRotation);
 
-        shipRotation.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
-                screenPath.getTarget().y, rotation);
+        shipRotation.init(screenPath, rotation);
 
-        shipRotationToDefault.init(screenPath.getSource().x, screenPath.getSource().y, screenPath.getTarget().x,
-                screenPath.getTarget().y, rotation);
+        shipRotationToDefault.init(screenPath, rotation);
 
         datas.get(mainAnimationIndex).phases.add(shipRotation);
 
@@ -80,9 +78,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
                     screenPath.getTarget(),
                     0);
 
-            shotMovement.init(screenPath.getSource().x, screenPath.getSource().y,
-                    screenPath.getTarget().x, screenPath.getTarget().y,
-                    targetRotation);
+            shotMovement.init(screenPath, targetRotation);
             animationData.phases.add(shotMovement);
             animationData.phases.add(explosion);
         }

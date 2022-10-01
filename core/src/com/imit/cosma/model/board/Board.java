@@ -4,13 +4,15 @@ import com.imit.cosma.ai.AI;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.HealthKit;
-import com.imit.cosma.model.board.content.SupplyKit;
-import com.imit.cosma.model.board.state.BlackHoleSpawnEvent;
-import com.imit.cosma.model.board.state.BoardEvent;
-import com.imit.cosma.model.board.state.IdleBoardEvent;
-import com.imit.cosma.model.board.state.ShipAttackBoardEvent;
-import com.imit.cosma.model.board.state.ShipMovementBoardEvent;
-import com.imit.cosma.model.board.state.SpaceDebrisAttackEvent;
+import com.imit.cosma.model.board.content.Loot;
+import com.imit.cosma.model.board.event.BlackHoleSpawnEvent;
+import com.imit.cosma.model.board.event.BoardEvent;
+import com.imit.cosma.model.board.event.IdleBoardEvent;
+import com.imit.cosma.model.board.event.LootSpawnEvent;
+import com.imit.cosma.model.board.event.ShipAttackBoardEvent;
+import com.imit.cosma.model.board.event.ShipMovementBoardEvent;
+import com.imit.cosma.model.board.event.SpaceDebrisAttackEvent;
+import com.imit.cosma.model.board.event.SpaceshipTakesLootBoardEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Attack;
@@ -153,33 +155,38 @@ public class Board {
         enemy = new AI(this);
     }
 
-    public BoardEvent getCurrentState(IntegerPoint selected) {
+    public BoardEvent getCurrentEvent(IntegerPoint selected) {
         if(inBoard(selected)){
             if (turn.isPlayer()) {
-                return calculateCurrentPlayerState(selected);
+                return getCurrentPlayerEvent(selected);
             } else if (turn instanceof EnemySide) {
-                return calculateCurrentEnemyState();
+                return getCurrentEnemyEvent();
             } else {
-                return calculateCurrentOtherState();
+                return getCurrentBoardEvent();
             }
         }
         return new IdleBoardEvent();
     }
 
-    public BoardEvent calculateCurrentPlayerState(IntegerPoint targetPoint){
+    public BoardEvent getCurrentPlayerEvent(IntegerPoint targetPoint){
         currentPath = new Path(this.selectedPoint, targetPoint);
 
-        if(selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
+        if(selected.containsShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide() == turn) {
             if (selectedCanMoveTo(targetPoint)) {
-                turn.updateTurns();
+                turn.scoreMove();
                 enemy.savePlayerTurn(currentPath, StepMode.MOVE);
-                setSelectedPosition(targetPoint);
+
+                if (isSupplyKit(targetPoint)) {
+                    return getCurrentSupplyKitEvent(targetPoint);
+                }
+
+                setSelectedShipPosition(targetPoint);
                 setSelected(targetPoint);
                 return new ShipMovementBoardEvent(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
             } else if (selectedCanFireTo(targetPoint)) {
                 damageShip(targetPoint, selected.getDamagePoints());
 
-                turn.updateTurns();
+                turn.scoreMove();
                 enemy.savePlayerTurn(currentPath, StepMode.ATTACK);
                 return new ShipAttackBoardEvent(selected, interacted, currentPath);
             }
@@ -188,13 +195,32 @@ public class Board {
         return new IdleBoardEvent();
     }
 
+    private boolean isSupplyKit(IntegerPoint target) {
+        return inBoard(target) && getCell(target).containsPickableContent();
+    }
+
+    private BoardEvent getCurrentSupplyKitEvent(IntegerPoint targetPoint) {
+        Cell lootCell = new Cell(getCell(targetPoint).getContent().clone());
+
+        if (getCell(targetPoint).getDamagePoints() < 0) {
+            damageShip(selectedPoint, getCell(targetPoint).getDamagePoints());
+        } else {
+            double damageBonus = ((DamageKit)getCell(targetPoint).getContent()).getDamageBonus();
+            ((Spaceship)getCell(selectedPoint).getContent()).setDamageBonus(damageBonus);
+        }
+
+        setSelectedShipPosition(targetPoint);
+        setSelected(targetPoint);
+
+        return new SpaceshipTakesLootBoardEvent(getCell(targetPoint), lootCell, currentPath);
+    }
+
     public Path getCurrentPath() {
         return currentPath;
     }
 
-    public BoardEvent calculateCurrentEnemyState(){
+    public BoardEvent getCurrentEnemyEvent(){
         enemy.update(this);
-        System.out.println("Enemy`s turn");
         currentPath = enemy.getPath();
         IntegerPoint source = currentPath.getSource();
         IntegerPoint target = currentPath.getTarget();
@@ -205,17 +231,17 @@ public class Board {
             selected.setStepMode(StepMode.ATTACK);
         }
 
-        if (selected.isShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide().equals(turn)) {
+        if (selected.containsShip() && selected.getStepMode() != StepMode.COMPLETED && selected.getSide().equals(turn)) {
             if (selectedCanMoveTo(target)) {
-                setSelectedPosition(target);
-                turn.updateTurns();
+                setSelectedShipPosition(target);
+                turn.scoreMove();
 
                 setSelectedEnemyTurn(target);
 
                 return new ShipMovementBoardEvent(selected, currentPath);
             } else if (selectedCanFireTo(target)) {
                 damageShip(target, selected.getDamagePoints());
-                turn.updateTurns();
+                turn.scoreMove();
 
                 return new ShipAttackBoardEvent(selected, interacted, currentPath);
             }
@@ -235,7 +261,8 @@ public class Board {
     }
 
     private boolean sideCompletedTurn() {
-        return turn.completedTurn() && (!turn.isPlayingSide() || turn.isPlayingSide() && selected.getStepMode() == StepMode.COMPLETED);
+        return turn.completedTurn() &&
+                (!turn.isPlayingSide() || turn.isPlayingSide() && selected.getStepMode() == StepMode.COMPLETED);
     }
 
     public boolean isShip(IntegerPoint target) {
@@ -243,11 +270,11 @@ public class Board {
     }
 
     public boolean isShip(int x, int y) {
-        return cells[y][x].isShip();
+        return cells[y][x].containsShip();
     }
 
     public boolean isShipSelected() {
-        return selected.isShip();
+        return selected.containsShip();
     }
 
     public boolean isEnemyShip(IntegerPoint target){
@@ -287,16 +314,12 @@ public class Board {
         return inBoard(x, y) && cells[y][x].isPassable();
     }
 
-    private boolean isSupplyKit(IntegerPoint target) {
-        return cells[target.y][target.x].getContent() instanceof SupplyKit;
-    }
-
     public Cell getSelected() {
         return selected;
     }
 
     public boolean selectedCanMoveTo(IntegerPoint target){
-        return selected.isShip()
+        return selected.containsShip()
                 && cells[target.y][target.x] != selected
                 && selected.canMoveTo(selectedPoint.x, selectedPoint.y, target.x, target.y)
                 && selected.getStepMode() == StepMode.MOVE && isPassable(target);
@@ -318,7 +341,7 @@ public class Board {
     }
 
     public Set<IntegerPoint> getAvailableCellsForMove() {
-        return selected.isShip() && selected.getStepMode() == StepMode.MOVE && selected.getSide() == turn
+        return selected.containsShip() && selected.getStepMode() == StepMode.MOVE && selected.getSide() == turn
                 ? availableForMove : emptySet;
     }
 
@@ -329,7 +352,7 @@ public class Board {
     }
 
     public Set<IntegerPoint> getAvailableCellsForFire(){
-        return selected.isShip() && selected.getStepMode() == StepMode.ATTACK ? availableForAttack : emptySet;
+        return selected.containsShip() && selected.getStepMode() == StepMode.ATTACK ? availableForAttack : emptySet;
     }
 
     public Set<IntegerPoint> getAvailableCellsForFire(int x, int y) {
@@ -342,7 +365,7 @@ public class Board {
         return objectController.getNonEmptyLocations();
     }
 
-    private void setSelectedPosition(IntegerPoint destination) {
+    private void setSelectedShipPosition(IntegerPoint destination) {
         interacted.setContent(cells[destination.y][destination.x].getContent().clone());
 
         swapCells(selectedPoint, destination);
@@ -400,7 +423,7 @@ public class Board {
         selected = cells[target.y][target.x];
         selectedPoint.set(target);
 
-        if(selected.isShip()) {
+        if(selected.containsShip()) {
             availableForAttack = selected.getStepMode() == StepMode.ATTACK
                     ? Attack.getAvailable(this, selectedPoint)
                     : emptySet;
@@ -438,21 +461,25 @@ public class Board {
         return cells[y][x].getDamagePoints();
     }
 
-    public BoardEvent calculateCurrentOtherState() {
+    public BoardEvent getCurrentBoardEvent() {
         if (Math.random() < Config.getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
-            return calculateSpaceDebrisSpawnState();
+            return getSpaceDebrisSpawnEvent();
         }
 
         if (Math.random() < Config.getInstance().BLACK_HOLE_SPAWN_CHANCE) {
-            return calculateSpawnBlackHoleState();
+            return getSpawnBlackHolEvent();
         }
 
-        turn.updateTurns();
+        if (Math.random() < Config.getInstance().SUPPLY_KIT_SPAWN_CHANCE) {
+            return getLootSpawnEvent();
+        }
+
+        turn.scoreMove();
         return new IdleBoardEvent();
     }
 
-    private BoardEvent calculateSpawnBlackHoleState() {
-        turn.updateTurns();
+    private BoardEvent getSpawnBlackHolEvent() {
+        turn.scoreMove();
 
         currentContentSpawnPoint = Randomizer.generatePoint(0, Config.getInstance().BOARD_SIZE - 1);
         objectController.addGameObject(currentContentSpawnPoint);
@@ -476,8 +503,8 @@ public class Board {
         }
     }
 
-    private BoardEvent calculateSpaceDebrisSpawnState() {
-        turn.updateTurns();
+    private BoardEvent getSpaceDebrisSpawnEvent() {
+        turn.scoreMove();
 
         List<IntegerPoint> targets = new ArrayList<>();
         List<Integer> damages = new ArrayList<>();
@@ -505,17 +532,19 @@ public class Board {
         return new SpaceDebrisAttackEvent(targets, damages, spaceships);
     }
 
-    private BoardEvent calculateSupplyKitSpawnState() {
+    private BoardEvent getLootSpawnEvent() {
+        turn.scoreMove();
+
         IntegerPoint spawnPoint = Randomizer.getRandom(objectController.getSpaceLocations());
-        SupplyKit supplyKit;
+        Loot loot;
 
         int randomValue = (int) (Math.random() * 2);
         
-        supplyKit = randomValue == 0 ? new HealthKit() : new DamageKit();
-        Cell cell = new Cell(supplyKit);
-        setCell(spawnPoint, cell);
+        loot = randomValue == 0 ? new HealthKit() : new DamageKit();
+        Cell lootCell = new Cell(loot);
+        setCell(spawnPoint, lootCell);
 
-        return new IdleBoardEvent();
+        return new LootSpawnEvent(lootCell, spawnPoint);
     }
 
     private void setCell(IntegerPoint target, Cell newCell) {

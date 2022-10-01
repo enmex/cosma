@@ -8,9 +8,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.imit.cosma.pkg.sound.SoundEffect;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.FloatPoint;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Vector;
 
 public class SimpleMovementAnimation implements SimpleAnimation{
@@ -25,7 +26,9 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
     private float rotation;
     private double distance, traveledDistance;
-    private float velocity, moveVelocityX, moveVelocityY;
+    private final float velocity;
+    private float moveVelocityX;
+    private float moveVelocityY;
     private boolean animated;
 
     private FloatPoint targetLocation;
@@ -55,18 +58,17 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     }
 
     @Override
-    public void init(int fromX, int fromY, int toX, int toY, float rotation) {
+    public void init(Path path, float rotation) {
         this.rotation = rotation;
 
-        currentLocation = new FloatPoint(fromX, fromY);
+        currentLocation = new FloatPoint(path.getSource());
 
         Vector destinationVector = new Vector(
-                toX - fromX,
-                toY - fromY
+                path.getTarget().x - path.getSource().x,
+                path.getTarget().y - path.getSource().y
         );
 
-        distance = (toX - fromX) * (toX - fromX) + (toY - fromY) * (toY - fromY);
-        distance = Math.sqrt(distance);
+        distance = path.getDistance();
 
         traveledDistance = 0;
 
@@ -77,7 +79,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         moveVelocityX = (float) (Math.abs(Math.cos(radians)) * velocity * Math.signum(destinationVector.getX()));
         moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity * Math.signum(destinationVector.getY()));
 
-        targetLocation = new FloatPoint(toX, toY);
+        targetLocation = new FloatPoint(path.getTarget());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.imit.cosma.model.board.content;
 
 import com.imit.cosma.model.rules.move.MoveType;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
@@ -9,6 +9,7 @@ import com.imit.cosma.model.rules.StepMode;
 public interface Content extends Cloneable {
     boolean isShip();
     boolean isPassable();
+    boolean isPickable();
     boolean canMoveTo(int fromX, int fromY, int x, int y);
 
     MoveType getMoveType();
@@ -24,7 +25,7 @@ public interface Content extends Cloneable {
 
     void addHealthPoints(int healthPoints);
 
-    int getDamage();
+    int getDamagePoints();
 
     int getHealthPoints();
 

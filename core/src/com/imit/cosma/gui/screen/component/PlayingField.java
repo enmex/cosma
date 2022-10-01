@@ -9,8 +9,8 @@ import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.content.Content;
-import com.imit.cosma.model.board.state.BoardEvent;
-import com.imit.cosma.model.board.state.GlobalBoardEvent;
+import com.imit.cosma.model.board.event.BoardEvent;
+import com.imit.cosma.model.board.event.GlobalBoardEvent;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
@@ -63,7 +63,7 @@ public class PlayingField {
         IntegerPoint selected = getSelectedBoardPoint(touchPoint);
 
         if(boardIsNotAnimated() && !isGameOver() && !board.isLoading()){
-            BoardEvent boardEvent = board.getCurrentState(selected);
+            BoardEvent boardEvent = board.getCurrentEvent(selected);
             if(!boardEvent.isIdle()) {
                 Path currentPath = board.getCurrentPath();
 

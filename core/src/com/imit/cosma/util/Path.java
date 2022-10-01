@@ -23,6 +23,10 @@ public class Path {
         this.from = from;
     }
 
+    public double getDistance() {
+        return Math.sqrt((to.x - from.x) * (to.x - from.x) + (to.y - from.y) * (to.y - from.y));
+    }
+
     public IntegerPoint getTarget(){
         return to;
     }

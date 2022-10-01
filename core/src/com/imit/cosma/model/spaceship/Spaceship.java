@@ -1,7 +1,7 @@
 package com.imit.cosma.model.spaceship;
 
 import com.imit.cosma.model.rules.move.MoveType;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.side.Side;
@@ -42,6 +42,11 @@ public class Spaceship implements Content {
 
     @Override
     public boolean isPassable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPickable() {
         return false;
     }
 
@@ -132,7 +137,7 @@ public class Spaceship implements Content {
     }
 
     @Override
-    public int getDamage(){
+    public int getDamagePoints(){
         int damage = damagePoints;
         if (damageBonus != 1.0) {
             damage *= damageBonus;

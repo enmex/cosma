@@ -2,7 +2,7 @@ package com.imit.cosma.model.board.content;
 
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
@@ -20,6 +20,11 @@ public class Space implements Content{
 
     @Override
     public boolean isShip() {
+        return false;
+    }
+
+    @Override
+    public boolean isPickable() {
         return false;
     }
 
@@ -65,7 +70,7 @@ public class Space implements Content{
     }
 
     @Override
-    public int getDamage() {
+    public int getDamagePoints() {
         return 0;
     }
 

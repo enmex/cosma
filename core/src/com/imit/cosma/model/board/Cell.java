@@ -27,11 +27,15 @@ public class Cell {
         return new Cell(new BlackHole());
     }
 
-    public boolean isShip(){
+    public boolean containsShip(){
         return content.isShip();
     }
 
     public boolean isPassable() { return content.isPassable(); }
+
+    public boolean containsPickableContent() {
+        return content.isPickable();
+    }
 
     public Content getContent() {
         return content;
@@ -71,7 +75,7 @@ public class Cell {
     }
 
     public int getDamagePoints(){
-        return content.getDamage();
+        return content.getDamagePoints();
     }
 
     public int getHealthPoints(){

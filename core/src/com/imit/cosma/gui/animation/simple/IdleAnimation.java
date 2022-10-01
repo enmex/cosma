@@ -10,9 +10,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.pkg.sound.SoundEffect;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Path;
 
 public class IdleAnimation implements SimpleAnimation{
     private final SpriteBatch batch;
@@ -74,7 +75,7 @@ public class IdleAnimation implements SimpleAnimation{
     }
 
     @Override
-    public void init(int fromX, int fromY, int toX, int toY, float rotation) {
+    public void init(Path path, float rotation) {
         this.rotation = rotation;
     }
 

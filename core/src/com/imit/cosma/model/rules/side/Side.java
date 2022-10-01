@@ -36,7 +36,7 @@ public abstract class Side implements Cloneable{
         return turns == 2 || shipsNumber == 1 && turns == 1;
     }
 
-    public void updateTurns() {
+    public void scoreMove() {
         turns++;
     }
 

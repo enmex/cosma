@@ -6,7 +6,7 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
 
@@ -54,11 +54,7 @@ public class SpaceDebrisAnimation extends AnimationType {
 
             IntegerPoint targetScreenPoint = toOriginCenterScreenPoint(targets.get(index));
 
-            spaceDebrisMovement.init(
-                    targetScreenPoint.x,
-                    Config.getInstance().WORLD_HEIGHT + Config.getInstance().DEFAULT_SPRITE_SIZE,
-                    targetScreenPoint.x,
-                    targetScreenPoint.y,
+            spaceDebrisMovement.init(new Path(targetScreenPoint.x, -128, targetScreenPoint.x, targetScreenPoint.y),
                     180
             );
 

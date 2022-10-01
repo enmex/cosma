@@ -1,4 +1,4 @@
-package com.imit.cosma.pkg.sound;
+package com.imit.cosma.pkg.soundtrack.sound;
 
 import static com.imit.cosma.config.Config.getInstance;
 

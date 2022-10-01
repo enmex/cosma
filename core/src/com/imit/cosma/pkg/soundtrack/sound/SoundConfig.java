@@ -1,4 +1,4 @@
-package com.imit.cosma.pkg.sound;
+package com.imit.cosma.pkg.soundtrack.sound;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;

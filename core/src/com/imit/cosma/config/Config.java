@@ -29,14 +29,16 @@ public class Config {
     public final int BOARD_SIZE = 8;
     public final int MOVEMENT_ANIMATION_PHASES = 3;
     public final int DEFAULT_SPRITE_SIZE = 128;
+    public final float MUSIC_FADE_STEP = 0.25f;
+
+    public final int MIN_HEALTH_KIT_HEALTH_POINTS = 150;
+    public final int MAX_HEALTH_KIT_HEALTH_POINTS = 500;
+
     public final String BACKGROUND_PATH = "background.png";
     public final String GRID_PATH = "grid.png";
-    public final String SPACESHIP_PATH = "spaceships.png";
     public final String INFORMATION_PANEL_PATH =  "spaceship_panel.png";
     public final String FONT_PATH = "font\\font.fnt";
     public final String SELECTED_CELL_PATH = "selected.png";
-    public final String GAME_OBJECTS_PATH = "objects.png";
-    public final String WIDGETS_PATH = "widgets.png";
 
     public final MovingStyle KING_MOVING_STYLE;
     public final MovingStyle QUEEN_MOVING_STYLE;
@@ -49,7 +51,7 @@ public class Config {
     public final List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
     public final Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
     public final float SPACE_DEBRIS_SPAWN_CHANCE = 0.1f;
-    public final float BLACK_HOLE_SPAWN_CHANCE = 0.9f;
+    public final float BLACK_HOLE_SPAWN_CHANCE = 0.1f;
     public final float SUPPLY_KIT_SPAWN_CHANCE = 0.4f;
 
     public final int WORLD_WIDTH = Gdx.graphics.getWidth();
@@ -86,16 +88,16 @@ public class Config {
     public final String BATTLESHIP_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_battleship.atlas";
 
     public final String BLACK_HOLE_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_black_hole.atlas";
-    public final String HEALTH_KIT_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_health_kit.atlas";
-    public final String DAMAGE_KIT_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_damage_kit.atlas";
+    public final String HEALTH_KIT_IDLE_ATLAS_PATH = BLACK_HOLE_IDLE_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_health_kit.atlas";
+    public final String DAMAGE_KIT_IDLE_ATLAS_PATH = BLACK_HOLE_IDLE_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_damage_kit.atlas";
     public final String SPACE_DEBRIS_1_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_1.atlas";
     public final String SPACE_DEBRIS_2_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_2.atlas";
     public final String SPACE_DEBRIS_3_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_3.atlas";
     public final String SPACE_DEBRIS_4_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_4.atlas";
 
     public final String BLACK_HOLE_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_black_hole.atlas";
-    public final String HEALTH_KIT_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_health_kit.atlas";
-    public final String DAMAGE_KIT_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_damage_kit.atlas";
+    public final String HEALTH_KIT_SPAWN_ATLAS_PATH = BLACK_HOLE_SPAWN_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_health_kit.atlas";
+    public final String DAMAGE_KIT_SPAWN_ATLAS_PATH = BLACK_HOLE_SPAWN_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_damage_kit.atlas";
 
     public final String MACHINE_GUN_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_machine_gun.atlas";
     public final String LASER_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_laser.atlas";
@@ -142,7 +144,4 @@ public class Config {
         }
         return instance;
     }
-
-
-
 }

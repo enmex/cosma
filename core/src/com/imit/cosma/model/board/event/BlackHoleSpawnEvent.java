@@ -1,10 +1,9 @@
-package com.imit.cosma.model.board.state;
+package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.gui.animation.compound.BlackHoleSpawnAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.ArrayList;
@@ -60,15 +59,5 @@ public class BlackHoleSpawnEvent implements LocalBoardEvent {
         }
 
         return Config.getInstance().EMPTY_LIST;
-    }
-
-    @Override
-    public IntegerPoint getMainObjectLocation() {
-        return null;
-    }
-
-    @Override
-    public String getMainObjectAtlasPath() {
-        return null;
     }
 }

@@ -18,4 +18,8 @@ public class Randomizer {
     public static float generateInLine(float a, float b) {
         return (float) (Math.random() % b + a);
     }
+
+    public static int generateInLine(int a, int b) {
+        return (int) (Math.random() % b + a);
+    }
 }

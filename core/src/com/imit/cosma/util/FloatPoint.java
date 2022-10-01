@@ -16,6 +16,11 @@ public class FloatPoint {
         this.y = another.y;
     }
 
+    public FloatPoint(IntegerPoint another) {
+        this.x = another.x;
+        this.y = another.y;
+    }
+
     public FloatPoint(float x, float y){
         this.x = x;
         this.y = y;

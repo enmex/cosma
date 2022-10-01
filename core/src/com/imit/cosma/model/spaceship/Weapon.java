@@ -1,7 +1,7 @@
 package com.imit.cosma.model.spaceship;
 
 import com.imit.cosma.config.Config;
-import com.imit.cosma.pkg.sound.SoundType;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 
 public enum Weapon {
 

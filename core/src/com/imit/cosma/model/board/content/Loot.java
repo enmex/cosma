@@ -4,23 +4,31 @@ import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.Side;
-import com.imit.cosma.pkg.sound.SoundType;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 
-public abstract class SupplyKit implements Content {
-    protected IntegerPoint atlasPoint;
+public abstract class Loot implements Content {
     private final Side side;
     private final MoveType moveType;
+    private final LootType lootType;
 
-    protected SupplyKit(IntegerPoint atlasPoint) {
-        this.atlasPoint = atlasPoint;
+    protected Loot(LootType lootType) {
         side = new NeutralSide();
         moveType = MoveType.IDLE;
+        this.lootType = lootType;
+    }
+
+    public LootType getLootType() {
+        return lootType;
     }
 
     @Override
     public boolean isShip() {
         return false;
+    }
+
+    @Override
+    public boolean isPickable() {
+        return true;
     }
 
     @Override
@@ -40,7 +48,7 @@ public abstract class SupplyKit implements Content {
 
     @Override
     public String getIdleAnimationPath() {
-        return null;
+        return lootType.getIdleAnimationPath();
     }
 
     @Override

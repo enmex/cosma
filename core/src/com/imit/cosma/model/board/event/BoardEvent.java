@@ -1,4 +1,4 @@
-package com.imit.cosma.model.board.state;
+package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.gui.animation.compound.AnimationType;
 import com.imit.cosma.util.IntegerPoint;
