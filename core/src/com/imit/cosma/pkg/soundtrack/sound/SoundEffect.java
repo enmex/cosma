@@ -9,7 +9,7 @@ public class SoundEffect {
     private Sound sound;
 
     public SoundEffect(SoundType soundType) {
-        sound = SoundConfig.getInstance().soundBank.get(soundType);
+        sound = null;//SoundConfig.getInstance().soundBank.get(soundType);
     }
 
     public SoundEffect() {}

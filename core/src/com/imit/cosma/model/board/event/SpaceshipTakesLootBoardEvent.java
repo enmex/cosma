@@ -47,10 +47,7 @@ public class SpaceshipTakesLootBoardEvent implements GlobalBoardEvent {
 
     @Override
     public List<IntegerPoint> getLocationsOfRemovedContents() {
-        List<IntegerPoint> removedContentLocations = new ArrayList<>();
-        removedContentLocations.add(shipPath.getTarget());
-
-        return removedContentLocations;
+        return Config.getInstance().EMPTY_LIST;
     }
 
     @Override

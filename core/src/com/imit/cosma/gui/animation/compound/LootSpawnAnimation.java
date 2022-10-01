@@ -37,4 +37,14 @@ public class LootSpawnAnimation extends AnimationType {
     public boolean isAnimated(IntegerPoint objectLocation) {
         return objectLocation.equals(spawnBoardPoint);
     }
+
+    @Override
+    public boolean isAnimated() {
+        return datas.size != 0;
+    }
+
+    @Override
+    public void clear() {
+        datas.clear();
+    }
 }

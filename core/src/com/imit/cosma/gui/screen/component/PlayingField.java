@@ -201,7 +201,7 @@ public class PlayingField {
         return touchPoint.x >= 0 && touchPoint.x <= Config.getInstance().BOARD_WIDTH
                 && Config.getInstance().WORLD_HEIGHT - touchPoint.y >=
                 Config.getInstance().BOARD_Y && Config.getInstance().WORLD_HEIGHT - touchPoint.y
-                <= Config.getInstance().BOARD_Y + Config.getInstance().WORLD_HEIGHT;
+                <= Config.getInstance().BOARD_Y + Config.getInstance().BOARD_HEIGHT;
     }
 
     private int getBoardX(int touchX){

@@ -54,7 +54,11 @@ public class SpaceDebrisAnimation extends AnimationType {
 
             IntegerPoint targetScreenPoint = toOriginCenterScreenPoint(targets.get(index));
 
-            spaceDebrisMovement.init(new Path(targetScreenPoint.x, -128, targetScreenPoint.x, targetScreenPoint.y),
+            spaceDebrisMovement.init(
+                    new Path(targetScreenPoint.x,
+                            Config.getInstance().WORLD_HEIGHT + Config.getInstance().DEFAULT_SPRITE_SIZE,
+                            targetScreenPoint.x,
+                            targetScreenPoint.y),
                     180
             );
 

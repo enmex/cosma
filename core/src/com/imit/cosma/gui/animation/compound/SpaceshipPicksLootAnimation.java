@@ -98,6 +98,8 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
             if (shipMovementAnimation.animationIsCompleted()) {
                 clear();
+            } else {
+                shipMovementAnimation.getCurrentPhase().setAnimated();
             }
         }
     }
@@ -114,5 +116,10 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
     private int getOrientation(){
         return (int) Math.signum(datas.get(0).path.getSource().x - datas.get(0).path.getTarget().x);
+    }
+
+    @Override
+    public void clear() {
+        datas.clear();
     }
 }

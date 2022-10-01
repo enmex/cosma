@@ -9,13 +9,14 @@ import com.imit.cosma.model.board.event.BlackHoleSpawnEvent;
 import com.imit.cosma.model.board.event.BoardEvent;
 import com.imit.cosma.model.board.event.IdleBoardEvent;
 import com.imit.cosma.model.board.event.LootSpawnEvent;
-import com.imit.cosma.model.board.event.ShipAttackBoardEvent;
-import com.imit.cosma.model.board.event.ShipMovementBoardEvent;
+import com.imit.cosma.model.board.event.SpaceshipAttackBoardEvent;
+import com.imit.cosma.model.board.event.SpaceshipMovementBoardEvent;
 import com.imit.cosma.model.board.event.SpaceDebrisAttackEvent;
 import com.imit.cosma.model.board.event.SpaceshipTakesLootBoardEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Attack;
+import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
@@ -118,7 +119,7 @@ public class Board {
                 Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
                         .addSkeleton()
                         .addWeapon(ShipRandomizer.getRandomAmount())
-                        .setMoveType().build();
+                        .setMoveType(MoveType.QUEEN).build();
                 cells[y][x] = new Cell(spaceship);
                 objectController.addSpaceship(x, y);
             }
@@ -182,13 +183,13 @@ public class Board {
 
                 setSelectedShipPosition(targetPoint);
                 setSelected(targetPoint);
-                return new ShipMovementBoardEvent(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
+                return new SpaceshipMovementBoardEvent(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
             } else if (selectedCanFireTo(targetPoint)) {
                 damageShip(targetPoint, selected.getDamagePoints());
 
                 turn.scoreMove();
                 enemy.savePlayerTurn(currentPath, StepMode.ATTACK);
-                return new ShipAttackBoardEvent(selected, interacted, currentPath);
+                return new SpaceshipAttackBoardEvent(selected, interacted, currentPath);
             }
         }
         setSelected(targetPoint);
@@ -238,12 +239,12 @@ public class Board {
 
                 setSelectedEnemyTurn(target);
 
-                return new ShipMovementBoardEvent(selected, currentPath);
+                return new SpaceshipMovementBoardEvent(selected, currentPath);
             } else if (selectedCanFireTo(target)) {
                 damageShip(target, selected.getDamagePoints());
                 turn.scoreMove();
 
-                return new ShipAttackBoardEvent(selected, interacted, currentPath);
+                return new SpaceshipAttackBoardEvent(selected, interacted, currentPath);
             }
         }
         return new IdleBoardEvent();
@@ -260,7 +261,7 @@ public class Board {
         }
     }
 
-    private boolean sideCompletedTurn() {
+    private boolean sideCompletedTurn() {//TODO bug
         return turn.completedTurn() &&
                 (!turn.isPlayingSide() || turn.isPlayingSide() && selected.getStepMode() == StepMode.COMPLETED);
     }
@@ -535,16 +536,15 @@ public class Board {
     private BoardEvent getLootSpawnEvent() {
         turn.scoreMove();
 
-        IntegerPoint spawnPoint = Randomizer.getRandom(objectController.getSpaceLocations());
-        Loot loot;
+        currentContentSpawnPoint = Randomizer.getRandom(objectController.getSpaceLocations());
 
         int randomValue = (int) (Math.random() * 2);
         
-        loot = randomValue == 0 ? new HealthKit() : new DamageKit();
+        Loot loot = randomValue == 0 ? new HealthKit() : new DamageKit();
         Cell lootCell = new Cell(loot);
-        setCell(spawnPoint, lootCell);
+        setCell(currentContentSpawnPoint, lootCell);
 
-        return new LootSpawnEvent(lootCell, spawnPoint);
+        return new LootSpawnEvent(lootCell, currentContentSpawnPoint);
     }
 
     private void setCell(IntegerPoint target, Cell newCell) {

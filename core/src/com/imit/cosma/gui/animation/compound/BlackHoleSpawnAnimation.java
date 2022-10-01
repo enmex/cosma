@@ -64,7 +64,7 @@ public class BlackHoleSpawnAnimation extends AnimationType{
 
             IdleAnimation victimShipDestruction = new IdleAnimation(victimSpaceshipDestructionAtlas,
                     Animation.PlayMode.NORMAL,
-                    screenPoint, 180 - defaultRotation);
+                    screenPoint, defaultRotation);
 
             shipDestructionAnimation.phases.add(victimShipIdle);
             shipDestructionAnimation.phases.add(victimShipDestruction);

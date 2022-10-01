@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ShipAttackBoardEvent implements GlobalBoardEvent {
+public class SpaceshipAttackBoardEvent implements GlobalBoardEvent {
     private final Cell source, target;
     private final Path updatedLocation;
     private final IntegerPoint interactedLocation;
 
-    public ShipAttackBoardEvent(Cell source, Cell target, Path path) {
+    public SpaceshipAttackBoardEvent(Cell source, Cell target, Path path) {
         this.source = source;
         this.target = target;
         this.updatedLocation = new Path(path.getSource(), path.getSource());

@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ShipMovementBoardEvent implements GlobalBoardEvent {
+public class SpaceshipMovementBoardEvent implements GlobalBoardEvent {
     private final Cell cell;
     private final Path updatedLocation;
 
-    public ShipMovementBoardEvent(Cell cell, Path updatedLocation) {
+    public SpaceshipMovementBoardEvent(Cell cell, Path updatedLocation) {
         this.cell = cell;
         this.updatedLocation = updatedLocation;
     }
