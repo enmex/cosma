@@ -10,16 +10,17 @@ import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SpaceshipTakesLootBoardEvent implements GlobalBoardEvent {
+public class SpaceshipPicksLootBoardEvent implements GlobalBoardEvent {
     private final Cell spaceshipCell, lootCell;
     private final Path shipPath;
 
-    public SpaceshipTakesLootBoardEvent(Cell spaceshipCell, Cell lootCell, Path shipPath) {
+    public SpaceshipPicksLootBoardEvent(Cell spaceshipCell, Cell lootCell, Path shipPath) {
         this.spaceshipCell = spaceshipCell;
         this.lootCell = lootCell;
         this.shipPath = shipPath;
@@ -42,12 +43,18 @@ public class SpaceshipTakesLootBoardEvent implements GlobalBoardEvent {
 
     @Override
     public Map<IntegerPoint, String> getLocationsOfAddedContents() {
-        return Config.getInstance().EMPTY_MAP;
+        Map<IntegerPoint, String> addedContents = new HashMap<>();
+        addedContents.put(shipPath.getTarget(), spaceshipCell.getIdleAnimationPath());
+
+        return addedContents;
     }
 
     @Override
     public List<IntegerPoint> getLocationsOfRemovedContents() {
-        return Config.getInstance().EMPTY_LIST;
+        List<IntegerPoint> removedContents = new ArrayList<>();
+        removedContents.add(shipPath.getTarget());
+        
+        return removedContents;
     }
 
     @Override

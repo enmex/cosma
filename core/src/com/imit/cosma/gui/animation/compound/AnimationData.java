@@ -31,4 +31,5 @@ public class AnimationData {
             completed = true;
         }
     }
+
 }

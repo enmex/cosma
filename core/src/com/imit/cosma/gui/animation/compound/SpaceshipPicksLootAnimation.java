@@ -84,23 +84,28 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
         AnimationData shipMovementAnimation = datas.get(0);
         AnimationData lootPickAnimation = datas.get(1);
 
-        if (shipMovementAnimation.currentPhase == 2) {
-            lootPickAnimation.getCurrentPhase().setNotAnimated();
-            lootPickAnimation.nextPhase();
-            lootPickAnimation.getCurrentPhase().setAnimated();
+        lootPickAnimation.getCurrentPhase().render(delta);
+
+        if (!shipMovementAnimation.animationIsCompleted()) {
+            shipMovementAnimation.getCurrentPhase().render(delta);
         }
 
-        lootPickAnimation.getCurrentPhase().render(delta);
-        shipMovementAnimation.getCurrentPhase().render(delta);
-
-        if (!shipMovementAnimation.getCurrentPhase().isAnimated()) {
+        if (!shipMovementAnimation.animationIsCompleted() && !shipMovementAnimation.getCurrentPhase().isAnimated()) {
             shipMovementAnimation.nextPhase();
 
-            if (shipMovementAnimation.animationIsCompleted()) {
-                clear();
-            } else {
+            if (!shipMovementAnimation.animationIsCompleted()) {
                 shipMovementAnimation.getCurrentPhase().setAnimated();
+
+                if (shipMovementAnimation.currentPhase == 2) {
+                    lootPickAnimation.getCurrentPhase().setNotAnimated();
+                    lootPickAnimation.nextPhase();
+                    lootPickAnimation.getCurrentPhase().setAnimated();
+                }
             }
+        }
+
+        if (lootPickAnimation.animationIsCompleted()) {
+            clear();
         }
     }
 
@@ -111,7 +116,7 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
     @Override
     public boolean isAnimated(IntegerPoint objectLocation) {
-        return objectLocation.equals(boardPath.getSource()) || objectLocation.equals(boardPath.getTarget());
+        return datas.size != 0 && (objectLocation.equals(boardPath.getSource()) || objectLocation.equals(boardPath.getTarget()));
     }
 
     private int getOrientation(){

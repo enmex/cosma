@@ -12,7 +12,7 @@ import com.imit.cosma.model.board.event.LootSpawnEvent;
 import com.imit.cosma.model.board.event.SpaceshipAttackBoardEvent;
 import com.imit.cosma.model.board.event.SpaceshipMovementBoardEvent;
 import com.imit.cosma.model.board.event.SpaceDebrisAttackEvent;
-import com.imit.cosma.model.board.event.SpaceshipTakesLootBoardEvent;
+import com.imit.cosma.model.board.event.SpaceshipPicksLootBoardEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Attack;
@@ -213,7 +213,7 @@ public class Board {
         setSelectedShipPosition(targetPoint);
         setSelected(targetPoint);
 
-        return new SpaceshipTakesLootBoardEvent(getCell(targetPoint), lootCell, currentPath);
+        return new SpaceshipPicksLootBoardEvent(getCell(targetPoint), lootCell, currentPath);
     }
 
     public Path getCurrentPath() {
@@ -262,8 +262,7 @@ public class Board {
     }
 
     private boolean sideCompletedTurn() {//TODO bug
-        return turn.completedTurn() &&
-                (!turn.isPlayingSide() || turn.isPlayingSide() && selected.getStepMode() == StepMode.COMPLETED);
+        return turn.completedTurn();
     }
 
     public boolean isShip(IntegerPoint target) {
@@ -471,7 +470,7 @@ public class Board {
             return getSpawnBlackHolEvent();
         }
 
-        if (Math.random() < Config.getInstance().SUPPLY_KIT_SPAWN_CHANCE) {
+        if (Math.random() < Config.getInstance().LOOT_SPAWN_CHANCE) {
             return getLootSpawnEvent();
         }
 

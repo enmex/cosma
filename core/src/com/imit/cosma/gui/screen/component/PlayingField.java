@@ -45,7 +45,7 @@ public class PlayingField {
 
         animatedSprites = new ArrayList<>(Config.getInstance().BOARD_SIZE * Config.getInstance().BOARD_SIZE);
         for (IntegerPoint location : board.getNonEmptyLocations()) {
-            animatedSprites.add(new AnimatedSprite(1/3f,
+            animatedSprites.add(new AnimatedSprite(Config.getInstance().FRAME_DURATION,
                     board.getIdleAnimationPath(location), toScreenPoint(location),
                     board.getDefaultRotation(location)));
         }
@@ -69,7 +69,7 @@ public class PlayingField {
 
                 for (Map.Entry<IntegerPoint, String> locationOfAddedContent : boardEvent.getLocationsOfAddedContents().entrySet()) {
                     IntegerPoint screenLocation = toScreenPoint(locationOfAddedContent.getKey());
-                    animatedSprites.add(new AnimatedSprite(1/3f,
+                    animatedSprites.add(new AnimatedSprite(Config.getInstance().FRAME_DURATION,
                             locationOfAddedContent.getValue(),
                             screenLocation,
                             board.getDefaultRotation(locationOfAddedContent.getKey())));

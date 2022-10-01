@@ -52,7 +52,7 @@ public class Config {
     public final Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
     public final float SPACE_DEBRIS_SPAWN_CHANCE = 0f;
     public final float BLACK_HOLE_SPAWN_CHANCE = 0f;
-    public final float SUPPLY_KIT_SPAWN_CHANCE = 0f;
+    public final float LOOT_SPAWN_CHANCE = 1f;
 
     public final int WORLD_WIDTH = Gdx.graphics.getWidth();
     public final int WORLD_HEIGHT = Gdx.graphics.getHeight();
