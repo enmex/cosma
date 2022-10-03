@@ -12,7 +12,6 @@ public class LootSpawnAnimation extends AnimationType {
     private IntegerPoint spawnBoardPoint;
 
     public LootSpawnAnimation(Loot loot) {
-        super(1, 0);
         this.lootSpawnAnimationPath = loot.getLootType().getSpawnAnimationPath();
     }
 
@@ -41,10 +40,5 @@ public class LootSpawnAnimation extends AnimationType {
     @Override
     public boolean isAnimated() {
         return datas.size != 0;
-    }
-
-    @Override
-    public void clear() {
-        datas.clear();
     }
 }

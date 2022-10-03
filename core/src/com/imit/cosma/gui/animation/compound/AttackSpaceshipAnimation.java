@@ -28,7 +28,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
     private IntegerPoint sourceBoardCell;
 
     public AttackSpaceshipAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
-        super(spaceshipPlayer.getWeapons().size() + 2, spaceshipPlayer.getSide().getDefaultRotation());
+        this.defaultRotation = spaceshipPlayer.getSide().getDefaultRotation();
         this.weaponList = spaceshipPlayer.getWeapons();
         playerShipAtlasPath = spaceshipPlayer.getIdleAnimationPath();
         enemyShipAtlasPath = spaceshipEnemy.getIdleAnimationPath();
@@ -128,7 +128,7 @@ public class AttackSpaceshipAnimation extends AnimationType {
 
         //render standing player ship between first and last phases
         AnimationData standingPlayerShipData = datas.get(standingPlayerShipAnimationIndex);
-        if(mainAnimationData.currentPhase > 0 && mainAnimationData.currentPhase < mainAnimationData.phases.size - 1){
+        if(mainAnimationData.currentPhase > 0 && !mainAnimationData.isLastPhase()){
             standingPlayerShipData.getCurrentPhase().setAnimated();
         }
         else{
@@ -145,20 +145,20 @@ public class AttackSpaceshipAnimation extends AnimationType {
             standingEnemyShipData.getCurrentPhase().render(delta);
         }
 
-        mainAnimationData.phases.get(mainAnimationData.currentPhase).render(delta);
+        mainAnimationData.getCurrentPhase().render(delta);
 
         //render shots from second to last-1 phases
         if (standingPlayerShipData.getCurrentPhase().isAnimated()) {
             standingPlayerShipData.getCurrentPhase().render(delta);
         }
 
-        if (!mainAnimationData.phases.get(mainAnimationData.currentPhase).isAnimated()) {
+        if (!mainAnimationData.getCurrentPhase().isAnimated()) {
             mainAnimationData.nextPhase();
-            if(mainAnimationData.currentPhase >= mainAnimationData.phases.size){
-                clear();
+            if(mainAnimationData.isCompleted()){
+                //clear();
             }
             else {
-                mainAnimationData.phases.get(mainAnimationData.currentPhase).setAnimated();
+                mainAnimationData.getCurrentPhase().setAnimated();
             }
         }
     }

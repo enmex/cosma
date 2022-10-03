@@ -86,32 +86,25 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
         lootPickAnimation.getCurrentPhase().render(delta);
 
-        if (!shipMovementAnimation.animationIsCompleted()) {
+        if (!shipMovementAnimation.isCompleted()) {
             shipMovementAnimation.getCurrentPhase().render(delta);
         }
 
-        if (!shipMovementAnimation.animationIsCompleted() && !shipMovementAnimation.getCurrentPhase().isAnimated()) {
+        if (!shipMovementAnimation.isCompleted() && !shipMovementAnimation.getCurrentPhase().isAnimated()) {
             shipMovementAnimation.nextPhase();
 
-            if (!shipMovementAnimation.animationIsCompleted()) {
+            if (!shipMovementAnimation.isCompleted()) {
                 shipMovementAnimation.getCurrentPhase().setAnimated();
 
-                if (shipMovementAnimation.currentPhase == 2) {
-                    lootPickAnimation.getCurrentPhase().setNotAnimated();
+                if (shipMovementAnimation.isLastPhase()) {
                     lootPickAnimation.nextPhase();
-                    lootPickAnimation.getCurrentPhase().setAnimated();
                 }
             }
         }
 
-        if (lootPickAnimation.animationIsCompleted()) {
-            clear();
+        if (lootPickAnimation.isCompleted()) {
+            //clear();
         }
-    }
-
-    @Override
-    public boolean isAnimated() {
-        return datas.size != 0;
     }
 
     @Override
@@ -123,10 +116,5 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
     private int getOrientation(){
         return (int) Math.signum(datas.get(0).path.getSource().x - datas.get(0).path.getTarget().x);
-    }
-
-    @Override
-    public void clear() {
-        datas.clear();
     }
 }

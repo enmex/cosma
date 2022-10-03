@@ -17,9 +17,10 @@ public class ShipMovementAnimation extends AnimationType {
     private final String idleShipAtlasPath;
 
     private final int mainAnimationIndex;
+    private IntegerPoint targetBoardPoint;
 
     public ShipMovementAnimation(Spaceship spaceship){
-        super(getInstance().MOVEMENT_ANIMATION_PHASES, spaceship.getSide().getDefaultRotation());
+        this.defaultRotation = spaceship.getSide().getDefaultRotation();
         movingShipAtlasPath = spaceship.getSkeleton().getMovementAnimationPath();
         idleShipAtlasPath = spaceship.getSkeleton().getIdleAnimationPath();
         mainAnimationIndex = 0;
@@ -29,6 +30,7 @@ public class ShipMovementAnimation extends AnimationType {
     @Override
     public void init(Path boardPath, Path screenPath){
         super.init(boardPath, screenPath);
+        this.targetBoardPoint = boardPath.getTarget();
         AnimationData animationData = datas.get(mainAnimationIndex);
 
         float rotation = animationData.rotation;
@@ -63,17 +65,7 @@ public class ShipMovementAnimation extends AnimationType {
 
     @Override
     public boolean isAnimated() {
-        if(datas.size == 0) {
-            return false;
-        }
-
-        AnimationData animationData = datas.get(mainAnimationIndex);
-        for(SimpleAnimation simpleAnimation : animationData.phases) {
-            if(simpleAnimation.isAnimated()) {
-                return true;
-            }
-        }
-        return false;
+        return datas.size != 0;
     }
 
     @Override

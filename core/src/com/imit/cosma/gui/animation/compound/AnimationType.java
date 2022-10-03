@@ -5,13 +5,10 @@ import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
 
-import java.util.List;
-
 public abstract class AnimationType {
     protected float defaultRotation;
 
-    protected Array<AnimationData> datas;
-
+    protected Array<AnimationData> datas = new Array<>();
 
     public void init(Path boardPath, Path screenPath){
         float orientation = (float) Math.cos(Math.toRadians(defaultRotation));
@@ -43,27 +40,21 @@ public abstract class AnimationType {
     public void init() { }
 
     public void render(float delta){
-        for(AnimationData data : datas){
-            data.phases.get(data.currentPhase).render(delta);
-            if (!data.phases.get(data.currentPhase).isAnimated()) {
-                data.currentPhase++;
-                if(data.currentPhase >= data.phases.size){
-                    clear();
-                }
-                else {
-                    data.phases.get(data.currentPhase).setAnimated();
-                }
-            }
+        for(AnimationData animation : datas){
+            animation.render(delta);
         }
     }
 
     public abstract boolean isAnimated(IntegerPoint objectLocation);
-    public boolean isAnimated(){
-        return datas.size != 0;
-    }
 
-    public void clear(){
-        datas.clear();
+    public boolean isAnimated(){
+        for (AnimationData animation : datas) {
+            if (!animation.isCompleted()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

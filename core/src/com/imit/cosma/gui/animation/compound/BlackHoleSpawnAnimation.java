@@ -13,7 +13,6 @@ public class BlackHoleSpawnAnimation extends AnimationType{
     private final String victimSpaceshipIdleAtlas, victimSpaceshipDestructionAtlas;
 
     public BlackHoleSpawnAnimation(IntegerPoint spawnPoint) {
-        super(2, 0);
         this.spawnPoint = spawnPoint;
         victimSpaceshipDestructionAtlas = "";
         victimSpaceshipIdleAtlas = "";
@@ -21,7 +20,6 @@ public class BlackHoleSpawnAnimation extends AnimationType{
     }
 
     public BlackHoleSpawnAnimation(IntegerPoint spawnPoint, Spaceship victimSpaceship) {
-        super(3, 0);
         this.victimSpaceshipIdleAtlas = victimSpaceship.getIdleAnimationPath();
         this.victimSpaceshipDestructionAtlas = victimSpaceship.getSkeleton().getDestructionAnimationPath();
 
@@ -102,17 +100,10 @@ public class BlackHoleSpawnAnimation extends AnimationType{
         if (!blackHoleAnimation.getCurrentPhase().isAnimated()) {
             blackHoleAnimation.nextPhase();
 
-            if (blackHoleAnimation.animationIsCompleted() || spawnedOnShip && datas.get(1).animationIsCompleted()) {
-                clear();
+            if (blackHoleAnimation.isCompleted() || spawnedOnShip && datas.get(1).isCompleted()) {
             } else {
                 blackHoleAnimation.getCurrentPhase().setAnimated();
             }
         }
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
-        spawnPoint.set(-1, -1);
     }
 }
