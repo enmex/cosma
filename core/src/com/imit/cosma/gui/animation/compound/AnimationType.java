@@ -12,20 +12,8 @@ public abstract class AnimationType {
 
     protected Array<AnimationData> datas;
 
-    protected IntegerPoint targetBoardPoint;
-
-    private final int phasesAmount;
-
-    protected AnimationType(int phasesAmount, float initialRotation){
-        this.defaultRotation = initialRotation;
-
-        datas = new Array<>();
-        this.phasesAmount = phasesAmount;
-    }
 
     public void init(Path boardPath, Path screenPath){
-        targetBoardPoint = boardPath.getTarget();
-
         float orientation = (float) Math.cos(Math.toRadians(defaultRotation));
 
         Vector normalVector = new Vector(0, orientation);
@@ -38,18 +26,16 @@ public abstract class AnimationType {
         data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector))) - defaultRotation;
 
         data.path = screenPath;
-        data.phases = new Array<>(phasesAmount);
+        data.phases = new Array<>();
 
         datas.add(data);
     }
 
     public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
-        targetBoardPoint = boardPoint;
-
         AnimationData data = new AnimationData();
         data.rotation = 0;
         data.path = new Path(screenPoint, screenPoint);
-        data.phases = new Array<>(phasesAmount);
+        data.phases = new Array<>();
 
         datas.add(data);
     }
@@ -73,15 +59,11 @@ public abstract class AnimationType {
 
     public abstract boolean isAnimated(IntegerPoint objectLocation);
     public boolean isAnimated(){
-        return datas.size != 0 && targetBoardPoint.x != -1 && targetBoardPoint.y != -1;
-    }
-    public Array<AnimationData> getDatas() {
-        return datas;
+        return datas.size != 0;
     }
 
     public void clear(){
         datas.clear();
-        targetBoardPoint.set(-1, -1);
     }
 }
 

@@ -17,7 +17,7 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
     private final String idleShipAnimationPath, movingShipAnimationPath, idleLootAnimationPath, takeLootAnimationPath;
 
     public SpaceshipPicksLootAnimation(Spaceship spaceship, Loot loot) {
-        super(3, spaceship.getSide().getDefaultRotation());
+        this.defaultRotation = spaceship.getSide().getDefaultRotation();
         this.idleShipAnimationPath = spaceship.getIdleAnimationPath();
         this.movingShipAnimationPath = spaceship.getSkeleton().getMovementAnimationPath();
         this.idleLootAnimationPath = loot.getIdleAnimationPath();
@@ -116,7 +116,9 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
     @Override
     public boolean isAnimated(IntegerPoint objectLocation) {
-        return datas.size != 0 && (objectLocation.equals(boardPath.getSource()) || objectLocation.equals(boardPath.getTarget()));
+        return datas.size != 0
+                && (objectLocation.equals(boardPath.getSource())
+                || objectLocation.equals(boardPath.getTarget()));
     }
 
     private int getOrientation(){

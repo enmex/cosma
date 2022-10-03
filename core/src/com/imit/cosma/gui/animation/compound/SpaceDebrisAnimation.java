@@ -27,7 +27,6 @@ public class SpaceDebrisAnimation extends AnimationType {
     private final Array<AnimationData> idleSpaceshipsAnimations;
 
     public SpaceDebrisAnimation(List<IntegerPoint> targets, List<Integer> damages, List<Spaceship> spaceships) {
-        super(2, 0);
         datas = new Array<>(targets.size());
         idleSpaceshipsAnimations = new Array<>(targets.size());
 
