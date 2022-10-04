@@ -96,13 +96,11 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
             SequentialObjectAnimation victimShipAnimation = getShipDestructionAnimation();
 
             if (victimShipAnimation.currentPhase == 0 && blackHoleAnimation.currentPhase == 1) {
-                victimShipAnimation.getCurrentPhase().setNotAnimated();
                 blackHoleAnimation.nextPhase();
-                victimShipAnimation.getCurrentPhase().setAnimated();
             }
 
             if (victimShipAnimation.currentPhase == 1 && !victimShipAnimation.getCurrentPhase().isAnimated()) {
-                blackHoleAnimation.getCurrentPhase().setNotAnimated();
+                blackHoleAnimation.stop();
             }
 
             if (victimShipAnimation.getCurrentPhase().isAnimated()) {

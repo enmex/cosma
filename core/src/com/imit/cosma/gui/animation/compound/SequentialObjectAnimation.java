@@ -31,7 +31,7 @@ public class SequentialObjectAnimation {
         currentPhase = currentPhase + 1 != phases.size ? currentPhase + 1 : currentPhase;
         isLastPhase = currentPhase == phases.size - 1;
 
-        getCurrentPhase().setAnimated();
+        getCurrentPhase().setAnimated(true);
     }
 
     public void render(float delta) {
@@ -41,11 +41,11 @@ public class SequentialObjectAnimation {
     }
 
     public void start() {
-        getCurrentPhase().setAnimated();
+        getCurrentPhase().setAnimated(true);
     }
 
     public void stop() {
-        getCurrentPhase().setNotAnimated();
+        getCurrentPhase().setAnimated(false);
     }
 
     public boolean isAnimated() {

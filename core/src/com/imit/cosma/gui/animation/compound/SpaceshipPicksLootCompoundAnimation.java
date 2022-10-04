@@ -58,7 +58,7 @@ public class SpaceshipPicksLootCompoundAnimation extends CompoundAnimation {
         shipMovementAnimation.phases.add(shipMovement);
         shipMovementAnimation.phases.add(shipRotationToDefault);
 
-        shipMovementAnimation.getCurrentPhase().setAnimated();
+        shipMovementAnimation.start();
 
         SequentialObjectAnimation lootPickAnimation = new SequentialObjectAnimation();
         lootPickAnimation.rotation = 0;

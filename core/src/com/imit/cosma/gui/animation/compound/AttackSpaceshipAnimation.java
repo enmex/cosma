@@ -1,7 +1,9 @@
 package com.imit.cosma.gui.animation.compound;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.utils.Array;
+import com.imit.cosma.gui.animation.simple.FontAnimation;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.gui.animation.simple.RotationAnimation;
@@ -73,9 +75,16 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
                     screenPath.getTarget(),
                     0);
 
+            FontAnimation damageInfo = new FontAnimation(
+                    -weapon.getDamage() + "HP",
+                    Color.RED
+            );
+
+            damageInfo.init(new Path(screenPath.getTarget(), screenPath.getTarget()), targetRotation);
             shotMovement.init(screenPath, targetRotation);
             shotsAnimation.phases.add(shotMovement);
             shotsAnimation.phases.add(explosion);
+            shotsAnimation.phases.add(damageInfo);
         }
 
         if (isKillAttack) {
@@ -133,8 +142,8 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
             standingEnemyShipAnimation.stop();
         }
 
-        shotsAnimation.render(delta);
         standingEnemyShipAnimation.render(delta);
+        shotsAnimation.render(delta);
         standingPlayerShipAnimation.render(delta);
 
         if (!shotsAnimation.isAnimated() && !shotsAnimation.isCompleted()) {
@@ -150,9 +159,6 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
 
     @Override
     public boolean isAnimated() {
-        if (getShotsAnimation().currentPhase == getShotsAnimation().phases.size - 1) {
-            System.out.println();
-        }
         return !getShotsAnimation().isCompleted();
     }
 

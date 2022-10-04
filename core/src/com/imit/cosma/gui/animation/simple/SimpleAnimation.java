@@ -7,7 +7,5 @@ public interface SimpleAnimation {
     void render(float delta);
 
     boolean isAnimated();
-    void setAnimated();
-
-    void setNotAnimated();
+    void setAnimated(boolean animated);
 }

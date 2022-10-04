@@ -1,6 +1,7 @@
 package com.imit.cosma.config;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.model.rules.move.HorseMovingStyle;
 import com.imit.cosma.model.rules.move.IdleMovingStyle;

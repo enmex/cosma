@@ -57,7 +57,7 @@ public class ShipMovementAnimation extends CompoundAnimation {
 
         sequentialObjectAnimation.currentPhase = 0;
 
-        sequentialObjectAnimation.phases.get(mainAnimationIndex).setAnimated();
+        sequentialObjectAnimation.start();
     }
 
     @Override

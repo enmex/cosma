@@ -30,7 +30,7 @@ public class RotationAnimation implements SimpleAnimation{
 
     private final SoundEffect soundEffect = new SoundEffect(SoundType.ROTATION);
 
-    private boolean isAnimated;
+    private boolean animated;
     //initialRotation - текущий поворот
     //targetRotation - конечный поворот
     public RotationAnimation(String atlasPath, float initialRotation, float targetRotation){
@@ -71,7 +71,7 @@ public class RotationAnimation implements SimpleAnimation{
             currentRotation += rotationVelocity;
         } else {
             currentRotation = targetRotation;
-            setNotAnimated();
+            setAnimated(false);
         }
 
         TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
@@ -86,19 +86,18 @@ public class RotationAnimation implements SimpleAnimation{
 
     @Override
     public boolean isAnimated() {
-        return isAnimated;
+        return animated;
     }
 
     @Override
-    public void setAnimated(){
-        soundEffect.play();
-        isAnimated = true;
-    }
+    public void setAnimated(boolean animated){
+        this.animated = animated;
 
-    @Override
-    public void setNotAnimated() {
-        soundEffect.stop();
-        isAnimated = false;
+        if (animated) {
+            soundEffect.play();
+        } else {
+            soundEffect.stop();
+        }
     }
 
     private boolean isArrived(){

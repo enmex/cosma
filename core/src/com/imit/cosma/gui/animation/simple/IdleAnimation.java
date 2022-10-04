@@ -28,7 +28,7 @@ public class IdleAnimation implements SimpleAnimation{
 
     private float rotation;
 
-    private boolean isAnimated;
+    private boolean animated;
 
     private final IntegerPoint locationOnScreen;
 
@@ -93,28 +93,26 @@ public class IdleAnimation implements SimpleAnimation{
         batch.end();
 
         if (playMode == PlayMode.NORMAL && animation.isAnimationFinished(elapsedTime)) {
-            isAnimated = false;
+            animated = false;
         }
     }
 
     @Override
     public boolean isAnimated() {
-        return isAnimated;
+        return animated;
     }
 
     @Override
-    public void setAnimated() {
-        if (playMode == PlayMode.LOOP) {
-            soundEffect.playLoop();
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
+        if (animated) {
+            if (playMode == PlayMode.LOOP) {
+                soundEffect.playLoop();
+            } else {
+                soundEffect.play();
+            }
         } else {
-            soundEffect.play();
+            soundEffect.stop();
         }
-        isAnimated = true;
-    }
-
-    @Override
-    public void setNotAnimated() {
-        soundEffect.stop();
-        isAnimated = false;
     }
 }

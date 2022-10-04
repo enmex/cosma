@@ -88,8 +88,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
 
         if(isArrived()){
             currentLocation.set(targetLocation);
-            animated = false;
-            movementSound.stop();
+            setAnimated(false);
         }
         else {
             currentLocation.move(moveVelocityX, moveVelocityY);
@@ -114,14 +113,13 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         return animated;
     }
 
-    @Override
-    public void setNotAnimated() {
-        animated = false;
-    }
-
-    public void setAnimated() {
-        movementSound.play();
-        animated = true;
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
+        if (animated) {
+            movementSound.play();
+        } else {
+            movementSound.stop();
+        }
     }
 
 }
