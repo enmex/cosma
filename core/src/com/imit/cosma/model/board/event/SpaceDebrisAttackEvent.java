@@ -1,7 +1,7 @@
 package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.compound.AnimationType;
+import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.gui.animation.compound.SpaceDebrisAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.IntegerPoint;
@@ -25,7 +25,7 @@ public class SpaceDebrisAttackEvent implements GlobalBoardEvent {
     }
 
     @Override
-    public AnimationType getAnimationType() {
+    public CompoundAnimation getAnimationType() {
         return new SpaceDebrisAnimation(targets, damages, spaceships);
     }
 

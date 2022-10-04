@@ -7,7 +7,7 @@ import com.imit.cosma.model.board.content.Loot;
 import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
 
-public class LootSpawnAnimation extends AnimationType {
+public class LootSpawnAnimation extends CompoundAnimation {
     private final String lootSpawnAnimationPath;
     private IntegerPoint spawnBoardPoint;
 
@@ -19,26 +19,30 @@ public class LootSpawnAnimation extends AnimationType {
     public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
         this.spawnBoardPoint = boardPoint;
 
-        AnimationData spawnAnimation = new AnimationData();
+        SequentialObjectAnimation spawnAnimation = new SequentialObjectAnimation();
         spawnAnimation.currentPhase = 0;
         spawnAnimation.path = new Path(screenPoint, screenPoint);
         spawnAnimation.rotation = 0;
         spawnAnimation.phases = new Array<>(1);
         spawnAnimation.phases.add(
-                new IdleAnimation(lootSpawnAnimationPath, Animation.PlayMode.NORMAL, screenPoint, 0)
+                new IdleAnimation(
+                        lootSpawnAnimationPath,
+                        Animation.PlayMode.NORMAL,
+                        screenPoint,
+                        0
+                )
         );
-        spawnAnimation.getCurrentPhase().setAnimated();
-
-        datas.add(spawnAnimation);
+        spawnAnimation.start();
+        objectsAnimations.add(spawnAnimation);
     }
 
     @Override
-    public boolean isAnimated(IntegerPoint objectLocation) {
-        return datas.size != 0 && objectLocation.equals(spawnBoardPoint);
+    public void render(float delta) {
+        super.render(delta);
     }
 
     @Override
-    public boolean isAnimated() {
-        return datas.size != 0;
+    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+        return isAnimated() && objectLocation.equals(spawnBoardPoint);
     }
 }

@@ -1,16 +1,13 @@
 package com.imit.cosma.gui.animation.compound;
 
-import static com.imit.cosma.config.Config.getInstance;
-
 import com.imit.cosma.gui.animation.simple.RotationAnimation;
-import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
-public class ShipMovementAnimation extends AnimationType {
+public class ShipMovementAnimation extends CompoundAnimation {
     private final SoundType contentSoundType;
 
     private final String movingShipAtlasPath;
@@ -31,9 +28,9 @@ public class ShipMovementAnimation extends AnimationType {
     public void init(Path boardPath, Path screenPath){
         super.init(boardPath, screenPath);
         this.targetBoardPoint = boardPath.getTarget();
-        AnimationData animationData = datas.get(mainAnimationIndex);
+        SequentialObjectAnimation sequentialObjectAnimation = objectsAnimations.get(mainAnimationIndex);
 
-        float rotation = animationData.rotation;
+        float rotation = sequentialObjectAnimation.rotation;
         if (rotation != 180) {
             rotation *= getOrientation();
         }
@@ -48,32 +45,28 @@ public class ShipMovementAnimation extends AnimationType {
         RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(idleShipAtlasPath,
                 targetRotation, defaultRotation);
 
-        shipRotationAnimation.init(screenPath, animationData.rotation);
+        shipRotationAnimation.init(screenPath, sequentialObjectAnimation.rotation);
 
         shipSimpleMovementAnimation.init(screenPath, targetRotation);
 
-        shipRotationAnimationToDefault.init(new Path(screenPath.getTarget(), screenPath.getTarget()), animationData.rotation);
+        shipRotationAnimationToDefault.init(new Path(screenPath.getTarget(), screenPath.getTarget()), sequentialObjectAnimation.rotation);
 
-        animationData.phases.add(shipRotationAnimation);
-        animationData.phases.add(shipSimpleMovementAnimation);
-        animationData.phases.add(shipRotationAnimationToDefault);
+        sequentialObjectAnimation.phases.add(shipRotationAnimation);
+        sequentialObjectAnimation.phases.add(shipSimpleMovementAnimation);
+        sequentialObjectAnimation.phases.add(shipRotationAnimationToDefault);
 
-        animationData.currentPhase = 0;
+        sequentialObjectAnimation.currentPhase = 0;
 
-        animationData.phases.get(mainAnimationIndex).setAnimated();
+        sequentialObjectAnimation.phases.get(mainAnimationIndex).setAnimated();
     }
 
     @Override
-    public boolean isAnimated() {
-        return datas.size != 0;
-    }
-
-    @Override
-    public boolean isAnimated(IntegerPoint objectLocation) {
-        return targetBoardPoint.equals(objectLocation);
+    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+        return isAnimated() && targetBoardPoint.equals(objectLocation);
     }
 
     private int getOrientation(){
-        return (int) Math.signum(datas.get(mainAnimationIndex).path.getSource().x - datas.get(mainAnimationIndex).path.getTarget().x);
+        return (int) Math.signum(objectsAnimations.get(mainAnimationIndex).path.getSource().x
+                - objectsAnimations.get(mainAnimationIndex).path.getTarget().x);
     }
 }

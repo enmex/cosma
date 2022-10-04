@@ -1,7 +1,7 @@
 package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.compound.AnimationType;
+import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.gui.animation.compound.AttackSpaceshipAnimation;
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.spaceship.Spaceship;
@@ -27,7 +27,7 @@ public class SpaceshipAttackBoardEvent implements GlobalBoardEvent {
     }
 
     @Override
-    public AnimationType getAnimationType() {
+    public CompoundAnimation getAnimationType() {
         return new AttackSpaceshipAnimation((Spaceship) source.getContent(), (Spaceship) target.getContent());
     }
 

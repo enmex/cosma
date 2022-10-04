@@ -11,12 +11,12 @@ import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
 
-public class SpaceshipPicksLootAnimation extends AnimationType {
+public class SpaceshipPicksLootCompoundAnimation extends CompoundAnimation {
     private final SoundType shipMovementSound;
     private Path boardPath;
     private final String idleShipAnimationPath, movingShipAnimationPath, idleLootAnimationPath, takeLootAnimationPath;
 
-    public SpaceshipPicksLootAnimation(Spaceship spaceship, Loot loot) {
+    public SpaceshipPicksLootCompoundAnimation(Spaceship spaceship, Loot loot) {
         this.defaultRotation = spaceship.getSide().getDefaultRotation();
         this.idleShipAnimationPath = spaceship.getIdleAnimationPath();
         this.movingShipAnimationPath = spaceship.getSkeleton().getMovementAnimationPath();
@@ -30,7 +30,7 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
         super.init(boardPath, screenPath);
         this.boardPath = boardPath;
 
-        AnimationData shipMovementAnimation = datas.get(0);
+        SequentialObjectAnimation shipMovementAnimation = getShipMovementAnimation();
 
         float rotation = shipMovementAnimation.rotation;
         if (rotation != 180) {
@@ -39,13 +39,19 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
         float targetRotation = defaultRotation + rotation;
 
-        RotationAnimation shipRotation = new RotationAnimation(idleShipAnimationPath, defaultRotation, targetRotation);
+        RotationAnimation shipRotation = new RotationAnimation(
+                idleShipAnimationPath,
+                defaultRotation,
+                targetRotation);
         shipRotation.init(screenPath, targetRotation);
 
         SimpleMovementAnimation shipMovement = new SimpleMovementAnimation(movingShipAnimationPath, shipMovementSound);
         shipMovement.init(screenPath, targetRotation);
 
-        RotationAnimation shipRotationToDefault = new RotationAnimation(idleShipAnimationPath, targetRotation, defaultRotation);
+        RotationAnimation shipRotationToDefault = new RotationAnimation(
+                idleShipAnimationPath,
+                targetRotation,
+                defaultRotation);
         shipRotationToDefault.init(new Path(screenPath.getTarget(), screenPath.getTarget()), targetRotation);
 
         shipMovementAnimation.phases.add(shipRotation);
@@ -54,7 +60,7 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
 
         shipMovementAnimation.getCurrentPhase().setAnimated();
 
-        AnimationData lootPickAnimation = new AnimationData();
+        SequentialObjectAnimation lootPickAnimation = new SequentialObjectAnimation();
         lootPickAnimation.rotation = 0;
         lootPickAnimation.phases = new Array<>(2);
         lootPickAnimation.path = new Path(screenPath.getTarget(), screenPath.getTarget());
@@ -72,49 +78,51 @@ public class SpaceshipPicksLootAnimation extends AnimationType {
                 0
         );
 
-        lootIdle.setAnimated();
         lootPickAnimation.phases.add(lootIdle);
         lootPickAnimation.phases.add(lootPick);
+        lootPickAnimation.start();
 
-        datas.add(lootPickAnimation);
+        objectsAnimations.add(lootPickAnimation);
     }
 
     @Override
     public void render(float delta) {
-        AnimationData shipMovementAnimation = datas.get(0);
-        AnimationData lootPickAnimation = datas.get(1);
+        SequentialObjectAnimation shipMovementAnimation = getShipMovementAnimation();
+        SequentialObjectAnimation lootPickAnimation = getLootPickAnimation();
 
-        lootPickAnimation.getCurrentPhase().render(delta);
+        lootPickAnimation.render(delta);
+        shipMovementAnimation.getCurrentPhase().render(delta);
 
-        if (!shipMovementAnimation.isCompleted()) {
-            shipMovementAnimation.getCurrentPhase().render(delta);
-        }
-
-        if (!shipMovementAnimation.isCompleted() && !shipMovementAnimation.getCurrentPhase().isAnimated()) {
+        if (!shipMovementAnimation.isCompleted() && !shipMovementAnimation.isAnimated()) {
             shipMovementAnimation.nextPhase();
 
-            if (!shipMovementAnimation.isCompleted()) {
-                shipMovementAnimation.getCurrentPhase().setAnimated();
-
-                if (shipMovementAnimation.isLastPhase()) {
-                    lootPickAnimation.nextPhase();
-                }
+            if (shipMovementAnimation.isLastPhase()) {
+                lootPickAnimation.nextPhase();
             }
-        }
-
-        if (lootPickAnimation.isCompleted()) {
-            //clear();
         }
     }
 
     @Override
-    public boolean isAnimated(IntegerPoint objectLocation) {
-        return datas.size != 0
+    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+        return isAnimated()
                 && (objectLocation.equals(boardPath.getSource())
                 || objectLocation.equals(boardPath.getTarget()));
     }
 
+    @Override
+    public boolean isAnimated() {
+        return !getLootPickAnimation().isCompleted();
+    }
+
     private int getOrientation(){
-        return (int) Math.signum(datas.get(0).path.getSource().x - datas.get(0).path.getTarget().x);
+        return (int) Math.signum(objectsAnimations.get(0).path.getSource().x - objectsAnimations.get(0).path.getTarget().x);
+    }
+
+    private SequentialObjectAnimation getShipMovementAnimation() {
+        return objectsAnimations.get(0);
+    }
+
+    private SequentialObjectAnimation getLootPickAnimation() {
+        return objectsAnimations.get(1);
     }
 }

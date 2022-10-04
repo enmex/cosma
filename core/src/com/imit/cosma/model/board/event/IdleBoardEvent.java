@@ -1,7 +1,7 @@
 package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.compound.AnimationType;
+import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class IdleBoardEvent implements BoardEvent {
     @Override
-    public AnimationType getAnimationType() {
+    public CompoundAnimation getAnimationType() {
         return null;
     }
 

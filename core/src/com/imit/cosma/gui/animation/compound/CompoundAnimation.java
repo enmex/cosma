@@ -5,10 +5,10 @@ import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
 
-public abstract class AnimationType {
+public abstract class CompoundAnimation {
     protected float defaultRotation;
 
-    protected Array<AnimationData> datas = new Array<>();
+    protected Array<SequentialObjectAnimation> objectsAnimations = new Array<>();
 
     public void init(Path boardPath, Path screenPath){
         float orientation = (float) Math.cos(Math.toRadians(defaultRotation));
@@ -19,36 +19,40 @@ public abstract class AnimationType {
                 orientation * (screenPath.getTarget().y - screenPath.getSource().y)
         );
 
-        AnimationData data = new AnimationData();//main animated object
+        SequentialObjectAnimation data = new SequentialObjectAnimation();//main animated object
         data.rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector))) - defaultRotation;
 
         data.path = screenPath;
         data.phases = new Array<>();
 
-        datas.add(data);
+        objectsAnimations.add(data);
     }
 
     public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
-        AnimationData data = new AnimationData();
+        SequentialObjectAnimation data = new SequentialObjectAnimation();
         data.rotation = 0;
         data.path = new Path(screenPoint, screenPoint);
         data.phases = new Array<>();
 
-        datas.add(data);
+        objectsAnimations.add(data);
     }
 
     public void init() { }
 
     public void render(float delta){
-        for(AnimationData animation : datas){
+        for(SequentialObjectAnimation animation : objectsAnimations){
             animation.render(delta);
+
+            if (!animation.isAnimated() && !animation.isCompleted()) {
+                animation.nextPhase();
+            }
         }
     }
 
-    public abstract boolean isAnimated(IntegerPoint objectLocation);
+    public abstract boolean isAnimatedObject(IntegerPoint objectLocation);
 
     public boolean isAnimated(){
-        for (AnimationData animation : datas) {
+        for (SequentialObjectAnimation animation : objectsAnimations) {
             if (!animation.isCompleted()) {
                 return true;
             }

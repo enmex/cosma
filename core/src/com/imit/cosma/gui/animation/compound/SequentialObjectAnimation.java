@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.util.Path;
 
-public class AnimationData {
+public class SequentialObjectAnimation {
     protected float rotation;
     protected Path path;
     protected Array<SimpleAnimation> phases;
@@ -16,7 +16,6 @@ public class AnimationData {
     }
 
     public SimpleAnimation getCurrentPhase(){
-
         return phases.get(currentPhase);
     }
 
@@ -29,22 +28,15 @@ public class AnimationData {
     }
 
     public void nextPhase() {
-        getCurrentPhase().setNotAnimated();
+        currentPhase = currentPhase + 1 != phases.size ? currentPhase + 1 : currentPhase;
+        isLastPhase = currentPhase == phases.size - 1;
 
-        if (!isLastPhase) {
-            currentPhase++;
-        }
-        if (currentPhase == phases.size - 1) {
-            getCurrentPhase().setAnimated();
-            isLastPhase = true;
-        }
+        getCurrentPhase().setAnimated();
     }
 
     public void render(float delta) {
         if (getCurrentPhase().isAnimated()) {
             getCurrentPhase().render(delta);
-        } else {
-            nextPhase();
         }
     }
 
@@ -56,4 +48,7 @@ public class AnimationData {
         getCurrentPhase().setNotAnimated();
     }
 
+    public boolean isAnimated() {
+        return getCurrentPhase().isAnimated();
+    }
 }

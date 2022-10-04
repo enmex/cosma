@@ -1,8 +1,7 @@
 package com.imit.cosma.model.board.event;
 
-import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.SpaceshipPicksLootAnimation;
+import com.imit.cosma.gui.animation.compound.CompoundAnimation;
+import com.imit.cosma.gui.animation.compound.SpaceshipPicksLootCompoundAnimation;
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.board.content.Loot;
 import com.imit.cosma.model.spaceship.Spaceship;
@@ -27,8 +26,8 @@ public class SpaceshipPicksLootBoardEvent implements GlobalBoardEvent {
     }
 
     @Override
-    public AnimationType getAnimationType() {
-        return new SpaceshipPicksLootAnimation((Spaceship) spaceshipCell.getContent(), (Loot) lootCell.getContent());
+    public CompoundAnimation getAnimationType() {
+        return new SpaceshipPicksLootCompoundAnimation((Spaceship) spaceshipCell.getContent(), (Loot) lootCell.getContent());
     }
 
     @Override

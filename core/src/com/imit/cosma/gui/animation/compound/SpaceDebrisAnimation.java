@@ -16,7 +16,7 @@ import java.util.List;
 import static com.imit.cosma.pkg.BoardToScreenConverter.*;
 import static com.imit.cosma.pkg.random.Randomizer.*;
 
-public class SpaceDebrisAnimation extends AnimationType {
+public class SpaceDebrisAnimation extends CompoundAnimation {
     private float elapsedTime = 0f;
     private final List<Float> animationDelays;
     private final List<IntegerPoint> destroyedSpaceshipsLocations;
@@ -24,10 +24,10 @@ public class SpaceDebrisAnimation extends AnimationType {
     private final List<Integer> damages;
     private final List<Spaceship> spaceships;
 
-    private final Array<AnimationData> idleSpaceshipsAnimations;
+    private final Array<SequentialObjectAnimation> idleSpaceshipsAnimations;
 
     public SpaceDebrisAnimation(List<IntegerPoint> targets, List<Integer> damages, List<Spaceship> spaceships) {
-        datas = new Array<>(targets.size());
+        objectsAnimations = new Array<>(targets.size());
         idleSpaceshipsAnimations = new Array<>(targets.size());
 
         this.targets = targets;
@@ -48,7 +48,7 @@ public class SpaceDebrisAnimation extends AnimationType {
             SimpleMovementAnimation spaceDebrisMovement = new SimpleMovementAnimation(
                     Config.getInstance().SPACE_DEBRIS_1_MOVEMENT_ATLAS_PATH,
                     SoundType.BATTLESHIP_MOVING,
-                    generateInLine(0.25f, 1f)
+                    generateInLine(0.45f, 0.8f)
             );
 
             IntegerPoint targetScreenPoint = toOriginCenterScreenPoint(targets.get(index));
@@ -68,7 +68,7 @@ public class SpaceDebrisAnimation extends AnimationType {
                     0
             );
 
-            AnimationData spaceDebrisAnimation = new AnimationData();
+            SequentialObjectAnimation spaceDebrisAnimation = new SequentialObjectAnimation();
             spaceDebrisAnimation.currentPhase = 0;
             spaceDebrisAnimation.phases = new Array<>(2);
             spaceDebrisAnimation.rotation = 0;
@@ -79,7 +79,7 @@ public class SpaceDebrisAnimation extends AnimationType {
             if (damages.get(index) >= spaceships.get(index).getHealthPoints()) {
                 destroyedSpaceshipsLocations.add(targets.get(index));
 
-                AnimationData spaceshipAnimation = new AnimationData();
+                SequentialObjectAnimation spaceshipAnimation = new SequentialObjectAnimation();
                 spaceshipAnimation.phases = new Array<>(2);
                 spaceshipAnimation.path = new Path(targetScreenPoint, targetScreenPoint);
                 spaceshipAnimation.currentPhase = 0;
@@ -99,12 +99,12 @@ public class SpaceDebrisAnimation extends AnimationType {
 
                 spaceshipAnimation.phases.add(idleSpaceship);
                 spaceshipAnimation.phases.add(destruction);
-                spaceshipAnimation.getCurrentPhase().setAnimated();
+                spaceshipAnimation.start();
 
                 idleSpaceshipsAnimations.add(spaceshipAnimation);
             }
 
-            datas.add(spaceDebrisAnimation);
+            objectsAnimations.add(spaceDebrisAnimation);
         }
     }
 
@@ -115,58 +115,44 @@ public class SpaceDebrisAnimation extends AnimationType {
             float delay = animationDelays.get(i);
             if (delay != 0f && elapsedTime > delay) {
                 animationDelays.set(i, 0f);
-                datas.get(i).getCurrentPhase().setAnimated();
+                objectsAnimations.get(i).start();
             }
         }
 
-        for (AnimationData spaceshipData : idleSpaceshipsAnimations) {
-            if (spaceshipData.getCurrentPhase().isAnimated()) {
-                spaceshipData.getCurrentPhase().render(delta);
-                AnimationData debris = getByPath(spaceshipData.path);
+        for (SequentialObjectAnimation spaceshipAnimation : idleSpaceshipsAnimations) {
+            spaceshipAnimation.render(delta);
+            SequentialObjectAnimation debrisAnimation = getByPath(spaceshipAnimation.path);
 
-                if (debris != null && debris.isCompleted() && spaceshipData.currentPhase == 0) {
-                    spaceshipData.getCurrentPhase().setNotAnimated();
-                    spaceshipData.currentPhase = 1;
-                    spaceshipData.getCurrentPhase().setAnimated();
-                }
-
-                if (spaceshipData.currentPhase == 1 && !spaceshipData.getCurrentPhase().isAnimated()) {
-                    spaceshipData.isLastPhase = true;
-                }
+            if (debrisAnimation != null && debrisAnimation.isCompleted() && spaceshipAnimation.currentPhase == 0) {
+                spaceshipAnimation.nextPhase();
             }
         }
 
-        for (AnimationData data : datas) {
-            if (data.currentPhase != data.phases.size && data.getCurrentPhase().isAnimated()) {
-                data.getCurrentPhase().render(delta);
-
-                if (!data.getCurrentPhase().isAnimated()) {
-                    data.currentPhase++;
-                    if (data.currentPhase != data.phases.size) {
-                        data.getCurrentPhase().setAnimated();
-                    } else {
-                        data.isLastPhase = true;
-                    }
+        for (SequentialObjectAnimation animation : objectsAnimations) {
+            if (animation.isAnimated()) {
+                animation.render(delta);
+                if (!animation.isAnimated() && !animation.isCompleted()) {
+                    animation.nextPhase();
                 }
             }
         }
     }
 
     @Override
-    public boolean isAnimated(IntegerPoint objectLocation) {
+    public boolean isAnimatedObject(IntegerPoint objectLocation) {
         return destroyedSpaceshipsLocations.contains(objectLocation);
     }
 
     @Override
     public boolean isAnimated() {
-        for (AnimationData data : idleSpaceshipsAnimations) {
-            if (!data.isCompleted()) {
+        for (SequentialObjectAnimation idleSpaceshipAnimation : idleSpaceshipsAnimations) {
+            if (!idleSpaceshipAnimation.isCompleted()) {
                 return true;
             }
         }
 
-        for (AnimationData data : datas) {
-            if (!data.isCompleted()) {
+        for (SequentialObjectAnimation objectAnimation : objectsAnimations) {
+            if (!objectAnimation.isCompleted()) {
                 return true;
             }
         }
@@ -174,10 +160,10 @@ public class SpaceDebrisAnimation extends AnimationType {
         return false;
     }
 
-    private AnimationData getByPath(Path path) {
-        for (AnimationData animationData : datas) {
-            if (animationData.path.equals(path)) {
-                return animationData;
+    private SequentialObjectAnimation getByPath(Path path) {
+        for (SequentialObjectAnimation sequentialObjectAnimation : objectsAnimations) {
+            if (sequentialObjectAnimation.path.equals(path)) {
+                return sequentialObjectAnimation;
             }
         }
 

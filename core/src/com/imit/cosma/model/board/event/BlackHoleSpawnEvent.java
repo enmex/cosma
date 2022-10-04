@@ -1,8 +1,8 @@
 package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.config.Config;
-import com.imit.cosma.gui.animation.compound.AnimationType;
-import com.imit.cosma.gui.animation.compound.BlackHoleSpawnAnimation;
+import com.imit.cosma.gui.animation.compound.CompoundAnimation;
+import com.imit.cosma.gui.animation.compound.BlackHoleSpawnCompoundAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.IntegerPoint;
 
@@ -25,10 +25,10 @@ public class BlackHoleSpawnEvent implements LocalBoardEvent {
     }
 
     @Override
-    public AnimationType getAnimationType() {
+    public CompoundAnimation getAnimationType() {
         return victimSpaceship == null
-                ? new BlackHoleSpawnAnimation(spawnPoint)
-                : new BlackHoleSpawnAnimation(spawnPoint, victimSpaceship);
+                ? new BlackHoleSpawnCompoundAnimation(spawnPoint)
+                : new BlackHoleSpawnCompoundAnimation(spawnPoint, victimSpaceship);
     }
 
     @Override
