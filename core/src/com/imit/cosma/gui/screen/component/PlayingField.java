@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static com.imit.cosma.pkg.BoardToScreenConverter.*;
+import static com.imit.cosma.pkg.CoordinateConverter.*;
 
 public class PlayingField {
     private final Texture grid;

@@ -13,7 +13,7 @@ import com.imit.cosma.util.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.imit.cosma.pkg.BoardToScreenConverter.*;
+import static com.imit.cosma.pkg.CoordinateConverter.*;
 import static com.imit.cosma.pkg.random.Randomizer.*;
 
 public class SpaceDebrisAnimation extends CompoundAnimation {

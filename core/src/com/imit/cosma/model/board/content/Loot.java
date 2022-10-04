@@ -67,9 +67,7 @@ public abstract class Loot implements Content {
     }
 
     @Override
-    public Content clone() {
-        return null;
-    }
+    public abstract Content clone();
 
     @Override
     public int getMaxHealthPoints() {

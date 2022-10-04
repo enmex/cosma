@@ -58,7 +58,7 @@ public class FontAnimation implements SimpleAnimation {
                 screenLocation.y,
                 Config.getInstance().BOARD_CELL_WIDTH,
                 0,
-                true
+                false
         );
         batch.end();
 

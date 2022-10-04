@@ -1,7 +1,6 @@
 package com.imit.cosma.config;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.imit.cosma.model.board.content.Space;
 import com.imit.cosma.model.rules.move.HorseMovingStyle;
 import com.imit.cosma.model.rules.move.IdleMovingStyle;
@@ -28,7 +27,6 @@ public class Config {
     public final double PANEL_TO_SCREEN_RATIO = 0.3;
     public final double PANEL_OFFSET = 0.03;
     public final int BOARD_SIZE = 8;
-    public final int MOVEMENT_ANIMATION_PHASES = 3;
     public final int DEFAULT_SPRITE_SIZE = 128;
     public final float MUSIC_FADE_STEP = 0.25f;
 

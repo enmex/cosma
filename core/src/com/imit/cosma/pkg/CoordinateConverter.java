@@ -6,7 +6,7 @@ import com.imit.cosma.util.IntegerPoint;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoardToScreenConverter {
+public class CoordinateConverter {
     public static IntegerPoint toScreenPoint(IntegerPoint boardPoint) {
         return new IntegerPoint(boardPoint.x * Config.getInstance().BOARD_CELL_WIDTH,
                 boardPoint.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y

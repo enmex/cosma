@@ -15,6 +15,7 @@ public class SpaceshipInformation extends ContentInformation{
     private ShapeRenderer healthBar;
     private int healthBarX, healthBarY, healthBarWidth, healthBarHeight;
     private float healthToBarRatio;
+    private Color barColor;
 
     //spaceship
     private int maxHealthPoints, healthPoints, skeletonId;
@@ -29,6 +30,11 @@ public class SpaceshipInformation extends ContentInformation{
         this.healthPoints = spaceship.getHealthPoints();
         this.skeletonId = spaceship.getSkeleton().getId();
         this.sprite = new Sprite(contentTexture);
+
+        float g = (float) healthPoints / spaceship.getMaxHealthPoints();
+        float r = 1f - g;
+
+        barColor = new Color(r, g, 0f, 1f);
     }
 
     @Override
@@ -69,7 +75,7 @@ public class SpaceshipInformation extends ContentInformation{
 
         //showing healthBar
         healthBar.begin(ShapeRenderer.ShapeType.Filled);
-        healthBar.setColor(Color.RED);
+        healthBar.setColor(barColor);
         healthBar.rect(healthBarX, healthBarY, healthBarWidth * healthToBarRatio, healthBarHeight);
         healthBar.end();
 
@@ -90,6 +96,11 @@ public class SpaceshipInformation extends ContentInformation{
             this.maxHealthPoints = spaceship.getMaxHealthPoints();
             this.healthPoints = spaceship.getHealthPoints();
             this.skeletonId = spaceship.getSkeleton().getId();
+
+            float g = (float) healthPoints / spaceship.getMaxHealthPoints();
+            float r = 1f - g;
+
+            barColor.set(r, g, 0f, 1f);
         }
         else{
             parent.setContentInformation(new SpaceInformation(parent));
