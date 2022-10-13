@@ -16,6 +16,7 @@ import com.imit.cosma.model.board.event.SpaceshipPicksLootBoardEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Attack;
+import com.imit.cosma.model.rules.Direction;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
 import com.imit.cosma.model.rules.side.NeutralSide;
@@ -31,8 +32,10 @@ import com.imit.cosma.util.PingPongList;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Board {
@@ -53,7 +56,8 @@ public class Board {
     private Path currentPath;
     private IntegerPoint currentContentSpawnPoint;
 
-    private Set<IntegerPoint> availableForMove, availableForAttack;
+    private Set<IntegerPoint> availableForMove;
+    private Map<IntegerPoint, Boolean> availableForAttack;
 
     private final Side playerSide;
     private final Side enemySide;
@@ -114,7 +118,7 @@ public class Board {
 
 
         //initialise player ships
-        for (int y = 0; y < 1; y++) {
+        for (int y = 0; y < 3; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
                         .addSkeleton()
@@ -126,7 +130,7 @@ public class Board {
         }
 
         //initialise space cells
-        for (int y = 1; y < Config.getInstance().BOARD_SIZE - 1; y++) {
+        for (int y = 3; y < Config.getInstance().BOARD_SIZE - 3; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
                 objectController.addSpace(x, y);
@@ -134,7 +138,7 @@ public class Board {
         }
 
         //initialise enemy ships
-        for (int y = Config.getInstance().BOARD_SIZE - 1; y < Config.getInstance().BOARD_SIZE; y++) {
+        for (int y = Config.getInstance().BOARD_SIZE - 3; y < Config.getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
                         .addSkeleton()
@@ -149,7 +153,7 @@ public class Board {
         interactedCells = new HashSet<>();
 
         availableForMove = new HashSet<>();
-        availableForAttack = new HashSet<>();
+        availableForAttack = new HashMap<>();
     }
 
     public void initAI(){
@@ -329,7 +333,7 @@ public class Board {
         return selected != null && isShipSelected() && isShip(target)
                 && selected.getSide() != cells[target.y][target.x].getSide()
                 && selected.getStepMode() == StepMode.ATTACK
-                && availableForAttack.contains(target);
+                && availableForAttack.get(target) != null;
     }
 
     public Cell getCell(IntegerPoint target){
@@ -351,14 +355,16 @@ public class Board {
                 : emptySet;
     }
 
-    public Set<IntegerPoint> getAvailableCellsForFire(){
-        return selected.containsShip() && selected.getStepMode() == StepMode.ATTACK ? availableForAttack : emptySet;
+    public Map<IntegerPoint, Boolean> getAvailableCellsForFire(){
+        return selected.containsShip() && selected.getStepMode() == StepMode.ATTACK
+                ? availableForAttack
+                : new HashMap<IntegerPoint, Boolean>();
     }
 
-    public Set<IntegerPoint> getAvailableCellsForFire(int x, int y) {
+    public Map<IntegerPoint, Boolean> getAvailableCellsForFire(int x, int y) {
         return isShip(x, y) && cells[y][x].getStepMode() == StepMode.ATTACK
-                ? Attack.getAvailable(this, x, y)
-                : emptySet;
+                ? getAvailableForAttack(new IntegerPoint(x, y))
+                : new HashMap<IntegerPoint, Boolean>();
     }
 
     public List<IntegerPoint> getNonEmptyLocations() {
@@ -425,8 +431,8 @@ public class Board {
 
         if(selected.containsShip()) {
             availableForAttack = selected.getStepMode() == StepMode.ATTACK
-                    ? Attack.getAvailable(this, selectedPoint)
-                    : emptySet;
+                    ? getAvailableForAttack(selectedPoint)
+                    : new HashMap<IntegerPoint, Boolean>();
             availableForMove = selected.getStepMode() == StepMode.MOVE
                     ? selected.getMoveType().getMove().getAvailable(this, selectedPoint)
                     : emptySet;
@@ -467,7 +473,7 @@ public class Board {
         }
 
         if (Math.random() < Config.getInstance().BLACK_HOLE_SPAWN_CHANCE) {
-            return getSpawnBlackHolEvent();
+            return getSpawnBlackHoleEvent();
         }
 
         if (Math.random() < Config.getInstance().LOOT_SPAWN_CHANCE) {
@@ -478,7 +484,7 @@ public class Board {
         return new IdleBoardEvent();
     }
 
-    private BoardEvent getSpawnBlackHolEvent() {
+    private BoardEvent getSpawnBlackHoleEvent() {
         turn.scoreMove();
 
         currentContentSpawnPoint = Randomizer.generatePoint(0, Config.getInstance().BOARD_SIZE - 1);
@@ -566,5 +572,38 @@ public class Board {
 
     public IntegerPoint getCurrentContentSpawnPoint() {
         return currentContentSpawnPoint;
+    }
+
+    private Map<IntegerPoint, Boolean> getAvailableForAttack(IntegerPoint target) {
+        Map<IntegerPoint, Boolean> availableForAttack = new HashMap<>();
+
+        IntegerPoint offset = new IntegerPoint(target);
+        for (Direction direction : Direction.getStraight()) {
+            for (int i = 0; i < 3 && !isEnemyShip(offset); i++) { // TODO config
+                offset.move(direction);
+                if (inBoard(offset)) {
+                    availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
+                }
+            }
+            offset.set(target);
+        }
+
+        for (Direction direction : Direction.getDiagonal()) {
+            offset.move(direction);
+            if (inBoard(offset)) {
+                availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
+            }
+            offset.set(target);
+        }
+
+        for (Direction direction : Direction.getHorseDirections()) {
+            offset.move(direction);
+            if (inBoard(offset)) {
+                availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
+            }
+            offset.set(target);
+        }
+
+        return availableForAttack;
     }
 }

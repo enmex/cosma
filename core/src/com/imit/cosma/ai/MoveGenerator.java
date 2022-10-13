@@ -7,6 +7,7 @@ import com.imit.cosma.util.Path;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MoveGenerator {
     private List<Path> pathsAI, pathsPlayer;
@@ -45,8 +46,11 @@ public class MoveGenerator {
                     for (IntegerPoint point : board.getAvailableCellsForMove(x, y)) {
                         pathsAI.add(new Path(x, y, point.x, point.y));
                     }
-                    for (IntegerPoint point : board.getAvailableCellsForFire(x, y)) {
-                        pathsAI.add(new Path(x, y, point.x, point.y));
+                    for (Map.Entry<IntegerPoint, Boolean> entry : board.getAvailableCellsForFire(x, y).entrySet()) {
+                        if (entry.getValue()) {
+                            IntegerPoint point = entry.getKey();
+                            pathsAI.add(new Path(x, y, point.x, point.y));
+                        }
                     }
                 }
             }
@@ -58,8 +62,11 @@ public class MoveGenerator {
                     for (IntegerPoint point : board.getAvailableCellsForMove(x, y)) {
                         pathsPlayer.add(new Path(x, y, point.x, point.y));
                     }
-                    for (IntegerPoint point : board.getAvailableCellsForFire(x, y)) {
-                        pathsPlayer.add(new Path(x, y, point.x, point.y));
+                    for (Map.Entry<IntegerPoint, Boolean> entry : board.getAvailableCellsForFire(x, y).entrySet()) {
+                        if (entry.getValue()) {
+                            IntegerPoint point = entry.getKey();
+                            pathsPlayer.add(new Path(x, y, point.x, point.y));
+                        }
                     }
                 }
             }

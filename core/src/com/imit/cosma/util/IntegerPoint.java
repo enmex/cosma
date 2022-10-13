@@ -1,5 +1,7 @@
 package com.imit.cosma.util;
 
+import com.imit.cosma.model.rules.Direction;
+
 import java.util.Objects;
 
 public class IntegerPoint {
@@ -24,6 +26,11 @@ public class IntegerPoint {
     public void move(int x, int y){
         this.x += x;
         this.y += y;
+    }
+
+    public void move(Direction direction) {
+        this.x += direction.getOffsetX();
+        this.y += direction.getOffsetY();
     }
 
     public void set(int x, int y){

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Config {
-    public final int DEFAULT_SHIPS_NUMBER = 8;
+    public final int DEFAULT_SHIPS_NUMBER = 24;
     private static Config instance;
 
     public final float FRAME_DURATION = 1 / 8f;
@@ -49,8 +49,8 @@ public class Config {
     public final Space SPACE;
     public final List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
     public final Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
-    public final float SPACE_DEBRIS_SPAWN_CHANCE = 1f;
-    public final float BLACK_HOLE_SPAWN_CHANCE = 0f;
+    public final float SPACE_DEBRIS_SPAWN_CHANCE = 0f;
+    public final float BLACK_HOLE_SPAWN_CHANCE = 1f;
     public final float LOOT_SPAWN_CHANCE = 0f;
 
     public final int WORLD_WIDTH = Gdx.graphics.getWidth();

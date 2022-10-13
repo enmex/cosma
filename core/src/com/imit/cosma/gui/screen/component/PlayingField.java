@@ -174,8 +174,15 @@ public class PlayingField {
             selectedCell.draw(batch);
         }
 
-        for(IntegerPoint point : board.getAvailableCellsForFire()){
-            selectedCell.setColor(Color.RED);
+        for(Map.Entry<IntegerPoint, Boolean> entry : board.getAvailableCellsForFire().entrySet()){
+            IntegerPoint point = entry.getKey();
+
+            if (entry.getValue()) {
+                selectedCell.setColor(Color.RED);
+            } else {
+                selectedCell.setColor(Color.YELLOW);
+            }
+
             selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,
                     point.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y,
                     Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);

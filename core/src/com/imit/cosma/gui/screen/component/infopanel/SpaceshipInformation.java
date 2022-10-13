@@ -15,7 +15,7 @@ public class SpaceshipInformation extends ContentInformation{
     private ShapeRenderer healthBar;
     private int healthBarX, healthBarY, healthBarWidth, healthBarHeight;
     private float healthToBarRatio;
-    private Color barColor;
+    private final Color barColor;
 
     //spaceship
     private int maxHealthPoints, healthPoints, skeletonId;

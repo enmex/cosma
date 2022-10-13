@@ -20,6 +20,7 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
     }
 
     public BlackHoleSpawnCompoundAnimation(IntegerPoint spawnPoint, Spaceship victimSpaceship) {
+        this.defaultRotation = victimSpaceship.getSide().getDefaultRotation();
         this.victimSpaceshipIdleAtlas = victimSpaceship.getIdleAnimationPath();
         this.victimSpaceshipDestructionAtlas = victimSpaceship.getSkeleton().getDestructionAnimationPath();
 
@@ -29,12 +30,12 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
 
     @Override
     public boolean isAnimatedObject(IntegerPoint objectLocation) {
-        return spawnPoint.equals(objectLocation) && objectsAnimations.get(0).getCurrentPhase().isAnimated();
+        return spawnPoint.equals(objectLocation) && getBlackHoleSpawnAnimation().isAnimated();
     }
 
     @Override
     public boolean isAnimated() {
-        return objectsAnimations.size != 0 && objectsAnimations.get(0).getCurrentPhase().isAnimated();
+        return getBlackHoleSpawnAnimation().isAnimated();
     }
 
     @Override
@@ -70,7 +71,7 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
                     victimSpaceshipIdleAtlas,
                     Animation.PlayMode.LOOP,
                      screenPoint,
-                    180 - defaultRotation);
+                    defaultRotation);
 
             IdleAnimation victimShipDestruction = new IdleAnimation(
                     victimSpaceshipDestructionAtlas,
@@ -95,16 +96,16 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
         if (spawnedOnShip) {
             SequentialObjectAnimation victimShipAnimation = getShipDestructionAnimation();
 
+            if (victimShipAnimation.isAnimated()) {
+                victimShipAnimation.render(delta);
+            }
+
             if (victimShipAnimation.currentPhase == 0 && blackHoleAnimation.currentPhase == 1) {
-                blackHoleAnimation.nextPhase();
+                victimShipAnimation.nextPhase();
             }
 
-            if (victimShipAnimation.currentPhase == 1 && !victimShipAnimation.getCurrentPhase().isAnimated()) {
+            if (!victimShipAnimation.isAnimated()) {
                 blackHoleAnimation.stop();
-            }
-
-            if (victimShipAnimation.getCurrentPhase().isAnimated()) {
-                victimShipAnimation.getCurrentPhase().render(delta);
             }
         }
 
