@@ -111,9 +111,8 @@ public class Spaceship implements Content {
         this.moveType = moveType;
     }
 
-    @Override
-    public boolean canMoveTo(int fromX, int fromY, int x, int y){
-        return moveType.getMove().canMoveTo(fromX, fromY, x, y);
+    public int getFiringRadius() {
+        return skeleton.getFiringRadius();
     }
 
     @Override

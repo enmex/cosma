@@ -10,7 +10,6 @@ public interface Content extends Cloneable {
     boolean isShip();
     boolean isPassable();
     boolean isPickable();
-    boolean canMoveTo(int fromX, int fromY, int x, int y);
 
     MoveType getMoveType();
 

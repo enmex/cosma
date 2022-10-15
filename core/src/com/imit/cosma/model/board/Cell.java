@@ -45,10 +45,6 @@ public class Cell {
         this.content = content;
     }
 
-    public boolean canMoveTo(int fromX, int fromY, int x, int y){
-        return content.canMoveTo(fromX, fromY, x, y);
-    }
-
     public MoveType getMoveType(){
         return content.getMoveType();
     }

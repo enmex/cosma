@@ -34,9 +34,11 @@ public enum Direction {
 
     public static Set<Direction> getDiagonal(){
         Set<Direction> directions = new HashSet<>(4);
-        for(int i = 1; i < Direction.values().length; i+=2){
-            directions.add(Direction.values()[i]);
-        }
+        directions.add(Direction.NORTH_EAST);
+        directions.add(Direction.NORTH_WEST);
+        directions.add(Direction.SOUTH_EAST);
+        directions.add(Direction.SOUTH_WEST);
+
         return directions;
     }
 
@@ -55,6 +57,14 @@ public enum Direction {
 
         directions.add(NORTH);
         directions.add(SOUTH);
+
+        return directions;
+    }
+
+    public static Set<Direction> getStraightAndDiagonal() {
+        Set<Direction> directions = Direction.getStraight();
+        directions.addAll(Direction.getDiagonal());
+
 
         return directions;
     }

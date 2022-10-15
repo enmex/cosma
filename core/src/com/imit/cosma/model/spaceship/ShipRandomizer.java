@@ -1,8 +1,5 @@
 package com.imit.cosma.model.spaceship;
 
-import com.imit.cosma.model.spaceship.Skeleton;
-import com.imit.cosma.model.spaceship.Weapon;
-import com.imit.cosma.model.rules.move.MovingStyle;
 import com.imit.cosma.model.rules.move.MoveType;
 
 public class ShipRandomizer {

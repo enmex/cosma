@@ -3,6 +3,7 @@ package com.imit.cosma.ai;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.Attack;
+import com.imit.cosma.model.rules.Direction;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
@@ -13,21 +14,24 @@ import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
+import org.graalvm.compiler.replacements.Log;
+
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ArtificialBoard implements Cloneable {
     private final Side[][] sidesField;
     private final StepMode[][] stepModeField;
     private final MoveType[][] moveTypeField;
-    private final int[][] healthField, damageField, weaponRangeField, maxHealthField;
+    private final int[][] healthField, damageField, weaponRangeField, maxHealthField, firingRadiusField;
     private final boolean[][] obstaclesField;
 
     private final Set<IntegerPoint> emptySet = new HashSet<>();
 
-    private final Set<IntegerPoint> interacted = new HashSet<>();
-
-    private Set<IntegerPoint> availableForMove, availableForAttack;
+    private Set<IntegerPoint> availableForMove;
+    private Set<IntegerPoint> availableForAttack;
 
     private Side turn;
     private final Side playerSide;
@@ -45,6 +49,7 @@ public class ArtificialBoard implements Cloneable {
         moveTypeField = new MoveType[size][size];
         obstaclesField = new boolean[size][size];
         maxHealthField = new int[size][size];
+        firingRadiusField = new int[size][size];
 
         availableForMove = new HashSet<>();
         availableForAttack = new HashSet<>();
@@ -75,6 +80,7 @@ public class ArtificialBoard implements Cloneable {
                 moveTypeField[y][x] = board.getCell(x, y).getContent().getMoveType();
                 obstaclesField[y][x] = board.isPassable(x, y);
                 maxHealthField[y][x] = board.getMaxHealthPoints(x, y);
+                firingRadiusField[y][x] = board.isShip(x, y) ? ((Spaceship) board.getCell(x, y).getContent()).getFiringRadius() : 0;
             }
         }
 
@@ -140,10 +146,10 @@ public class ArtificialBoard implements Cloneable {
         selectedPoint.set(target);
         if(isShip(selectedPoint)) {
             availableForAttack = getStepMode(selectedPoint) == StepMode.ATTACK
-                    ? Attack.getAvailable(this, selectedPoint)
+                    ? getAvailableForAttack(selectedPoint)
                     : emptySet;
             availableForMove = getStepMode(selectedPoint) == StepMode.MOVE
-                    ? moveTypeField[selectedPoint.y][selectedPoint.x].getMove().getAvailable(this, selectedPoint)
+                    ? getAvailableForMove(selectedPoint)
                     : emptySet;
         }
     }
@@ -172,6 +178,7 @@ public class ArtificialBoard implements Cloneable {
         sidesField[target.y][target.x] = new NeutralSide();
         maxHealthField[target.y][target.x] = 0;
         weaponRangeField[target.y][target.x] = 0;
+        firingRadiusField[target.y][target.x] = 0;
         moveTypeField[target.y][target.x] = MoveType.IDLE;
     }
 
@@ -195,6 +202,10 @@ public class ArtificialBoard implements Cloneable {
         valueTemp = maxHealthField[target.y][target.x];
         maxHealthField[target.y][target.x] = maxHealthField[selectedPoint.y][selectedPoint.x];
         maxHealthField[selectedPoint.y][selectedPoint.x] = valueTemp;
+
+        valueTemp = firingRadiusField[target.y][target.x];
+        firingRadiusField[target.y][target.x] = firingRadiusField[selectedPoint.y][selectedPoint.x];
+        firingRadiusField[selectedPoint.y][selectedPoint.x] = valueTemp;
 
         StepMode stepModeTemp = stepModeField[target.y][target.x];
         stepModeField[target.y][target.x] = stepModeField[selectedPoint.y][selectedPoint.x];
@@ -226,7 +237,7 @@ public class ArtificialBoard implements Cloneable {
     public boolean selectedCanMoveTo(IntegerPoint target){
         return isShip(selectedPoint)
                 && !target.equals(selectedPoint)
-                && moveTypeField[selectedPoint.y][selectedPoint.x].getMove().canMoveTo(selectedPoint.x, selectedPoint.y, target.x, target.y)
+                && availableForMove.contains(target)
                 && stepModeField[selectedPoint.y][selectedPoint.x] == StepMode.MOVE && isPassable(target);
     }
 
@@ -239,13 +250,13 @@ public class ArtificialBoard implements Cloneable {
 
     public Set<IntegerPoint> getAvailableCellsForMove(int x, int y) {
         return isShip(x, y) && stepModeField[y][x] == StepMode.MOVE
-                ? moveTypeField[y][x].getMove().getAvailable(this, new IntegerPoint(x, y))
+                ? getAvailableForMove(new IntegerPoint(x, y))
                 : emptySet;
     }
 
     public Set<IntegerPoint> getAvailableCellsForFire(int x, int y) {
         return isShip(x, y) && stepModeField[y][x] == StepMode.ATTACK
-                ? Attack.getAvailable(this, x, y)
+                ? getAvailableForAttack(new IntegerPoint(x, y))
                 : emptySet;
     }
 
@@ -314,5 +325,64 @@ public class ArtificialBoard implements Cloneable {
 
     public int getMaxHealthPoints(IntegerPoint target) {
         return maxHealthField[target.y][target.x];
+    }
+
+    private Set<IntegerPoint> getAvailableForMove(IntegerPoint target) {
+        Set<IntegerPoint> availableForMove = new HashSet<>();
+        MoveType moveType = moveTypeField[target.y][target.x];
+
+        IntegerPoint offset = new IntegerPoint(target);
+        for (Direction direction : moveType.getDirections()) {
+            do {
+                offset.move(direction);
+
+                if (inBoard(offset) && isPassable(offset)) {
+                    availableForMove.add(new IntegerPoint(offset));
+                }
+
+            } while (moveType.isEndless() && inBoard(offset) && isPassable(offset));
+
+            offset.set(target);
+        }
+
+        return availableForMove;
+    }
+
+    private Set<IntegerPoint> getAvailableForAttack(IntegerPoint target) {
+        Set<IntegerPoint> availableForAttack = new HashSet<>();
+        int firingRadius = firingRadiusField[target.y][target.x];
+
+        IntegerPoint offset = new IntegerPoint(target);
+
+        for (Direction direction : Direction.getStraight()) {
+            for (int i = 0; i < firingRadius; i++) {
+                offset.move(direction);
+                if (inBoard(offset) && isEnemyShip(offset)) {
+                    availableForAttack.add(new IntegerPoint(offset));
+                }
+            }
+            offset.set(target);
+        }
+
+        if (firingRadius > 1) {
+            for (Direction direction : Direction.getDiagonal()) {
+                offset.move(direction);
+                if (inBoard(offset) && isEnemyShip(offset)) {
+                    availableForAttack.add(new IntegerPoint(offset));
+                }
+                offset.set(target);
+            }
+        }
+
+        if (firingRadius > 2) {
+            for (Direction direction : Direction.getHorseDirections()) {
+                offset.move(direction);
+                if (inBoard(offset) && isEnemyShip(offset)) {
+                    availableForAttack.add(new IntegerPoint(offset));
+                }
+                offset.set(target);
+            }
+        }
+        return availableForAttack;
     }
 }

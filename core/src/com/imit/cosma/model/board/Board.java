@@ -118,7 +118,7 @@ public class Board {
 
 
         //initialise player ships
-        for (int y = 0; y < 3; y++) {
+        for (int y = 0; y < 1; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
                         .addSkeleton()
@@ -130,7 +130,7 @@ public class Board {
         }
 
         //initialise space cells
-        for (int y = 3; y < Config.getInstance().BOARD_SIZE - 3; y++) {
+        for (int y = 1; y < Config.getInstance().BOARD_SIZE - 1; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
                 objectController.addSpace(x, y);
@@ -138,7 +138,7 @@ public class Board {
         }
 
         //initialise enemy ships
-        for (int y = Config.getInstance().BOARD_SIZE - 3; y < Config.getInstance().BOARD_SIZE; y++) {
+        for (int y = Config.getInstance().BOARD_SIZE - 1; y < Config.getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
                         .addSkeleton()
@@ -325,7 +325,7 @@ public class Board {
     public boolean selectedCanMoveTo(IntegerPoint target){
         return selected.containsShip()
                 && cells[target.y][target.x] != selected
-                && selected.canMoveTo(selectedPoint.x, selectedPoint.y, target.x, target.y)
+                && availableForMove.contains(target)
                 && selected.getStepMode() == StepMode.MOVE && isPassable(target);
     }
 
@@ -351,7 +351,7 @@ public class Board {
 
     public Set<IntegerPoint> getAvailableCellsForMove(int x, int y) {
         return isShip(x, y) && cells[y][x].getStepMode() == StepMode.MOVE
-                ? cells[y][x].getMoveType().getMove().getAvailable(this, new IntegerPoint(x, y))
+                ? getAvailableForMove(new IntegerPoint(x, y))
                 : emptySet;
     }
 
@@ -434,7 +434,7 @@ public class Board {
                     ? getAvailableForAttack(selectedPoint)
                     : new HashMap<IntegerPoint, Boolean>();
             availableForMove = selected.getStepMode() == StepMode.MOVE
-                    ? selected.getMoveType().getMove().getAvailable(this, selectedPoint)
+                    ? getAvailableForMove(selectedPoint)
                     : emptySet;
 
             if (selected.getStepMode() == StepMode.ATTACK && availableForAttack.isEmpty()) {
@@ -574,12 +574,35 @@ public class Board {
         return currentContentSpawnPoint;
     }
 
-    private Map<IntegerPoint, Boolean> getAvailableForAttack(IntegerPoint target) {
-        Map<IntegerPoint, Boolean> availableForAttack = new HashMap<>();
+    private Set<IntegerPoint> getAvailableForMove(IntegerPoint target) {
+        Set<IntegerPoint> availableForMove = new HashSet<>();
+        MoveType moveType = getCell(target).getMoveType();
 
         IntegerPoint offset = new IntegerPoint(target);
+        for (Direction direction : moveType.getDirections()) {
+            do {
+                offset.move(direction);
+
+                if (inBoard(offset) && isPassable(offset)) {
+                    availableForMove.add(new IntegerPoint(offset));
+                }
+
+            } while (moveType.isEndless() && inBoard(offset) && isPassable(offset));
+
+            offset.set(target);
+        }
+
+        return availableForMove;
+    }
+
+    private Map<IntegerPoint, Boolean> getAvailableForAttack(IntegerPoint target) {
+        Map<IntegerPoint, Boolean> availableForAttack = new HashMap<>();
+        int firingRadius = isShip(target) ? ((Spaceship) getCell(target).getContent()).getFiringRadius() : 0;
+
+        IntegerPoint offset = new IntegerPoint(target);
+
         for (Direction direction : Direction.getStraight()) {
-            for (int i = 0; i < 3 && !isEnemyShip(offset); i++) { // TODO config
+            for (int i = 0; i < firingRadius; i++) {
                 offset.move(direction);
                 if (inBoard(offset)) {
                     availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
@@ -588,20 +611,24 @@ public class Board {
             offset.set(target);
         }
 
-        for (Direction direction : Direction.getDiagonal()) {
-            offset.move(direction);
-            if (inBoard(offset)) {
-                availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
+        if (firingRadius > 1) {
+            for (Direction direction : Direction.getDiagonal()) {
+                offset.move(direction);
+                if (inBoard(offset)) {
+                    availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
+                }
+                offset.set(target);
             }
-            offset.set(target);
         }
 
-        for (Direction direction : Direction.getHorseDirections()) {
-            offset.move(direction);
-            if (inBoard(offset)) {
-                availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
+        if (firingRadius > 2) {
+            for (Direction direction : Direction.getHorseDirections()) {
+                offset.move(direction);
+                if (inBoard(offset)) {
+                    availableForAttack.put(new IntegerPoint(offset), isEnemyShip(offset));
+                }
+                offset.set(target);
             }
-            offset.set(target);
         }
 
         return availableForAttack;

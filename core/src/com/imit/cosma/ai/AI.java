@@ -23,7 +23,7 @@ public class AI {
         this.board = new ArtificialBoard(board);
         playerTurns = new MutualLinkedMap<>();
         cachedTree = new DecisionTree();
-        generator = new MoveGenerator(board);
+        generator = new MoveGenerator(this.board);
         currentPaths = new MutualLinkedMap<>();
     }
 

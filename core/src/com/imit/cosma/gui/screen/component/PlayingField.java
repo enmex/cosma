@@ -180,7 +180,7 @@ public class PlayingField {
             if (entry.getValue()) {
                 selectedCell.setColor(Color.RED);
             } else {
-                selectedCell.setColor(Color.YELLOW);
+                selectedCell.setColor(1, 1f, 0.3f, 1f);
             }
 
             selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,

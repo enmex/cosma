@@ -59,11 +59,6 @@ public class BlackHole implements Content {
     }
 
     @Override
-    public boolean canMoveTo(int fromX, int fromY, int x, int y) {
-        return false;
-    }
-
-    @Override
     public void setDamage(int damage) {}
 
     @Override

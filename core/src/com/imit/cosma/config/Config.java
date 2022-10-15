@@ -2,13 +2,6 @@ package com.imit.cosma.config;
 
 import com.badlogic.gdx.Gdx;
 import com.imit.cosma.model.board.content.Space;
-import com.imit.cosma.model.rules.move.HorseMovingStyle;
-import com.imit.cosma.model.rules.move.IdleMovingStyle;
-import com.imit.cosma.model.rules.move.KingMovingStyle;
-import com.imit.cosma.model.rules.move.MovingStyle;
-import com.imit.cosma.model.rules.move.OfficerMovingStyle;
-import com.imit.cosma.model.rules.move.QueenMovingStyle;
-import com.imit.cosma.model.rules.move.WeakRookMovingStyle;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.ArrayList;
@@ -38,13 +31,6 @@ public class Config {
     public final String INFORMATION_PANEL_PATH =  "spaceship_panel.png";
     public final String FONT_PATH = "font\\font.fnt";
     public final String SELECTED_CELL_PATH = "selected.png";
-
-    public final MovingStyle KING_MOVING_STYLE;
-    public final MovingStyle QUEEN_MOVING_STYLE;
-    public final MovingStyle OFFICER_MOVING_STYLE;
-    public final MovingStyle HORSE_MOVING_STYLE;
-    public final MovingStyle WEAK_ROOK_MOVING_STYLE;
-    public final MovingStyle IDLE_MOVING_STYLE;
 
     public final Space SPACE;
     public final List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
@@ -127,13 +113,6 @@ public class Config {
     public final String TORPEDO_LAUNCHER_EXPLOSION_SOUND = SOUNDS_DIRECTORY + "torpedo_launcher_explosion.ogg";
 
     private Config(){
-        KING_MOVING_STYLE = new KingMovingStyle();
-        QUEEN_MOVING_STYLE = new QueenMovingStyle();
-        OFFICER_MOVING_STYLE = new OfficerMovingStyle();
-        HORSE_MOVING_STYLE = new HorseMovingStyle();
-        WEAK_ROOK_MOVING_STYLE = new WeakRookMovingStyle();
-        IDLE_MOVING_STYLE = new IdleMovingStyle();
-
         SPACE = new Space();
     }
 

@@ -1,22 +1,32 @@
 package com.imit.cosma.model.rules.move;
 
 import com.imit.cosma.config.Config;
+import com.imit.cosma.model.rules.Direction;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public enum MoveType {
-    KING(Config.getInstance().KING_MOVING_STYLE),
-    QUEEN(Config.getInstance().QUEEN_MOVING_STYLE),
-    OFFICER(Config.getInstance().OFFICER_MOVING_STYLE),
-    HORSE(Config.getInstance().HORSE_MOVING_STYLE),
-    WEAK_ROOK(Config.getInstance().WEAK_ROOK_MOVING_STYLE),
-    IDLE(Config.getInstance().IDLE_MOVING_STYLE);
+    KING(Direction.getStraightAndDiagonal(), false),
+    QUEEN(Direction.getStraightAndDiagonal(), true),
+    OFFICER(Direction.getDiagonal(), true),
+    HORSE(Direction.getHorseDirections(), false),
+    WEAK_ROOK(Direction.getStraight(), false),
+    IDLE(new HashSet<Direction>(), false);
 
-    private final MovingStyle movingStyle;
+    private final Set<Direction> directions;
+    private final boolean endless;
 
-    MoveType(MovingStyle movingStyle){
-        this.movingStyle = movingStyle;
+    MoveType(Set<Direction> directions, boolean endless){
+        this.directions = directions;
+        this.endless = endless;
     }
 
-    public MovingStyle getMove() {
-        return movingStyle;
+    public Set<Direction> getDirections() {
+        return directions;
+    }
+
+    public boolean isEndless() {
+        return endless;
     }
 }
