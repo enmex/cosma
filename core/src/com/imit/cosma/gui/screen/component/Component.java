@@ -1,17 +1,19 @@
 package com.imit.cosma.gui.screen.component;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.imit.cosma.util.IntegerPoint;
 
 public abstract class Component{
     protected SpriteBatch batch;
-    protected int componentLeft, componentBottom;
+    protected IntegerPoint location;
     protected int componentWidth, componentHeight;
 
-    protected Component() {
+    protected Component(IntegerPoint location, int componentWidth, int componentHeight) {
         batch = new SpriteBatch();
+        this.location = location;
+        this.componentWidth = componentWidth;
+        this.componentHeight = componentHeight;
     }
 
-    public void render() {}
-
-    public void resize(int width, int height) {}
+    public abstract void render();
 }
