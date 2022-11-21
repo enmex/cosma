@@ -2,7 +2,6 @@ package com.imit.cosma.ai;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.Board;
-import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.Direction;
 import com.imit.cosma.model.rules.StepMode;
 import com.imit.cosma.model.rules.move.MoveType;
@@ -14,11 +13,7 @@ import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
-import org.graalvm.compiler.replacements.Log;
-
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class ArtificialBoard implements Cloneable {

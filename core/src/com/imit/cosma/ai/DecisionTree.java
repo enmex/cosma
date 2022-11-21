@@ -13,7 +13,7 @@ import java.util.Set;
 public class DecisionTree{
     private TreeNode root;
 
-    private final int SEARCH_LIMIT = 3;
+    private final int SEARCH_LIMIT = 100;
 
     private final boolean isCaching;
 
@@ -23,11 +23,9 @@ public class DecisionTree{
     }
 
     public MutualLinkedMap<Path, StepMode> treeSearch(ArtificialBoard board) {
-        for(int i = 0; i < SEARCH_LIMIT; i++) {
-            TreeNode node = selectNode(board, root);
-            int reward = node.stateReward;
-            backpropogate(node, reward);
-        }
+        TreeNode node = selectNode(board, root);
+        int reward = node.stateReward;
+        backpropogate(node, reward);
 
         TreeNode bestChild = selectBestNode(root);
 
@@ -104,12 +102,12 @@ public class DecisionTree{
         }
     }
 
-    private TreeNode selectNode(ArtificialBoard board, TreeNode current) {
-        if(current.children.isEmpty()) {
-            expandNode(board, current);
+    private TreeNode selectNode(ArtificialBoard board, TreeNode currentNode) {
+        if(currentNode.children.isEmpty()) {
+            expandNode(board, currentNode);
         }
 
-        return selectBestNode(current);
+        return selectBestNode(currentNode);
     }
 
     private TreeNode selectBestNode(TreeNode parentNode) {

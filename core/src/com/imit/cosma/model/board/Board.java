@@ -1,7 +1,8 @@
 package com.imit.cosma.model.board;
 
+import static com.imit.cosma.config.Config.getInstance;
+
 import com.imit.cosma.ai.AI;
-import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.HealthKit;
 import com.imit.cosma.model.board.content.Loot;
@@ -15,7 +16,6 @@ import com.imit.cosma.model.board.event.SpaceDebrisAttackEvent;
 import com.imit.cosma.model.board.event.SpaceshipPicksLootBoardEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
-import com.imit.cosma.model.rules.Attack;
 import com.imit.cosma.model.rules.Direction;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.EnemySide;
@@ -23,12 +23,12 @@ import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.model.spaceship.ShipRandomizer;
+import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.pkg.random.Randomizer;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.PingPongList;
+import com.imit.cosma.util.CycledList;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.ArrayList;
@@ -61,13 +61,13 @@ public class Board {
 
     private final Side playerSide;
     private final Side enemySide;
-    private final PingPongList<Side> sides;
+    private final CycledList<Side> sides;
 
     public Board() {
-        cells = new Cell[Config.getInstance().BOARD_SIZE][Config.getInstance().BOARD_SIZE];
+        cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
         emptySet = new HashSet<>();
-        selected = new Cell(Config.getInstance().SPACE);
-        interacted = new Cell(Config.getInstance().SPACE);
+        selected = new Cell(getInstance().SPACE);
+        interacted = new Cell(getInstance().SPACE);
 
         objectController = new ObjectController();
 
@@ -76,22 +76,28 @@ public class Board {
         playerSide = new PlayerSide();
         enemySide = new EnemySide();
 
-        sides = new PingPongList<>(3);
-        sides.add(playerSide);
-        sides.add(new NeutralSide());
+        sides = new CycledList<>();
         sides.add(enemySide);
+        sides.add(new NeutralSide());
+        sides.add(playerSide);
 
         selectedPoint = new IntegerPoint();
 
-        /*
-        IntegerPoint pShip = new IntegerPoint(4, 4);
+        IntegerPoint pShip1 = new IntegerPoint(4, 4);
+        IntegerPoint pShip2 = new IntegerPoint(6, 4);
         IntegerPoint eShip1 = new IntegerPoint(1, 5);
         IntegerPoint eShip2 = new IntegerPoint(2, 5);
 
         for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 IntegerPoint point = new IntegerPoint(x, y);
-                if (point.equals(pShip)) {
+                if (point.equals(pShip1)) {
+                    cells[y][x] = new Cell(spaceshipBuilder.setSide(playerSide)
+                            .addSkeleton(Skeleton.DREADNOUGHT)
+                            .addWeapon(8)
+                            .setMoveType(MoveType.QUEEN).build());
+                    objectController.addSpaceship(x, y);
+                } else if (point.equals(pShip2)) {
                     cells[y][x] = new Cell(spaceshipBuilder.setSide(playerSide)
                             .addSkeleton(Skeleton.DREADNOUGHT)
                             .addWeapon(8)
@@ -114,9 +120,9 @@ public class Board {
                     objectController.addSpace(x, y);
                 }
             }
-        }*/
+        }
 
-
+        /*
         //initialise player ships
         for (int y = 0; y < 1; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
@@ -147,7 +153,7 @@ public class Board {
                 cells[y][x] = new Cell(spaceship);
                 objectController.addSpaceship(x, y);
             }
-        }
+        }*/
 
         turn = playerSide;
         interactedCells = new HashSet<>();
@@ -468,15 +474,15 @@ public class Board {
     }
 
     public BoardEvent getCurrentBoardEvent() {
-        if (Math.random() < Config.getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
+        if (Math.random() < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
             return getSpaceDebrisSpawnEvent();
         }
 
-        if (Math.random() < Config.getInstance().BLACK_HOLE_SPAWN_CHANCE) {
+        if (Math.random() < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
             return getSpawnBlackHoleEvent();
         }
 
-        if (Math.random() < Config.getInstance().LOOT_SPAWN_CHANCE) {
+        if (Math.random() < getInstance().LOOT_SPAWN_CHANCE) {
             return getLootSpawnEvent();
         }
 
@@ -487,7 +493,7 @@ public class Board {
     private BoardEvent getSpawnBlackHoleEvent() {
         turn.scoreMove();
 
-        currentContentSpawnPoint = Randomizer.generatePoint(0, Config.getInstance().BOARD_SIZE - 1);
+        currentContentSpawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE - 1);
         objectController.addGameObject(currentContentSpawnPoint);
 
         IntegerPoint blackHoleSpawnPoint = currentContentSpawnPoint.clone();

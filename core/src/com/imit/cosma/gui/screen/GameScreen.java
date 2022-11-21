@@ -99,7 +99,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        infoPanel.resize(width, height);
+        //infoPanel.resize(width, height);
     }
 
     @Override
