@@ -1,10 +1,12 @@
 package com.imit.cosma.model.board;
 
+import com.imit.cosma.config.Config;
 import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.IntegerPoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ObjectController {
     private MutualLinkedMap<IntegerPoint, ContentType> contentLocations;
@@ -99,17 +101,41 @@ public class ObjectController {
         contentLocations.put(location, ContentType.GAME_OBJECT);
     }
 
-    public boolean isEmpty(int x, int y) {
-        return contentLocations.getValue(new IntegerPoint(x, y)) == ContentType.SPACE;
+    public void update() {
+        for (IntegerPoint gameObjectLocation : getGameObjectsLocations()) {
+            contentLocations.getValue(gameObjectLocation).decreaseLiveTime();
+        }
     }
 
-    public void clear() {
-        contentLocations.clear();
+    public List<IntegerPoint> getExpiredGameObjectLocations() {
+        List<IntegerPoint> expiredGameObjectLocations = new ArrayList<>();
+
+        for (IntegerPoint gameObjectLocation : getGameObjectsLocations()) {
+            if (contentLocations.getValue(gameObjectLocation).isExpired()) {
+                expiredGameObjectLocations.add(gameObjectLocation);
+            }
+        }
+
+        return expiredGameObjectLocations;
     }
 }
 
 enum ContentType {
     SPACE,
     SPACESHIP,
-    GAME_OBJECT
+    GAME_OBJECT;
+
+    int timeToLive;
+
+    ContentType() {
+        this.timeToLive = Config.getInstance().GAME_OBJECT_LIVE_TIME;
+    }
+
+    public void decreaseLiveTime() {
+        timeToLive--;
+    }
+
+    public boolean isExpired() {
+        return timeToLive == 0;
+    }
 }

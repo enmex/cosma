@@ -20,7 +20,7 @@ public class ArtificialBoard implements Cloneable {
     private final Side[][] sidesField;
     private final StepMode[][] stepModeField;
     private final MoveType[][] moveTypeField;
-    private final int[][] healthField, damageField, weaponRangeField, maxHealthField, firingRadiusField;
+    private final int[][] healthField, damageField, firingRadiusField, maxHealthField;
     private final boolean[][] obstaclesField;
 
     private final Set<IntegerPoint> emptySet = new HashSet<>();
@@ -40,11 +40,10 @@ public class ArtificialBoard implements Cloneable {
         healthField = new int[size][size];
         damageField = new int[size][size];
         stepModeField = new StepMode[size][size];
-        weaponRangeField = new int[size][size];
+        firingRadiusField = new int[size][size];
         moveTypeField = new MoveType[size][size];
         obstaclesField = new boolean[size][size];
         maxHealthField = new int[size][size];
-        firingRadiusField = new int[size][size];
 
         availableForMove = new HashSet<>();
         availableForAttack = new HashSet<>();
@@ -71,11 +70,11 @@ public class ArtificialBoard implements Cloneable {
                 healthField[y][x] = board.getHealthPoints(x, y);
                 damageField[y][x] = board.getDamagePoints(x, y);
                 stepModeField[y][x] = board.getStepMode(x, y);
-                weaponRangeField[y][x] = board.isShip(x, y) ? ((Spaceship) (board.getCell(x, y).getContent())).getWeaponRange() : 0;
+                firingRadiusField[y][x] = board.isShip(x, y) ?
+                        ((Spaceship) (board.getCell(x, y).getContent())).getFiringRadius() : 0;
                 moveTypeField[y][x] = board.getCell(x, y).getContent().getMoveType();
                 obstaclesField[y][x] = board.isPassable(x, y);
                 maxHealthField[y][x] = board.getMaxHealthPoints(x, y);
-                firingRadiusField[y][x] = board.isShip(x, y) ? ((Spaceship) board.getCell(x, y).getContent()).getFiringRadius() : 0;
             }
         }
 
@@ -97,8 +96,6 @@ public class ArtificialBoard implements Cloneable {
     public void updateSide() {
         if (sideCompletedTurn()) {
             changeTurn();
-
-
         }
     }
 
@@ -172,7 +169,6 @@ public class ArtificialBoard implements Cloneable {
         obstaclesField[target.y][target.x] = true;
         sidesField[target.y][target.x] = new NeutralSide();
         maxHealthField[target.y][target.x] = 0;
-        weaponRangeField[target.y][target.x] = 0;
         firingRadiusField[target.y][target.x] = 0;
         moveTypeField[target.y][target.x] = MoveType.IDLE;
     }
@@ -190,17 +186,13 @@ public class ArtificialBoard implements Cloneable {
         damageField[target.y][target.x] = damageField[selectedPoint.y][selectedPoint.x];
         damageField[selectedPoint.y][selectedPoint.x] = valueTemp;
 
-        valueTemp = weaponRangeField[target.y][target.x];
-        weaponRangeField[target.y][target.x] = weaponRangeField[selectedPoint.y][selectedPoint.x];
-        weaponRangeField[selectedPoint.y][selectedPoint.x] = valueTemp;
+        valueTemp = firingRadiusField[target.y][target.x];
+        firingRadiusField[target.y][target.x] = firingRadiusField[selectedPoint.y][selectedPoint.x];
+        firingRadiusField[selectedPoint.y][selectedPoint.x] = valueTemp;
 
         valueTemp = maxHealthField[target.y][target.x];
         maxHealthField[target.y][target.x] = maxHealthField[selectedPoint.y][selectedPoint.x];
         maxHealthField[selectedPoint.y][selectedPoint.x] = valueTemp;
-
-        valueTemp = firingRadiusField[target.y][target.x];
-        firingRadiusField[target.y][target.x] = firingRadiusField[selectedPoint.y][selectedPoint.x];
-        firingRadiusField[selectedPoint.y][selectedPoint.x] = valueTemp;
 
         StepMode stepModeTemp = stepModeField[target.y][target.x];
         stepModeField[target.y][target.x] = stepModeField[selectedPoint.y][selectedPoint.x];
@@ -226,7 +218,7 @@ public class ArtificialBoard implements Cloneable {
     }
 
     public int getWeaponRange(int x, int y) {
-        return weaponRangeField[y][x];
+        return firingRadiusField[y][x];
     }
 
     public boolean selectedCanMoveTo(IntegerPoint target){
@@ -253,10 +245,6 @@ public class ArtificialBoard implements Cloneable {
         return isShip(x, y) && stepModeField[y][x] == StepMode.ATTACK
                 ? getAvailableForAttack(new IntegerPoint(x, y))
                 : emptySet;
-    }
-
-    public IntegerPoint getSelectedPoint() {
-        return selectedPoint;
     }
 
     public boolean inBoard(IntegerPoint target){
@@ -296,7 +284,7 @@ public class ArtificialBoard implements Cloneable {
                 board.damageField[y][x] = damageField[y][x];
                 board.stepModeField[y][x] = stepModeField[y][x];
                 board.moveTypeField[y][x] = moveTypeField[y][x];
-                board.weaponRangeField[y][x] = weaponRangeField[y][x];
+                board.firingRadiusField[y][x] = firingRadiusField[y][x];
                 board.obstaclesField[y][x] = obstaclesField[y][x];
                 board.maxHealthField[y][x] = maxHealthField[y][x];
             }

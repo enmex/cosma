@@ -3,6 +3,7 @@ package com.imit.cosma.model.board;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.imit.cosma.ai.AI;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.HealthKit;
 import com.imit.cosma.model.board.content.Loot;
@@ -23,6 +24,7 @@ import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.spaceship.ShipRandomizer;
 import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
@@ -82,7 +84,7 @@ public class Board {
         sides.add(playerSide);
 
         selectedPoint = new IntegerPoint();
-
+        /*
         IntegerPoint pShip1 = new IntegerPoint(4, 4);
         IntegerPoint pShip2 = new IntegerPoint(6, 4);
         IntegerPoint eShip1 = new IntegerPoint(1, 5);
@@ -120,9 +122,9 @@ public class Board {
                     objectController.addSpace(x, y);
                 }
             }
-        }
+        }*/
 
-        /*
+
         //initialise player ships
         for (int y = 0; y < 1; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
@@ -153,7 +155,7 @@ public class Board {
                 cells[y][x] = new Cell(spaceship);
                 objectController.addSpaceship(x, y);
             }
-        }*/
+        }
 
         turn = playerSide;
         interactedCells = new HashSet<>();
@@ -403,10 +405,6 @@ public class Board {
 
     public boolean inBoard(int x, int y){
         return x >=0 && x < 8 && y >= 0 && y < 8;
-    }
-
-    public IntegerPoint getSelectedPoint() {
-        return selectedPoint;
     }
 
     public Side getTurn(){

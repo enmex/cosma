@@ -11,7 +11,7 @@ import com.imit.cosma.util.Path;
 public class AI {
     private final MoveGenerator generator;
 
-    private final DecisionTree cachedTree;
+    private final DecisionTree tree;
 
     private final MutualLinkedMap<Path, StepMode> playerTurns;
 
@@ -22,18 +22,18 @@ public class AI {
     public AI(final Board board){
         this.board = new ArtificialBoard(board);
         playerTurns = new MutualLinkedMap<>();
-        cachedTree = new DecisionTree();
+        tree = new MinMaxTree(this.board);
         generator = new MoveGenerator(this.board);
         currentPaths = new MutualLinkedMap<>();
     }
 
     private void updatePaths(){
-        cachedTree.climbDown(playerTurns); //корень = ход игрока
+        tree.climbDown(playerTurns); //корень = ход игрока
 
         //получение лучшего дочернего узла
-        currentPaths = cachedTree.treeSearch(board);
+        currentPaths = tree.treeSearch(board);
 
-        cachedTree.climbDown(currentPaths); //корень = ход ИИ
+        tree.climbDown(currentPaths); //корень = ход ИИ
         playerTurns.clear();
     }
 
@@ -59,7 +59,7 @@ public class AI {
     }
 
     public boolean isLoading() {
-        return cachedTree.isCaching();
+        return false;
     }
 
     public void savePlayerTurn(Path playerTurn, StepMode turnType) {
