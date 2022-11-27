@@ -13,10 +13,14 @@ import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.IntegerPoint;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ArtificialBoard implements Cloneable {
+    private final ArtificialSpaceshipController controller;
+
     private final Side[][] sidesField;
     private final StepMode[][] stepModeField;
     private final MoveType[][] moveTypeField;
@@ -35,6 +39,7 @@ public class ArtificialBoard implements Cloneable {
     private IntegerPoint selectedPoint;
 
     public ArtificialBoard() {
+        controller = new ArtificialSpaceshipController();
         int size = Config.getInstance().BOARD_SIZE;
         sidesField = new Side[size][size];
         healthField = new int[size][size];
@@ -67,6 +72,14 @@ public class ArtificialBoard implements Cloneable {
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
                 sidesField[y][x] = board.getSide(x, y);
+                if (sidesField[y][x].isPlayer()) {
+                    controller.addPlayerShip(new IntegerPoint(x, y));
+                }
+
+                if (sidesField[y][x].isPlayingSide()) {
+                    controller.addEnemyShip(new IntegerPoint(x, y));
+                }
+
                 healthField[y][x] = board.getHealthPoints(x, y);
                 damageField[y][x] = board.getDamagePoints(x, y);
                 stepModeField[y][x] = board.getStepMode(x, y);
@@ -157,9 +170,11 @@ public class ArtificialBoard implements Cloneable {
 
     private void destroyShip(IntegerPoint target) {
         if(turn.isPlayer()) {
+            controller.removeEnemyShip(target);
             enemySide.removeShip();
         }
         else {
+            controller.removePlayerShip(target);
             playerSide.removeShip();
         }
 
@@ -229,6 +244,10 @@ public class ArtificialBoard implements Cloneable {
                 && sidesField[selectedPoint.y][selectedPoint.x] != sidesField[target.y][target.x]
                 && stepModeField[selectedPoint.y][selectedPoint.x] == StepMode.ATTACK
                 && availableForAttack.contains(target);
+    }
+
+    public Set<IntegerPoint> getAvailableCellsForMove(IntegerPoint target) {
+        return getAvailableCellsForMove(target.x, target.y);
     }
 
     public Set<IntegerPoint> getAvailableCellsForMove(int x, int y) {
@@ -306,6 +325,18 @@ public class ArtificialBoard implements Cloneable {
         return maxHealthField[target.y][target.x];
     }
 
+    public List<IntegerPoint> getPlayerShipLocations() {
+        return controller.getPlayerShipLocations();
+    }
+
+    public List<IntegerPoint> getEnemyShipLocations() {
+        return controller.getEnemyShipLocations();
+    }
+
+    public Side getTurn() {
+        return turn;
+    }
+
     private Set<IntegerPoint> getAvailableForMove(IntegerPoint target) {
         Set<IntegerPoint> availableForMove = new HashSet<>();
         MoveType moveType = moveTypeField[target.y][target.x];
@@ -363,5 +394,38 @@ public class ArtificialBoard implements Cloneable {
             }
         }
         return availableForAttack;
+    }
+}
+
+class ArtificialSpaceshipController {
+    private final List<IntegerPoint> playerShipLocations, enemyShipLocations;
+
+    public ArtificialSpaceshipController() {
+        playerShipLocations = new ArrayList<>();
+        enemyShipLocations = new ArrayList<>();
+    }
+
+    public void addPlayerShip(IntegerPoint location) {
+        playerShipLocations.add(location);
+    }
+
+    public void addEnemyShip(IntegerPoint location) {
+        enemyShipLocations.add(location);
+    }
+
+    public void removePlayerShip(IntegerPoint location) {
+        playerShipLocations.remove(location);
+    }
+
+    public void removeEnemyShip(IntegerPoint location) {
+        enemyShipLocations.remove(location);
+    }
+
+    public List<IntegerPoint> getEnemyShipLocations() {
+        return enemyShipLocations;
+    }
+
+    public List<IntegerPoint> getPlayerShipLocations() {
+        return playerShipLocations;
     }
 }

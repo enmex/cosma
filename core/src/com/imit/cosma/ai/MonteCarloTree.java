@@ -2,23 +2,22 @@ package com.imit.cosma.ai;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.pkg.random.Randomizer;
 import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MonteCarloTree extends DecisionTree {
+    private final int SIMULATION_DEPTH = 5;
     private MonteCarloTreeNode root;
     private ArtificialBoard board;
 
     public MonteCarloTree(ArtificialBoard board){
         super(board);
         root = new MonteCarloTreeNode();
-        expand(root);
     }
 
     @Override
@@ -32,20 +31,16 @@ public class MonteCarloTree extends DecisionTree {
 
         expand(bestNode);
 
-        simulate(bestNode);
+        MonteCarloTreeNode randomChildNode = Randomizer.getRandom(bestNode.children);
+        simulate(randomChildNode);
 
-        backpropogate(bestNode, bestNode.totalReward);
+        backpropogate(randomChildNode, randomChildNode.reward);
 
-        MonteCarloTreeNode bestChild = selectBestNode(root);
-
-        if (bestChild.pathToTypeMap == null) {
-            System.out.println();
-        }
-        return bestChild.pathToTypeMap;
+        return randomChildNode.pathToTypeMap;
     }
 
     private void expand(MonteCarloTreeNode current) {
-        MoveGenerator generator = new MoveGenerator(board);
+        PathGenerator generator = new PathGenerator(board);
         int childrenNumber = 0;
 
         List<Path> firstPaths = current.playerTurn
@@ -67,7 +62,7 @@ public class MonteCarloTree extends DecisionTree {
                 MutualLinkedMap<Path, StepMode> pathToTypeMap = new MutualLinkedMap<>();
                 pathToTypeMap.put(firstPath, firstTurnMode);
 
-                initNode(firstTurnBoard, current, pathToTypeMap);
+                initNode(current, pathToTypeMap);
                 childrenNumber++;
             } else {
                 for(Path secondPath : pathsForSecondTurn) {
@@ -80,7 +75,7 @@ public class MonteCarloTree extends DecisionTree {
                     pathToTypeMap.put(secondPath, secondMode);
                     pathToTypeMap.put(firstPath, firstTurnMode);
 
-                    initNode(secondTurnBoard, current, pathToTypeMap);
+                    initNode(current, pathToTypeMap);
                     childrenNumber++;
 
                     if (childrenNumber >= Config.getInstance().MAX_CHILDREN_NODES) {
@@ -95,21 +90,31 @@ public class MonteCarloTree extends DecisionTree {
     }
 
     private void simulate(MonteCarloTreeNode parentNode) {
+        ArtificialBoard clonedBoard = board.clone();
         MonteCarloTreeNode node = parentNode.clone();
-        expand(node);
 
-        double maxUCB = -Double.MAX_VALUE;
-        MonteCarloTreeNode bestNode = null;
-        for (MonteCarloTreeNode child : node.children) {
-            if (maxUCB < child.getUCB()) {
-                bestNode = child;
-                maxUCB = child.getUCB();
-            }
+        int totalReward = 0;
+
+        for (int i = 0; i < SIMULATION_DEPTH; i++) {
+            MutualLinkedMap<Path, StepMode> pathToStepModeMap = new MutualLinkedMap<>();
+
+            Path firstTurnPath = PathGenerator.getRandomShipPath(clonedBoard);
+            pathToStepModeMap.put(firstTurnPath, clonedBoard.doTurn(firstTurnPath));
+
+            Path secondTurnPath = PathGenerator.getRandomShipPath(clonedBoard);
+
+            pathToStepModeMap.put(secondTurnPath, clonedBoard.doTurn(secondTurnPath));
+
+            MonteCarloTreeNode childNode = new MonteCarloTreeNode(node, pathToStepModeMap);
+            childNode.setAdvantage(clonedBoard, secondTurnPath);
+
+            totalReward += childNode.reward;
+            node.addChild(childNode);
+
+            node = childNode;
         }
 
-        if (bestNode != null) {
-            parentNode.totalReward += bestNode.stateReward;
-        }
+        parentNode.reward = totalReward;
     }
 
     @Override
@@ -126,7 +131,7 @@ public class MonteCarloTree extends DecisionTree {
     private void backpropogate(MonteCarloTreeNode current, int reward) {
         while(current != null) {
             current.visits++;
-            current.totalReward += reward;
+            current.reward = reward;
             current = current.parent;
         }
     }
@@ -146,18 +151,13 @@ public class MonteCarloTree extends DecisionTree {
         return selectBestNode(current);
     }
 
-    private void initNode(ArtificialBoard board, MonteCarloTreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
+    private void initNode(MonteCarloTreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
         MonteCarloTreeNode node = parent.getChild(pathToTypeMap.keySet());
 
         if(node == null) {
             node = new MonteCarloTreeNode(parent, pathToTypeMap);
-            node.setAdvantage(board);
             parent.addChild(node);
         }
-    }
-
-    public boolean isCaching() {
-        return false;
     }
 
 }
@@ -165,32 +165,30 @@ public class MonteCarloTree extends DecisionTree {
 class MonteCarloTreeNode {
     protected MutualLinkedMap<Path, StepMode> pathToTypeMap;
     protected boolean playerTurn;
-    protected int totalReward;
-    protected int stateReward;
+    protected int reward;
     protected int visits;
     protected MonteCarloTreeNode parent;
     protected boolean isInitiated;
-    protected Set<MonteCarloTreeNode> children;
+    protected List<MonteCarloTreeNode> children;
 
     public MonteCarloTreeNode() {
         pathToTypeMap = new MutualLinkedMap<>();
-        children = new HashSet<>();
+        children = new ArrayList<>();
         playerTurn = false;
         isInitiated = false;
     }
 
     public MonteCarloTreeNode(MonteCarloTreeNode parent, MutualLinkedMap<Path, StepMode> pathToTypeMap) {
         this.pathToTypeMap = pathToTypeMap;
-        children = new HashSet<>();
+        children = new ArrayList<>();
         this.playerTurn = !parent.playerTurn;
         this.parent = parent;
-        this.visits = 1;
     }
 
     public MonteCarloTreeNode(MutualLinkedMap<Path, StepMode> pathToTypeMap, boolean playerTurn) {
         this.pathToTypeMap = pathToTypeMap;
         this.playerTurn = playerTurn;
-        children = new HashSet<>();
+        children = new ArrayList<>();
 
     }
 
@@ -216,39 +214,22 @@ class MonteCarloTreeNode {
             return Double.MAX_VALUE;
         }
 
-        return (double) stateReward / visits + Math.sqrt(Math.log(parent.visits) / visits);
+        return (double) reward / visits + Math.sqrt(Math.log(parent.visits) / visits);
     }
 
-    public void setAdvantage(ArtificialBoard board) {
-        Path path = getByStepMode(StepMode.ATTACK);
-
-        if(path == null) {
-            totalReward = 0;
-        } else {
-
-            this.stateReward = board.getMaxHealthPoints(path.getTarget())
-                    - board.getHealthPoints(path.getTarget())
-                    + board.getDamagePoints(path.getTarget());
-        }
+    public void setAdvantage(ArtificialBoard board, Path path) {
+        reward = board.getMaxHealthPoints(path.getTarget())
+                - board.getHealthPoints(path.getTarget())
+                + board.getDamagePoints(path.getTarget());
     }
 
     public Path getByStepMode(StepMode stepMode) {
         return pathToTypeMap.getKey(stepMode);
     }
 
-    public void clear() {
-        parent = null;
-        for(MonteCarloTreeNode child : children) {
-            child.parent = null;
-        }
-
-        children.clear();
-        pathToTypeMap.clear();
-    }
-
     public MonteCarloTreeNode clone() {
         MonteCarloTreeNode node = new MonteCarloTreeNode();
-        node.totalReward = totalReward;
+        node.reward = reward;
         node.playerTurn = playerTurn;
 
         node.pathToTypeMap.putAll(pathToTypeMap);
@@ -263,6 +244,6 @@ class MonteCarloTreeNode {
     @SuppressWarnings("DefaultLocale")
     @Override
     public String toString() {
-        return String.format("(%d/%d), hasAttack=%b", totalReward, visits, pathToTypeMap.values().contains(StepMode.ATTACK));
+        return String.format("(%d/%d), hasAttack=%b", reward, visits, pathToTypeMap.values().contains(StepMode.ATTACK));
     }
 }

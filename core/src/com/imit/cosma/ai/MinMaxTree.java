@@ -50,7 +50,7 @@ public class MinMaxTree extends DecisionTree {
 
         int childrenNumber = 0;
 
-        MoveGenerator generator = new MoveGenerator(board);
+        PathGenerator generator = new PathGenerator(board);
 
         List<Path> pathsForFirstTurn = parent.playerTurn
                 ? new ArrayList<>(generator.getEnemyPaths())

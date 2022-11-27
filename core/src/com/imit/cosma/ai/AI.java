@@ -9,7 +9,7 @@ import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.Path;
 
 public class AI {
-    private final MoveGenerator generator;
+    private final PathGenerator generator;
 
     private final DecisionTree tree;
 
@@ -22,8 +22,8 @@ public class AI {
     public AI(final Board board){
         this.board = new ArtificialBoard(board);
         playerTurns = new MutualLinkedMap<>();
-        tree = new MinMaxTree(this.board);
-        generator = new MoveGenerator(this.board);
+        tree = new MonteCarloTree(this.board);
+        generator = new PathGenerator(this.board);
         currentPaths = new MutualLinkedMap<>();
     }
 

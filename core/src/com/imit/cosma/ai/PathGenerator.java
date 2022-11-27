@@ -1,6 +1,7 @@
 package com.imit.cosma.ai;
 
 import com.imit.cosma.config.Config;
+import com.imit.cosma.pkg.random.Randomizer;
 import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.util.Path;
@@ -9,22 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MoveGenerator {
-    private List<Path> pathsAI, pathsPlayer;
+public class PathGenerator {
+    private final List<Path> pathsAI, pathsPlayer;
 
-    public MoveGenerator(Board board){
+    public PathGenerator(ArtificialBoard board){
         pathsAI = new ArrayList<>();
         pathsPlayer = new ArrayList<>();
         update(board);
     }
 
-    public MoveGenerator(ArtificialBoard board){
-        pathsAI = new ArrayList<>();
-        pathsPlayer = new ArrayList<>();
-        update(board);
-    }
-
-    public MoveGenerator(List<Path> pathsAI, List<Path> pathsPlayer) {
+    public PathGenerator(List<Path> pathsAI, List<Path> pathsPlayer) {
         this.pathsAI = pathsAI;
         this.pathsPlayer = pathsPlayer;
     }
@@ -103,10 +98,17 @@ public class MoveGenerator {
         }
     }
 
-    public MoveGenerator clone() {
+    public static Path getRandomShipPath(ArtificialBoard board) {
+        IntegerPoint randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer() ? board.getPlayerShipLocations() : board.getEnemyShipLocations());
+        IntegerPoint randomTargetLocation = Randomizer.getRandom(new ArrayList<>(board.getAvailableCellsForMove(randomShipLocation)));
+
+        return new Path(randomShipLocation, randomTargetLocation);
+    }
+
+    public PathGenerator clone() {
         List<Path> pathsAIClone = new ArrayList<>(pathsAI);
         List<Path> pathsPlayerClone = new ArrayList<>(pathsPlayer);
 
-        return new MoveGenerator(pathsAIClone, pathsPlayerClone);
+        return new PathGenerator(pathsAIClone, pathsPlayerClone);
     }
 }
