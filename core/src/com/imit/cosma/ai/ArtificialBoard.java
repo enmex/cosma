@@ -217,10 +217,6 @@ public class ArtificialBoard implements Cloneable {
         return stepModeField[y][x];
     }
 
-    public int getWeaponRange(int x, int y) {
-        return firingRadiusField[y][x];
-    }
-
     public boolean selectedCanMoveTo(IntegerPoint target){
         return isShip(selectedPoint)
                 && !target.equals(selectedPoint)

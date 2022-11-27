@@ -250,4 +250,9 @@ class MinMaxTreeNode {
 
         return node;
     }
+
+    @Override
+    public String toString() {
+        return pathToTypeMap.toString() + " " + advantage;
+    }
 }
