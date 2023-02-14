@@ -13,6 +13,7 @@ import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.event.BoardEvent;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 import java.util.Map;
@@ -62,8 +63,15 @@ public class PlayingField extends Actor {
             for (Map.Entry<Point<Integer>, String> entry : boardEvent.getLocationsOfAddedContents().entrySet()) {
                 stage.addActor(new AnimatedSprite(Config.getInstance().FRAME_DURATION, entry.getValue(), toScreenPoint(entry.getKey()), 0, Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT));
             }
+            for (Path<Integer> contentPath : boardEvent.getContentsPaths()) {
+                Point<Float> target = toScreenPoint(contentPath.getTarget());
+                Actor actor = getActorByScreenLocation(toScreenPoint(contentPath.getSource()));
+                if (actor != null) {
+                    actor.setPosition(target.x, target.y);
+                }
+            }
             if (!boardEvent.isIdle()) {
-                contentAnimation.init(boardEvent.getAnimationType());
+                board.updateSide();
             }
         }
     }

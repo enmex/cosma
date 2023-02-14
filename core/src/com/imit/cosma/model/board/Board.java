@@ -372,7 +372,7 @@ public class Board {
         interacted.setContent(cells[destination.y][destination.x].getContent().clone());
 
         swapCells(selectedPoint, destination);
-        cells[destination.y][destination.x].setStepMode(TurnType.ATTACK);
+        cells[destination.y][destination.x].setStepMode(TurnType.COMPLETED);
 
         objectController.setSpaceship(new Point<>(destination));
         objectController.setEmpty(new Point<>(selectedPoint));
