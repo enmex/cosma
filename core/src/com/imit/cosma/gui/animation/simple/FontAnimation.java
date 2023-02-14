@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.util.FloatPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 public class FontAnimation implements SimpleAnimation {
     private boolean animated;
@@ -22,7 +22,7 @@ public class FontAnimation implements SimpleAnimation {
     private final float maxOffset = Config.getInstance().BOARD_CELL_HEIGHT / 2f;
     private float velocity;
 
-    private FloatPoint screenLocation;
+    private Point<Float> screenLocation;
 
     public FontAnimation(String text, Color fontColor) {
         this.text = text;
@@ -37,8 +37,8 @@ public class FontAnimation implements SimpleAnimation {
     }
 
     @Override
-    public void init(Path path, float rotation) {
-        this.screenLocation = new FloatPoint(
+    public void init(Path<Float> path, float rotation) {
+        this.screenLocation = new Point<>(
                 path.getSource().x - Config.getInstance().BOARD_CELL_WIDTH / 2f,
                 path.getSource().y
         );
@@ -64,7 +64,7 @@ public class FontAnimation implements SimpleAnimation {
 
         alpha -= fadeStep;
         offset += velocity;
-        screenLocation.move(0, velocity);
+        screenLocation.set(screenLocation.x, screenLocation.y + velocity);
 
         if (Math.abs(offset) >= maxOffset) {
             setAnimated(false);

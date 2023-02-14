@@ -3,7 +3,7 @@ package com.imit.cosma.model.spaceship;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.model.board.content.Content;
-import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.rules.TurnType;
 import com.imit.cosma.model.rules.side.Side;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class Spaceship implements Content {
     private final Side side;
     private MoveType moveType;
 
-    private StepMode stepMode;
+    private TurnType turnType;
 
     private int weaponAmount;
     private int healthPoints;
@@ -27,7 +27,7 @@ public class Spaceship implements Content {
 
     public Spaceship(Side side) {
         this.side = side;
-        stepMode = StepMode.MOVE;
+        turnType = TurnType.MOVE;
         weaponRange = 3; //TODO refactor
         weapons = new ArrayList<>();
         selectedWeapons = new ArrayList<>();
@@ -121,13 +121,13 @@ public class Spaceship implements Content {
     }
 
     @Override
-    public void setStepMode(StepMode stepMode) {
-        this.stepMode = stepMode;
+    public void setStepMode(TurnType turnType) {
+        this.turnType = turnType;
     }
 
     @Override
-    public StepMode getStepMode() {
-        return stepMode;
+    public TurnType getStepMode() {
+        return turnType;
     }
 
     @Override
@@ -176,7 +176,7 @@ public class Spaceship implements Content {
     @Override
     public Content clone() {
         Spaceship spaceship = new Spaceship(side);
-        spaceship.stepMode = stepMode;
+        spaceship.turnType = turnType;
         spaceship.damagePoints = damagePoints;
         spaceship.healthPoints = healthPoints;
         spaceship.moveType = moveType;

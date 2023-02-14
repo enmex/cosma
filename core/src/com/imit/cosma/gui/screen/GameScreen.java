@@ -35,7 +35,7 @@ public class GameScreen implements Screen {
     public GameScreen(){
         player = new Player();
         playingField = new PlayingField();
-        infoPanel = new InfoComponent();
+        infoPanel = new InfoComponent(playingField);
         background = new Texture(getInstance().BACKGROUND_PATH);
 
         batch = new SpriteBatch();
@@ -69,6 +69,8 @@ public class GameScreen implements Screen {
             }
         });
 
+        stage.addActor(playingField);
+        stage.addActor(infoPanel);
         stage.addActor(soundSwitcher);
     }
 
@@ -79,18 +81,7 @@ public class GameScreen implements Screen {
         batch.end();
 
         if(player.touchedScreen() || !playingField.isPlayerTurn()){
-            playingField.updateField(player.getTouchPoint());
-            infoPanel.updateContent(playingField.getSelectedContent(), playingField.getTurn());
-        }
-
-        playingField.render(delta, player.getTouchPoint());
-
-        infoPanel.render();
-        //scoreComponent.update(playingField.getPlayerAdvantagePoints(), playingField.getEnemyAdvantagePoints());
-        //scoreComponent.render();
-
-        if(playingField.isGameOver()) {
-            drawFont();
+            playingField.setTouchPoint(player.getTouchPoint());
         }
 
         stage.act(delta);
@@ -98,9 +89,7 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-        //infoPanel.resize(width, height);
-    }
+    public void resize(int width, int height) {}
 
     @Override
     public void pause() {}
@@ -114,7 +103,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
-        playingField.dispose();
     }
 
     private void drawFont() {

@@ -1,7 +1,7 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.utils.Array;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
 
@@ -10,7 +10,7 @@ public abstract class CompoundAnimation {
 
     protected Array<SequentialObjectAnimation> objectsAnimations = new Array<>();
 
-    public void init(Path boardPath, Path screenPath){
+    public void init(Path<Integer> boardPath, Path<Float> screenPath){
         float orientation = (float) Math.cos(Math.toRadians(defaultRotation));
 
         Vector normalVector = new Vector(0, orientation);
@@ -28,10 +28,10 @@ public abstract class CompoundAnimation {
         objectsAnimations.add(data);
     }
 
-    public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
+    public void init(Point<Integer> boardPoint, Point<Float> screenPoint) {
         SequentialObjectAnimation data = new SequentialObjectAnimation();
         data.rotation = 0;
-        data.path = new Path(screenPoint, screenPoint);
+        data.path = new Path<>(screenPoint, screenPoint);
         data.phases = new Array<>();
 
         objectsAnimations.add(data);
@@ -49,7 +49,7 @@ public abstract class CompoundAnimation {
         }
     }
 
-    public abstract boolean isAnimatedObject(IntegerPoint objectLocation);
+    public abstract boolean isAnimatedObject(Point<Integer> objectLocation);
 
     public boolean isAnimated(){
         for (SequentialObjectAnimation animation : objectsAnimations) {

@@ -5,17 +5,19 @@ import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.gui.animation.compound.LootSpawnAnimation;
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.board.content.Loot;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LootSpawnEvent implements LocalBoardEvent {
+public class LootSpawnEvent implements BoardEvent {
     private final Cell lootCell;
-    private final IntegerPoint spawnPoint;
+    private final Point<Integer> spawnPoint;
 
-    public LootSpawnEvent(Cell lootCell, IntegerPoint spawnPoint) {
+    public LootSpawnEvent(Cell lootCell, Point<Integer> spawnPoint) {
         this.lootCell = lootCell;
         this.spawnPoint = spawnPoint;
     }
@@ -31,19 +33,26 @@ public class LootSpawnEvent implements LocalBoardEvent {
     }
 
     @Override
-    public boolean isGlobal() {
+    public boolean changesActorLocation() {
         return false;
     }
 
     @Override
-    public Map<IntegerPoint, String> getLocationsOfAddedContents() {
-        Map<IntegerPoint, String> addedContents = new HashMap<>();
+    public List<Path<Integer>> getContentsPaths() {
+        List<Path<Integer>> list = new ArrayList<>();
+        list.add(new Path<>(spawnPoint, spawnPoint));
+        return list;
+    }
+
+    @Override
+    public Map<Point<Integer>, String> getLocationsOfAddedContents() {
+        Map<Point<Integer>, String> addedContents = new HashMap<>();
         addedContents.put(spawnPoint, lootCell.getIdleAnimationPath());
         return addedContents;
     }
 
     @Override
-    public List<IntegerPoint> getLocationsOfRemovedContents() {
+    public List<Point<Integer>> getLocationsOfRemovedContents() {
         return Config.getInstance().EMPTY_LIST;
     }
 }

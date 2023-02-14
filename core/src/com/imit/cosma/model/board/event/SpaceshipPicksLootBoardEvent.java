@@ -5,21 +5,19 @@ import com.imit.cosma.gui.animation.compound.SpaceshipPicksLootCompoundAnimation
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.board.content.Loot;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class SpaceshipPicksLootBoardEvent implements GlobalBoardEvent {
+public class SpaceshipPicksLootBoardEvent implements BoardEvent {
     private final Cell spaceshipCell, lootCell;
-    private final Path shipPath;
+    private final Path<Integer> shipPath;
 
-    public SpaceshipPicksLootBoardEvent(Cell spaceshipCell, Cell lootCell, Path shipPath) {
+    public SpaceshipPicksLootBoardEvent(Cell spaceshipCell, Cell lootCell, Path<Integer> shipPath) {
         this.spaceshipCell = spaceshipCell;
         this.lootCell = lootCell;
         this.shipPath = shipPath;
@@ -36,44 +34,29 @@ public class SpaceshipPicksLootBoardEvent implements GlobalBoardEvent {
     }
 
     @Override
-    public boolean isGlobal() {
+    public boolean changesActorLocation() {
         return true;
     }
 
     @Override
-    public Map<IntegerPoint, String> getLocationsOfAddedContents() {
-        Map<IntegerPoint, String> addedContents = new HashMap<>();
-        addedContents.put(shipPath.getTarget(), spaceshipCell.getIdleAnimationPath());
+    public List<Path<Integer>> getContentsPaths() {
+        List<Path<Integer>> list = new ArrayList<>();
+        list.add(shipPath);
+        return list;
+    }
 
+    @Override
+    public Map<Point<Integer>, String> getLocationsOfAddedContents() {
+        Map<Point<Integer>, String> addedContents = new HashMap<>();
+        addedContents.put(shipPath.getTarget(), spaceshipCell.getIdleAnimationPath());
         return addedContents;
     }
 
     @Override
-    public List<IntegerPoint> getLocationsOfRemovedContents() {
-        List<IntegerPoint> removedContents = new ArrayList<>();
+    public List<Point<Integer>> getLocationsOfRemovedContents() {
+        List<Point<Integer>> removedContents = new ArrayList<>();
         removedContents.add(shipPath.getTarget());
         
         return removedContents;
-    }
-
-    @Override
-    public boolean isExternal() {
-        return false;
-    }
-
-    @Override
-    public Set<Path> getUpdatedMainObjectLocations() {
-        Set<Path> updatedMainObjectLocations = new HashSet<>();
-        updatedMainObjectLocations.add(shipPath);
-
-        return updatedMainObjectLocations;
-    }
-
-    @Override
-    public Set<IntegerPoint> getInteractedMainObjectLocations() {
-        Set<IntegerPoint> interactedLocations = new HashSet<>();
-        interactedLocations.add(shipPath.getTarget());
-
-        return interactedLocations;
     }
 }

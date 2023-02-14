@@ -4,24 +4,24 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.model.board.content.Loot;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 public class LootSpawnAnimation extends CompoundAnimation {
     private final String lootSpawnAnimationPath;
-    private IntegerPoint spawnBoardPoint;
+    private Point<Integer> spawnBoardPoint;
 
     public LootSpawnAnimation(Loot loot) {
         this.lootSpawnAnimationPath = loot.getLootType().getSpawnAnimationPath();
     }
 
     @Override
-    public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
+    public void init(Point<Integer> boardPoint, Point<Float> screenPoint) {
         this.spawnBoardPoint = boardPoint;
 
         SequentialObjectAnimation spawnAnimation = new SequentialObjectAnimation();
         spawnAnimation.currentPhase = 0;
-        spawnAnimation.path = new Path(screenPoint, screenPoint);
+        spawnAnimation.path = new Path<>(screenPoint, screenPoint);
         spawnAnimation.rotation = 0;
         spawnAnimation.phases = new Array<>(1);
         spawnAnimation.phases.add(
@@ -42,7 +42,7 @@ public class LootSpawnAnimation extends CompoundAnimation {
     }
 
     @Override
-    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+    public boolean isAnimatedObject(Point<Integer> objectLocation) {
         return isAnimated() && objectLocation.equals(spawnBoardPoint);
     }
 }

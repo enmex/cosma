@@ -5,25 +5,21 @@ import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.gui.animation.compound.AttackSpaceshipAnimation;
 import com.imit.cosma.model.board.Cell;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class SpaceshipAttackBoardEvent implements GlobalBoardEvent {
+public class SpaceshipAttackBoardEvent implements BoardEvent {
     private final Cell source, target;
-    private final Path updatedLocation;
-    private final IntegerPoint interactedLocation;
+    private final Path<Integer> contentPath;
 
-    public SpaceshipAttackBoardEvent(Cell source, Cell target, Path path) {
+    public SpaceshipAttackBoardEvent(Cell source, Cell target, Path<Integer> contentPath) {
         this.source = source;
         this.target = target;
-        this.updatedLocation = new Path(path.getSource(), path.getSource());
-        this.interactedLocation = new IntegerPoint(path.getTarget());
+        this.contentPath = contentPath;
     }
 
     @Override
@@ -37,45 +33,31 @@ public class SpaceshipAttackBoardEvent implements GlobalBoardEvent {
     }
 
     @Override
-    public boolean isGlobal() {
-        return true;
+    public boolean changesActorLocation() {
+        return false;
     }
 
     @Override
-    public Map<IntegerPoint, String> getLocationsOfAddedContents() {
+    public List<Path<Integer>> getContentsPaths() {
+        List<Path<Integer>> list = new ArrayList<>();
+        list.add(contentPath);
+        return list;
+    }
+
+    @Override
+    public Map<Point<Integer>, String> getLocationsOfAddedContents() {
         return Config.getInstance().EMPTY_MAP;
     }
 
     @Override
-    public List<IntegerPoint> getLocationsOfRemovedContents() {
+    public List<Point<Integer>> getLocationsOfRemovedContents() {
         if (source.getDamagePoints() >= target.getHealthPoints()) {
-            List<IntegerPoint> removedContents = new ArrayList<>();
-            removedContents.add(interactedLocation);
+            List<Point<Integer>> removedContents = new ArrayList<>();
+            removedContents.add(contentPath.getTarget());
 
             return removedContents;
         }
 
         return Config.getInstance().EMPTY_LIST;
-    }
-
-    @Override
-    public Set<Path> getUpdatedMainObjectLocations() {
-        Set<Path> updatedLocations = new HashSet<>();
-        updatedLocations.add(updatedLocation);
-
-        return updatedLocations;
-    }
-
-    @Override
-    public Set<IntegerPoint> getInteractedMainObjectLocations() {
-        Set<IntegerPoint> interactedLocations = new HashSet<>();
-        interactedLocations.add(interactedLocation);
-
-        return interactedLocations;
-    }
-
-    @Override
-    public boolean isExternal() {
-        return false;
     }
 }

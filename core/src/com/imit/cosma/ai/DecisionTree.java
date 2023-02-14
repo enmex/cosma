@@ -1,7 +1,6 @@
 package com.imit.cosma.ai;
 
-import com.imit.cosma.model.rules.StepMode;
-import com.imit.cosma.util.MutualLinkedMap;
+import com.imit.cosma.model.rules.TurnType;
 import com.imit.cosma.util.Path;
 
 public abstract class DecisionTree {
@@ -11,7 +10,7 @@ public abstract class DecisionTree {
         this.board = board;
     }
 
-    public abstract void climbDown(MutualLinkedMap<Path, StepMode> paths);
+    public abstract void climbDown(Path<Integer> path, TurnType turnType);
 
-    public abstract MutualLinkedMap<Path, StepMode> treeSearch(ArtificialBoard board);
+    public abstract Path<Integer> treeSearch(ArtificialBoard board);
 }

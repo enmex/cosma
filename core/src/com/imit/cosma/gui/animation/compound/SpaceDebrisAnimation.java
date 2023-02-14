@@ -7,8 +7,8 @@ import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +19,14 @@ import static com.imit.cosma.pkg.random.Randomizer.*;
 public class SpaceDebrisAnimation extends CompoundAnimation {
     private float elapsedTime = 0f;
     private final List<Float> animationDelays;
-    private final List<IntegerPoint> destroyedSpaceshipsLocations;
-    private final List<IntegerPoint> targets;
+    private final List<Point<Integer>> destroyedSpaceshipsLocations;
+    private final List<Point<Integer>> targets;
     private final List<Integer> damages;
     private final List<Spaceship> spaceships;
 
     private final Array<SequentialObjectAnimation> idleSpaceshipsAnimations;
 
-    public SpaceDebrisAnimation(List<IntegerPoint> targets, List<Integer> damages, List<Spaceship> spaceships) {
+    public SpaceDebrisAnimation(List<Point<Integer>> targets, List<Integer> damages, List<Spaceship> spaceships) {
         objectsAnimations = new Array<>(targets.size());
         idleSpaceshipsAnimations = new Array<>(targets.size());
 
@@ -51,11 +51,11 @@ public class SpaceDebrisAnimation extends CompoundAnimation {
                     generateInLine(0.45f, 0.8f)
             );
 
-            IntegerPoint targetScreenPoint = toOriginCenterScreenPoint(targets.get(index));
+            Point<Float> targetScreenPoint = toOriginCenterScreenPoint(targets.get(index));
 
             spaceDebrisMovement.init(
-                    new Path(targetScreenPoint.x,
-                            Config.getInstance().WORLD_HEIGHT + Config.getInstance().DEFAULT_SPRITE_SIZE,
+                    new Path<>(targetScreenPoint.x,
+                            (float)Config.getInstance().WORLD_HEIGHT + Config.getInstance().DEFAULT_SPRITE_SIZE,
                             targetScreenPoint.x,
                             targetScreenPoint.y),
                     180
@@ -72,7 +72,7 @@ public class SpaceDebrisAnimation extends CompoundAnimation {
             spaceDebrisAnimation.currentPhase = 0;
             spaceDebrisAnimation.phases = new Array<>(2);
             spaceDebrisAnimation.rotation = 0;
-            spaceDebrisAnimation.path = new Path(targetScreenPoint, targetScreenPoint);
+            spaceDebrisAnimation.path = new Path<>(targetScreenPoint, targetScreenPoint);
             spaceDebrisAnimation.phases.add(spaceDebrisMovement);
             spaceDebrisAnimation.phases.add(explosion);
 
@@ -81,7 +81,7 @@ public class SpaceDebrisAnimation extends CompoundAnimation {
 
                 SequentialObjectAnimation spaceshipAnimation = new SequentialObjectAnimation();
                 spaceshipAnimation.phases = new Array<>(2);
-                spaceshipAnimation.path = new Path(targetScreenPoint, targetScreenPoint);
+                spaceshipAnimation.path = new Path<>(targetScreenPoint, targetScreenPoint);
                 spaceshipAnimation.currentPhase = 0;
 
                 IdleAnimation idleSpaceship = new IdleAnimation(
@@ -139,7 +139,7 @@ public class SpaceDebrisAnimation extends CompoundAnimation {
     }
 
     @Override
-    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+    public boolean isAnimatedObject(Point<Integer> objectLocation) {
         return destroyedSpaceshipsLocations.contains(objectLocation);
     }
 
@@ -160,7 +160,7 @@ public class SpaceDebrisAnimation extends CompoundAnimation {
         return false;
     }
 
-    private SequentialObjectAnimation getByPath(Path path) {
+    private SequentialObjectAnimation getByPath(Path<Float> path) {
         for (SequentialObjectAnimation sequentialObjectAnimation : objectsAnimations) {
             if (sequentialObjectAnimation.path.equals(path)) {
                 return sequentialObjectAnimation;

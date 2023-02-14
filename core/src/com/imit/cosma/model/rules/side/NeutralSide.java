@@ -1,9 +1,11 @@
 package com.imit.cosma.model.rules.side;
 
+import com.imit.cosma.model.rules.TurnType;
+
 public class NeutralSide extends Side{
 
     public NeutralSide() {
-        super(0, 0);
+        super(0, 0, TurnType.COMPLETED);
     }
 
     @Override
@@ -19,10 +21,5 @@ public class NeutralSide extends Side{
     @Override
     public Side clone() {
         return new NeutralSide();
-    }
-
-    @Override
-    public boolean completedTurn() {
-        return turns == 1;
     }
 }

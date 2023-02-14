@@ -4,7 +4,7 @@ import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Cloneable;
 import com.imit.cosma.model.rules.side.Side;
-import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.rules.TurnType;
 
 public interface Content extends Cloneable {
     boolean isShip();
@@ -17,8 +17,8 @@ public interface Content extends Cloneable {
 
     Side getSide();
 
-    void setStepMode(StepMode stepMode);
-    StepMode getStepMode();
+    void setStepMode(TurnType turnType);
+    TurnType getStepMode();
 
     void setDamage(int damage);
 

@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
-import com.imit.cosma.util.FloatPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
 public class SimpleMovementAnimation implements SimpleAnimation{
@@ -31,8 +31,8 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     private float moveVelocityY;
     private boolean animated;
 
-    private FloatPoint targetLocation;
-    private FloatPoint currentLocation;
+    private Point<Float> targetLocation;
+    private Point<Float> currentLocation;
 
     public SimpleMovementAnimation(String atlasPath, SoundType soundType, float velocity){
         movementSound = new SoundEffect(soundType);
@@ -58,10 +58,10 @@ public class SimpleMovementAnimation implements SimpleAnimation{
     }
 
     @Override
-    public void init(Path path, float rotation) {
+    public void init(Path<Float> path, float rotation) {
         this.rotation = rotation;
 
-        currentLocation = new FloatPoint(path.getSource());
+        currentLocation = new Point<>(path.getSource());
 
         Vector destinationVector = new Vector(
                 path.getTarget().x - path.getSource().x,
@@ -79,7 +79,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
         moveVelocityX = (float) (Math.abs(Math.cos(radians)) * velocity * Math.signum(destinationVector.getX()));
         moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity * Math.signum(destinationVector.getY()));
 
-        targetLocation = new FloatPoint(path.getTarget());
+        targetLocation = new Point<>(path.getTarget());
     }
 
     @Override
@@ -91,7 +91,7 @@ public class SimpleMovementAnimation implements SimpleAnimation{
             setAnimated(false);
         }
         else {
-            currentLocation.move(moveVelocityX, moveVelocityY);
+            currentLocation.set(currentLocation.x + moveVelocityX, currentLocation.y + moveVelocityY);
             traveledDistance += Math.sqrt(moveVelocityX * moveVelocityX + moveVelocityY * moveVelocityY);
         }
 

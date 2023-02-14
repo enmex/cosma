@@ -12,8 +12,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 public class IdleAnimation implements SimpleAnimation{
     private final SpriteBatch batch;
@@ -30,9 +30,9 @@ public class IdleAnimation implements SimpleAnimation{
 
     private boolean animated;
 
-    private final IntegerPoint locationOnScreen;
+    private final Point<Float> locationOnScreen;
 
-    public IdleAnimation(String atlasPath, PlayMode playMode, SoundType soundType, IntegerPoint locationOnScreen, float rotation){
+    public IdleAnimation(String atlasPath, PlayMode playMode, SoundType soundType, Point<Float> locationOnScreen, float rotation){
         this.playMode = playMode;
         this.rotation = rotation;
         elapsedTime = 0f;
@@ -53,7 +53,7 @@ public class IdleAnimation implements SimpleAnimation{
                 getInstance().BOARD_CELL_HEIGHT / 2f);
     }
 
-    public IdleAnimation(String atlasPath, PlayMode playMode, IntegerPoint locationOnScreen, float rotation){
+    public IdleAnimation(String atlasPath, PlayMode playMode, Point<Float> locationOnScreen, float rotation){
         this.playMode = playMode;
         this.rotation = rotation;
         elapsedTime = 0f;
@@ -75,7 +75,7 @@ public class IdleAnimation implements SimpleAnimation{
     }
 
     @Override
-    public void init(Path path, float rotation) {
+    public void init(Path<Float> path, float rotation) {
         this.rotation = rotation;
     }
 

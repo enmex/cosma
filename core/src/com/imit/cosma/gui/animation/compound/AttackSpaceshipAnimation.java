@@ -12,7 +12,7 @@ import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.Weapon;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
     private final String enemyShipAtlasPath;
     private final String enemyShipDestructionAtlasPath;
 
-    private IntegerPoint sourceBoardCell, targetBoardCell;
+    private Point<Integer> sourceBoardCell, targetBoardCell;
 
     public AttackSpaceshipAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
         this.defaultRotation = spaceshipPlayer.getSide().getDefaultRotation();
@@ -37,7 +37,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
     }
 
     @Override
-    public void init(Path boardPath, Path screenPath) {
+    public void init(Path<Integer> boardPath, Path<Float> screenPath) {
         super.init(boardPath, screenPath);
 
         SequentialObjectAnimation shotsAnimation = getShotsAnimation();
@@ -152,7 +152,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
     }
 
     @Override
-    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+    public boolean isAnimatedObject(Point<Integer> objectLocation) {
         return isAnimated() && (objectLocation.equals(sourceBoardCell) ||
                 objectLocation.equals(targetBoardCell) && getStandingEnemyShipAnimation().isAnimated());
     }

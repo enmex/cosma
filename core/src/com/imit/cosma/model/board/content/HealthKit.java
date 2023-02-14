@@ -1,7 +1,7 @@
 package com.imit.cosma.model.board.content;
 
 import com.imit.cosma.config.Config;
-import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.rules.TurnType;
 import com.imit.cosma.pkg.random.Randomizer;
 
 public class HealthKit extends Loot {
@@ -21,7 +21,7 @@ public class HealthKit extends Loot {
     }
 
     @Override
-    public void setStepMode(StepMode stepMode) {}
+    public void setStepMode(TurnType turnType) {}
 
     @Override
     public void setDamage(int damage) {}

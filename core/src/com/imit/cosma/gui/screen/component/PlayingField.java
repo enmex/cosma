@@ -2,157 +2,110 @@ package com.imit.cosma.gui.screen.component;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.event.CellChangeEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.ContentAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.event.BoardEvent;
-import com.imit.cosma.model.board.event.GlobalBoardEvent;
-import com.imit.cosma.model.rules.side.Side;
-import com.imit.cosma.util.Path;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import static com.imit.cosma.pkg.CoordinateConverter.*;
 
-public class PlayingField {
+public class PlayingField extends Actor {
     private final Texture grid;
-
+    private final Stage stage;
     private final Sprite selectedCell;
-
     private final Board board;
-
     private final ContentAnimation contentAnimation;
+    private Point<Integer> touchPoint;
+    private boolean acted;
 
-    private final List<AnimatedSprite> animatedSprites;
-    private final SpriteBatch batch;
-
-    public PlayingField(){
+    public PlayingField() {
         board = new Board();
         board.initAI();
         contentAnimation = new ContentAnimation();
+        touchPoint = new Point<>(-1, -1);
+        stage = new Stage();
 
         grid = new Texture(Config.getInstance().GRID_PATH);
         selectedCell = new Sprite(new Texture(Config.getInstance().SELECTED_CELL_PATH));
 
-        batch = new SpriteBatch();
-
-        animatedSprites = new ArrayList<>(Config.getInstance().BOARD_SIZE * Config.getInstance().BOARD_SIZE);
-        for (IntegerPoint location : board.getNonEmptyLocations()) {
-            animatedSprites.add(new AnimatedSprite(Config.getInstance().FRAME_DURATION,
+        for (Point<Integer> location : board.getNonEmptyLocations()) {
+            stage.addActor(new AnimatedSprite(Config.getInstance().FRAME_DURATION,
                     board.getIdleAnimationPath(location), toScreenPoint(location),
-                    board.getDefaultRotation(location)));
+                    board.getDefaultRotation(location),
+                    Config.getInstance().BOARD_CELL_WIDTH,
+                    Config.getInstance().BOARD_CELL_HEIGHT));
         }
+        acted = false;
     }
 
-    public void render(float delta, IntegerPoint touchPoint){
-        if(!touchPoint.hasZero() && boardIsNotAnimated() && isPlayerTurn()) {
-            drawSelected(touchPoint);
-        }
-        drawGrid();
-        drawBoardObjects(delta);
-    }
-
-    public void updateField(IntegerPoint touchPoint) {
-        IntegerPoint selected = getSelectedBoardPoint(touchPoint);
-
-        if(boardIsNotAnimated() && !isGameOver() && !board.isLoading()){
-            BoardEvent boardEvent = board.getCurrentEvent(selected);
-            if(!boardEvent.isIdle()) {
-                Path currentPath = board.getCurrentPath();
-
-                for (Map.Entry<IntegerPoint, String> locationOfAddedContent : boardEvent.getLocationsOfAddedContents().entrySet()) {
-                    IntegerPoint screenLocation = toScreenPoint(locationOfAddedContent.getKey());
-                    animatedSprites.add(new AnimatedSprite(Config.getInstance().FRAME_DURATION,
-                            locationOfAddedContent.getValue(),
-                            screenLocation,
-                            board.getDefaultRotation(locationOfAddedContent.getKey())));
-                }
-
-                for (IntegerPoint locationOfRemovedContent : boardEvent.getLocationsOfRemovedContents()) {
-                    IntegerPoint screenLocation = toScreenPoint(locationOfRemovedContent);
-
-                    for (AnimatedSprite sprite : animatedSprites) {
-                        if (sprite.getLocationOnScreen().equals(screenLocation)) {
-                            animatedSprites.remove(sprite);
-                            break;
-                        }
-                    }
-                }
-
-                if (boardEvent.isGlobal()) {
-                    GlobalBoardEvent globalBoardEvent = (GlobalBoardEvent) boardEvent;
-                    for (Path updatedObjectLocation : globalBoardEvent.getUpdatedMainObjectLocations()) {
-                        Path screenPath = new Path(toScreenPoint(updatedObjectLocation.getSource()), toScreenPoint(updatedObjectLocation.getTarget()));
-
-                        for (AnimatedSprite sprite : animatedSprites) {
-                            if (sprite.getLocationOnScreen().equals(screenPath.getSource())) {
-                                sprite.setLocationOnScreen(screenPath.getTarget());
-                            }
-                        }
-                    }
-
-                    if (globalBoardEvent.isExternal()) {
-                        contentAnimation.init(globalBoardEvent.getAnimationType());
-                    } else {
-                        contentAnimation.init(
-                                globalBoardEvent.getAnimationType(),
-                                currentPath,
-                                new Path(toScreenPoint(currentPath.getSource()), toScreenPoint(currentPath.getTarget())));
-                    }
-                } else {
-                    contentAnimation.init(boardEvent.getAnimationType(),
-                            board.getCurrentContentSpawnPoint(),
-                            toScreenPoint(board.getCurrentContentSpawnPoint()));
-                }
-
+    @Override
+    public void act(float delta) {
+        stage.act(delta);
+        Point<Integer> selectedBoardPoint = getSelectedBoardPoint(touchPoint);
+        if (!acted && boardIsNotAnimated() && !isGameOver() && inBoard(touchPoint)) {
+            acted = true;
+            BoardEvent boardEvent = board.getCurrentEvent(selectedBoardPoint);
+            fire(new CellChangeEvent(board.getSelected()));
+            for (Point<Integer> location : boardEvent.getLocationsOfRemovedContents()) {
+                stage.getActors().removeValue(getActorByScreenLocation(toScreenPoint(location)), false);
             }
-            board.updateSide();
+            for (Map.Entry<Point<Integer>, String> entry : boardEvent.getLocationsOfAddedContents().entrySet()) {
+                stage.addActor(new AnimatedSprite(Config.getInstance().FRAME_DURATION, entry.getValue(), toScreenPoint(entry.getKey()), 0, Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT));
+            }
+            if (!boardEvent.isIdle()) {
+                contentAnimation.init(boardEvent.getAnimationType());
+            }
         }
     }
 
-    private IntegerPoint getSelectedBoardPoint(IntegerPoint touchPoint) {
-        return new IntegerPoint(getBoardX(touchPoint.x)/Config.getInstance().BOARD_CELL_WIDTH,
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        if(!(touchPoint.x == 0 || touchPoint.y == 0) && boardIsNotAnimated() && isPlayerTurn()) {
+            drawSelected(batch);
+        }
+        drawGrid(batch);
+        drawBoardObjects(batch, parentAlpha);
+    }
+
+    private Point<Integer> getSelectedBoardPoint(Point<Integer> touchPoint) {
+        return new Point<>(getBoardX(touchPoint.x)/Config.getInstance().BOARD_CELL_WIDTH,
                 (getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y)
                         - Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT);
     }
 
-    public Side getTurn(){
-        return board.getTurn();
-    }
-
-    private void drawGrid(){
-        batch.begin();
+    private void drawGrid(Batch batch){
         batch.draw(grid, 0,
                 Config.getInstance().BOARD_Y,
                 Config.getInstance().BOARD_WIDTH,
                 Config.getInstance().BOARD_HEIGHT);
-        batch.end();
     }
 
-    private void drawSelected(IntegerPoint touchPoint){
+    private void drawSelected(Batch batch){
         if(inBoard(touchPoint)) {
-            batch.begin();
             batch.draw(selectedCell, getBoardX(touchPoint.x),
                     getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y),
                     Config.getInstance().BOARD_CELL_WIDTH,
                     Config.getInstance().BOARD_CELL_HEIGHT);
-            batch.end();
-            drawAvailableCells();
+            drawAvailableCells(batch);
         }
     }
 
-    private void drawBoardObjects(float delta){
+    private void drawBoardObjects(Batch batch, float delta){
         //draw idle objs
-        for (AnimatedSprite sprite : animatedSprites) {
-            if (!contentAnimation.isAnimatedObject(toBoardPoint(sprite.getLocationOnScreen()))) {
-                sprite.render(delta, Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
+        for (Actor actor : stage.getActors()) {
+            Point<Float> screenLocation = ((AnimatedSprite) actor).getScreenLocation();
+            if (!contentAnimation.isAnimatedObject(toBoardPoint(screenLocation))) {
+                actor.draw(batch, delta);
             }
         }
 
@@ -160,13 +113,10 @@ public class PlayingField {
         if(contentAnimation.isAnimated()) {
             contentAnimation.render(delta);
         }
-
     }
 
-    private void drawAvailableCells() {
-        batch.begin();
-
-        for (IntegerPoint point : board.getAvailableCellsForMove()) {
+    private void drawAvailableCells(Batch batch) {
+        for (Point<Integer> point : board.getAvailableCellsForMove()) {
             selectedCell.setColor(Color.GREEN);
             selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,
                     point.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y,
@@ -174,8 +124,8 @@ public class PlayingField {
             selectedCell.draw(batch);
         }
 
-        for(Map.Entry<IntegerPoint, Boolean> entry : board.getAvailableCellsForFire().entrySet()){
-            IntegerPoint point = entry.getKey();
+        for(Map.Entry<Point<Integer>, Boolean> entry : board.getAvailableCellsForFire().entrySet()){
+            Point<Integer> point = entry.getKey();
 
             if (entry.getValue()) {
                 selectedCell.setColor(Color.RED);
@@ -188,23 +138,13 @@ public class PlayingField {
                     Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT);
             selectedCell.draw(batch);
         }
-
-        batch.end();
     }
 
     public Content getSelectedContent(){
         return board.getSelected().getContent();
     }
 
-    public void dispose(){
-        batch.dispose();
-
-        for (AnimatedSprite sprite : animatedSprites) {
-            sprite.dispose();
-        }
-    }
-
-    private boolean inBoard(IntegerPoint touchPoint){
+    private boolean inBoard(Point<Integer> touchPoint){
         return touchPoint.x >= 0 && touchPoint.x <= Config.getInstance().BOARD_WIDTH
                 && Config.getInstance().WORLD_HEIGHT - touchPoint.y >=
                 Config.getInstance().BOARD_Y && Config.getInstance().WORLD_HEIGHT - touchPoint.y
@@ -230,6 +170,28 @@ public class PlayingField {
 
     public boolean isGameOver() {
         return board.isGameOver();
+    }
+
+    public boolean isShipSelected() {
+        return board.isShipSelected();
+    }
+
+    public boolean isObjectSelected() {
+        return board.isObjectSelected();
+    }
+
+    public void setTouchPoint(Point<Integer> touchPoint) {
+        this.touchPoint = touchPoint;
+        acted = false;
+    }
+
+    private Actor getActorByScreenLocation(Point<Float> screenLocation) {
+        for (Actor sprite : stage.getActors()) {
+            if (screenLocation.x == sprite.getX() && screenLocation.y == sprite.getY()) {
+                return sprite;
+            }
+        }
+        return null;
     }
 }
 

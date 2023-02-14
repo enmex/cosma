@@ -36,7 +36,8 @@ public class CycledList<T> {
         return current.value;
     }
 
-    public void next() {
+    public T next() {
         current = current.next;
+        return current.value;
     }
 }

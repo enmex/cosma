@@ -1,19 +1,21 @@
 package com.imit.cosma.model.rules.side;
 
 import com.imit.cosma.config.Config;
+import com.imit.cosma.model.rules.TurnType;
 
 public abstract class Side implements Cloneable{
     protected final float defaultRotation;
     protected int shipsNumber;
-    protected int turns;
+    protected TurnType turnType;
 
     protected Side(float defaultRotation){
-        this(defaultRotation, Config.getInstance().DEFAULT_SHIPS_NUMBER);
+        this(defaultRotation, Config.getInstance().DEFAULT_SHIPS_NUMBER, TurnType.COMPLETED);
     }
 
-    protected Side(float defaultRotation, int shipsNumber) {
+    protected Side(float defaultRotation, int shipsNumber, TurnType turnType) {
         this.defaultRotation = defaultRotation;
         this.shipsNumber = shipsNumber;
+        this.turnType = turnType;
     }
 
     public float getDefaultRotation() {
@@ -32,20 +34,8 @@ public abstract class Side implements Cloneable{
 
     public abstract boolean isPlayingSide();
 
-    public boolean completedTurn() {
-        return turns == 2 || shipsNumber == 1 && turns == 1;
-    }
-
-    public void scoreMove() {
-        turns++;
-    }
-
-    public int getTurns() {
-        return turns;
-    }
-
-    public void resetTurns() {
-        turns = 0;
+    public void setStepMode(TurnType turnType) {
+        this.turnType = turnType;
     }
 
     @Override

@@ -8,8 +8,8 @@ import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.board.content.Loot;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 public class SpaceshipPicksLootCompoundAnimation extends CompoundAnimation {
     private final SoundType shipMovementSound;
@@ -26,7 +26,7 @@ public class SpaceshipPicksLootCompoundAnimation extends CompoundAnimation {
     }
 
     @Override
-    public void init(Path boardPath, Path screenPath) {
+    public void init(Path<Integer> boardPath, Path<Float> screenPath) {
         super.init(boardPath, screenPath);
         this.boardPath = boardPath;
 
@@ -103,7 +103,7 @@ public class SpaceshipPicksLootCompoundAnimation extends CompoundAnimation {
     }
 
     @Override
-    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+    public boolean isAnimatedObject(Point<Integer> objectLocation) {
         return isAnimated()
                 && (objectLocation.equals(boardPath.getSource())
                 || objectLocation.equals(boardPath.getTarget()));

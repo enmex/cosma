@@ -5,10 +5,10 @@ import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.model.rules.side.Side;
-import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.rules.TurnType;
 
 public class BlackHole implements Content {
-    private StepMode stepMode;
+    private TurnType turnType;
 
     private MoveType moveType;
     private Side side;
@@ -49,13 +49,13 @@ public class BlackHole implements Content {
     }
 
     @Override
-    public void setStepMode(StepMode stepMode) {
-        this.stepMode = stepMode;
+    public void setStepMode(TurnType turnType) {
+        this.turnType = turnType;
     }
 
     @Override
-    public StepMode getStepMode() {
-        return stepMode;
+    public TurnType getStepMode() {
+        return turnType;
     }
 
     @Override

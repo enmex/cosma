@@ -1,7 +1,8 @@
 package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.gui.animation.compound.CompoundAnimation;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,8 @@ import java.util.Map;
 public interface BoardEvent {
     CompoundAnimation getAnimationType();
     boolean isIdle();
-    boolean isGlobal();
-    Map<IntegerPoint, String> getLocationsOfAddedContents();
-    List<IntegerPoint> getLocationsOfRemovedContents();
+    boolean changesActorLocation();
+    List<Path<Integer>> getContentsPaths();
+    Map<Point<Integer>, String> getLocationsOfAddedContents();
+    List<Point<Integer>> getLocationsOfRemovedContents();
 }

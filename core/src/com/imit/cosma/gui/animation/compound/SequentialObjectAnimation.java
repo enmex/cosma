@@ -6,12 +6,12 @@ import com.imit.cosma.util.Path;
 
 public class SequentialObjectAnimation {
     protected float rotation;
-    protected Path path;
+    protected Path<Float> path;
     protected Array<SimpleAnimation> phases;
     protected int currentPhase;
     protected boolean isLastPhase;
 
-    public Path getPath() {
+    public Path<Float> getPath() {
         return path;
     }
 

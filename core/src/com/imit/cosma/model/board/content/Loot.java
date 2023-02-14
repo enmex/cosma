@@ -1,6 +1,6 @@
 package com.imit.cosma.model.board.content;
 
-import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.rules.TurnType;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.Side;
@@ -52,8 +52,8 @@ public abstract class Loot implements Content {
     }
 
     @Override
-    public StepMode getStepMode() {
-        return StepMode.COMPLETED;
+    public TurnType getStepMode() {
+        return TurnType.COMPLETED;
     }
 
     @Override

@@ -5,21 +5,21 @@ import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 
 public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
-    private final IntegerPoint spawnPoint;
+    private final Point<Integer> spawnPoint;
     private final boolean spawnedOnShip;
     private final String victimSpaceshipIdleAtlas, victimSpaceshipDestructionAtlas;
 
-    public BlackHoleSpawnCompoundAnimation(IntegerPoint spawnPoint) {
+    public BlackHoleSpawnCompoundAnimation(Point<Integer> spawnPoint) {
         this.spawnPoint = spawnPoint;
         victimSpaceshipDestructionAtlas = "";
         victimSpaceshipIdleAtlas = "";
         spawnedOnShip = false;
     }
 
-    public BlackHoleSpawnCompoundAnimation(IntegerPoint spawnPoint, Spaceship victimSpaceship) {
+    public BlackHoleSpawnCompoundAnimation(Point<Integer> spawnPoint, Spaceship victimSpaceship) {
         this.defaultRotation = victimSpaceship.getSide().getDefaultRotation();
         this.victimSpaceshipIdleAtlas = victimSpaceship.getIdleAnimationPath();
         this.victimSpaceshipDestructionAtlas = victimSpaceship.getSkeleton().getDestructionAnimationPath();
@@ -29,7 +29,7 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
     }
 
     @Override
-    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+    public boolean isAnimatedObject(Point<Integer> objectLocation) {
         return spawnPoint.equals(objectLocation) && getBlackHoleSpawnAnimation().isAnimated();
     }
 
@@ -39,7 +39,7 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
     }
 
     @Override
-    public void init(IntegerPoint boardPoint, IntegerPoint screenPoint) {
+    public void init(Point<Integer> boardPoint, Point<Float> screenPoint) {
         super.init(boardPoint, screenPoint);
 
         SequentialObjectAnimation blackHoleSpawnAnimation = getBlackHoleSpawnAnimation();

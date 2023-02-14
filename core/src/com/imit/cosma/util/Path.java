@@ -2,37 +2,35 @@ package com.imit.cosma.util;
 
 import java.util.Objects;
 
-public class Path {
+public class Path<T extends Number> {
 
-    private IntegerPoint from, to;
+    private Point<T> from, to;
 
-    public Path(int fromX, int fromY, int toX, int toY){
-        from = new IntegerPoint(fromX, fromY);
-        to = new IntegerPoint(toX, toY);
+    public Path(T fromX, T fromY, T toX, T toY){
+        from = new Point<>(fromX, fromY);
+        to = new Point<>(toX, toY);
     }
-    public Path(IntegerPoint from, IntegerPoint to){
-        this.from = new IntegerPoint(from);
-        this.to = new IntegerPoint(to);
+
+    public Path(Point<T> from, Point<T> to){
+        this.from = new Point<>(from);
+        this.to = new Point<>(to);
     }
+
     public Path(){
-        from = new IntegerPoint();
-        to = new IntegerPoint();
-    }
-
-    public void setLocation(IntegerPoint from){
-        this.from = from;
+        from = new Point<T>();
+        to = new Point<T>();
     }
 
     public double getDistance() {
-        return Math.sqrt((to.x - from.x) * (to.x - from.x) + (to.y - from.y) * (to.y - from.y));
+        return Math.sqrt((to.x.doubleValue() - from.x.doubleValue()) * (to.x.doubleValue() - from.x.doubleValue()) + (to.y.doubleValue() - from.y.doubleValue()) * (to.y.doubleValue() - from.y.doubleValue()));
     }
 
-    public IntegerPoint getTarget(){
+    public Point<T> getTarget(){
         return to;
     }
 
-    public Path clone() {
-        Path path = new Path();
+    public Path<T> clone() {
+        Path<T> path = new Path<>();
         path.to = to.clone();
         path.from = from.clone();
 
@@ -47,7 +45,7 @@ public class Path {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Path path = (Path) o;
+        Path<T> path = (Path<T>) o;
         return from.equals(path.from) && to.equals(path.to);
     }
 
@@ -56,12 +54,12 @@ public class Path {
         return Objects.hash(from, to);
     }
 
-    public IntegerPoint getSource() {
+    public Point<T> getSource() {
         return from;
     }
 
     @Override
     public String toString() {
-        return from + "--->" + to;
+        return from + "->" + to;
     }
 }

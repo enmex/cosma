@@ -1,8 +1,9 @@
 package com.imit.cosma.config;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.imit.cosma.model.board.content.Space;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +39,8 @@ public class Config {
     public final String SELECTED_CELL_PATH = "selected.png";
 
     public final Space SPACE;
-    public final List<IntegerPoint> EMPTY_LIST = new ArrayList<>();
-    public final Map<IntegerPoint, String> EMPTY_MAP = new HashMap<>();
+    public final List<Point<Integer>> EMPTY_LIST = new ArrayList<>();
+    public final Map<Point<Integer>, String> EMPTY_MAP = new HashMap<>();
     public final float SPACE_DEBRIS_SPAWN_CHANCE = 0.3f;
     public final float BLACK_HOLE_SPAWN_CHANCE = 0.3f;
     public final float LOOT_SPAWN_CHANCE = 0.3f;
@@ -117,6 +118,8 @@ public class Config {
     public final String ION_CANNON_EXPLOSION_SOUND = SOUNDS_DIRECTORY + "ion_cannon_explosion.ogg";
     public final String TORPEDO_LAUNCHER_EXPLOSION_SOUND = SOUNDS_DIRECTORY + "torpedo_launcher_explosion.ogg";
 
+    public final String SKINS_DIRECTORY = "skin\\";
+
     private Config(){
         SPACE = new Space();
     }
@@ -126,5 +129,13 @@ public class Config {
             instance = new Config();
         }
         return instance;
+    }
+
+    public static FileHandle getSkin(String skinName) {
+        return Gdx.files.internal(instance.SKINS_DIRECTORY + skinName);
+    }
+
+    public static String getSoundPath(String soundName) {
+        return instance.SOUNDS_DIRECTORY + soundName;
     }
 }

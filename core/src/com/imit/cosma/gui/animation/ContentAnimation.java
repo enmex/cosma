@@ -3,7 +3,7 @@ package com.imit.cosma.gui.animation;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 
 public class ContentAnimation {
     private CompoundAnimation compoundAnimation;
@@ -15,13 +15,13 @@ public class ContentAnimation {
         this(null);
     }
 
-    public void init(CompoundAnimation compoundAnimation, Path boardPath, Path screenPath){
-        Path originCenterScreenPath = new Path(
-                new IntegerPoint(
+    public void init(CompoundAnimation compoundAnimation, Path<Integer> boardPath, Path<Float> screenPath){
+        Path<Float> originCenterScreenPath = new Path<>(
+                new Point<>(
                         screenPath.getSource().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
                         screenPath.getSource().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
                 ),
-                new IntegerPoint(
+                new Point<>(
                         screenPath.getTarget().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
                         screenPath.getTarget().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
                 )
@@ -32,8 +32,8 @@ public class ContentAnimation {
 
     }
 
-    public void init(CompoundAnimation compoundAnimation, IntegerPoint boardPoint, IntegerPoint screenPoint) {
-        IntegerPoint originBasedScreenPoint = new IntegerPoint(
+    public void init(CompoundAnimation compoundAnimation, Point<Integer> boardPoint, Point<Float> screenPoint) {
+        Point<Float> originBasedScreenPoint = new Point<>(
                 screenPoint.x + Config.getInstance().BOARD_CELL_WIDTH / 2,
                 screenPoint.y + + Config.getInstance().BOARD_CELL_HEIGHT / 2
         );
@@ -55,7 +55,7 @@ public class ContentAnimation {
         return compoundAnimation != null && compoundAnimation.isAnimated();
     }
 
-    public boolean isAnimatedObject(IntegerPoint objectLocation){
+    public boolean isAnimatedObject(Point<Integer> objectLocation){
         return compoundAnimation != null && compoundAnimation.isAnimatedObject(objectLocation);
     }
 }

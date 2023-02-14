@@ -1,12 +1,14 @@
 package com.imit.cosma.model.rules.side;
 
+import com.imit.cosma.model.rules.TurnType;
+
 public class EnemySide extends Side{
     public EnemySide() {
         super(180);
     }
 
     public EnemySide(int shipsNumber) {
-        super(180, shipsNumber);
+        super(180, shipsNumber, TurnType.MOVE);
     }
 
     @Override
@@ -21,8 +23,6 @@ public class EnemySide extends Side{
 
     @Override
     public Side clone() {
-        Side enemy = new EnemySide(shipsNumber);
-        enemy.turns = turns;
-        return enemy;
+        return new EnemySide(shipsNumber);
     }
 }

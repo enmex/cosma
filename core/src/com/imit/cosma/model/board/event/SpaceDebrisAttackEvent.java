@@ -4,21 +4,19 @@ import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.gui.animation.compound.SpaceDebrisAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.util.IntegerPoint;
 import com.imit.cosma.util.Path;
+import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class SpaceDebrisAttackEvent implements GlobalBoardEvent {
-    private final List<IntegerPoint> targets;
+public class SpaceDebrisAttackEvent implements BoardEvent {
+    private final List<Point<Integer>> targets;
     private final List<Integer> damages;
     private final List<Spaceship> spaceships;
 
-    public SpaceDebrisAttackEvent(List<IntegerPoint> targets, List<Integer> damages, List<Spaceship> spaceships) {
+    public SpaceDebrisAttackEvent(List<Point<Integer>> targets, List<Integer> damages, List<Spaceship> spaceships) {
         this.targets = targets;
         this.damages = damages;
         this.spaceships = spaceships;
@@ -35,18 +33,23 @@ public class SpaceDebrisAttackEvent implements GlobalBoardEvent {
     }
 
     @Override
-    public boolean isGlobal() {
-        return true;
+    public boolean changesActorLocation() {
+        return false;
     }
 
     @Override
-    public Map<IntegerPoint, String> getLocationsOfAddedContents() {
+    public List<Path<Integer>> getContentsPaths() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Map<Point<Integer>, String> getLocationsOfAddedContents() {
         return Config.getInstance().EMPTY_MAP;
     }
 
     @Override
-    public List<IntegerPoint> getLocationsOfRemovedContents() {
-        List<IntegerPoint> removedContents = new ArrayList<>();
+    public List<Point<Integer>> getLocationsOfRemovedContents() {
+        List<Point<Integer>> removedContents = new ArrayList<>();
         for (int i = 0; i < targets.size(); i++) {
             if (damages.get(i) >= spaceships.get(i).getHealthPoints()) {
                 removedContents.add(targets.get(i));
@@ -54,20 +57,5 @@ public class SpaceDebrisAttackEvent implements GlobalBoardEvent {
         }
 
         return removedContents;
-    }
-
-    @Override
-    public Set<Path> getUpdatedMainObjectLocations() {
-        return new HashSet<>();
-    }
-
-    @Override
-    public Set<IntegerPoint> getInteractedMainObjectLocations() {
-        return new HashSet<>(targets);
-    }
-
-    @Override
-    public boolean isExternal() {
-        return true;
     }
 }

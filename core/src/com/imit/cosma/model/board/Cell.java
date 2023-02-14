@@ -5,7 +5,7 @@ import com.imit.cosma.model.board.content.BlackHole;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.rules.move.MoveType;
 import com.imit.cosma.model.rules.side.Side;
-import com.imit.cosma.model.rules.StepMode;
+import com.imit.cosma.model.rules.TurnType;
 
 public class Cell {
 
@@ -53,15 +53,15 @@ public class Cell {
         return content.getIdleAnimationPath();
     }
 
-    public StepMode getStepMode(){
+    public TurnType getStepMode(){
         return content.getStepMode();
     }
 
     public Side getSide(){
         return content.getSide();
     }
-    public void setStepMode(StepMode stepMode){
-        content.setStepMode(stepMode);
+    public void setStepMode(TurnType turnType){
+        content.setStepMode(turnType);
     }
 
     public void swapContents(Cell cell){

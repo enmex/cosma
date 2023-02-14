@@ -1,28 +1,22 @@
 package com.imit.cosma.gui.screen.component.infopanel;
 
-import com.imit.cosma.model.board.content.Content;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.imit.cosma.util.Point;
 
-public class SelectedCellDetails {
+public abstract class SelectedCellDetails extends Actor {
+    protected Point<Float> parentLocation;
+    protected float parentWidth, parentHeight;
 
-    private ContentInformation contentInformation;
-
-    public SelectedCellDetails(){
-        contentInformation = new SpaceInformation(this);
+    protected SelectedCellDetails(Point<Float> parentLocation, float parentWidth, float parentHeight) {
+        this.parentLocation = parentLocation;
+        this.parentWidth = parentWidth;
+        this.parentHeight = parentHeight;
     }
 
-    public void setContentInformation(ContentInformation contentInformation){
-        this.contentInformation = contentInformation;
-    }
+    public abstract boolean isShip();
 
-    public void init(int componentLeft, int componentBottom, int componentWidth, int componentHeight){
-        contentInformation.init(componentLeft, componentBottom, componentWidth, componentHeight);
-    }
+    public abstract boolean isObject();
 
-    public void render(){
-        contentInformation.render();
-    }
-
-    public void update(Content content){
-        contentInformation.update(content);
-    }
+    @Override
+    public abstract void act(float delta);
 }

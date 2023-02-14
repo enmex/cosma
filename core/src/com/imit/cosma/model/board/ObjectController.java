@@ -2,42 +2,41 @@ package com.imit.cosma.model.board;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.MutualLinkedMap;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ObjectController {
-    private MutualLinkedMap<IntegerPoint, ContentType> contentLocations;
+    private final MutualLinkedMap<Point<Integer>, ContentType> contentLocations;
 
     public ObjectController() {
         contentLocations = new MutualLinkedMap<>();
     }
 
-    public void addSpace(IntegerPoint location) {
+    public void addSpace(Point<Integer> location) {
         contentLocations.put(location, ContentType.SPACE);
     }
 
     public void addSpace(int x, int y) {
-        addSpace(new IntegerPoint(x, y));
+        addSpace(new Point<>(x, y));
     }
 
-    public void addSpaceship(IntegerPoint location) {
+    public void addSpaceship(Point<Integer> location) {
         contentLocations.put(location, ContentType.SPACESHIP);
     }
 
     public void addSpaceship(int x, int y) {
-        addSpaceship(new IntegerPoint(x ,y));
+        addSpaceship(new Point<>(x ,y));
     }
 
-    public void addGameObject(IntegerPoint location) {
+    public void addGameObject(Point<Integer> location) {
         contentLocations.put(location, ContentType.GAME_OBJECT);
     }
 
-    public List<IntegerPoint> getGameObjectsLocations() {
-        List<IntegerPoint> objectsLocations = new ArrayList<>();
-        for (IntegerPoint location : contentLocations.keySet()) {
+    public List<Point<Integer>> getGameObjectsLocations() {
+        List<Point<Integer>> objectsLocations = new ArrayList<>();
+        for (Point<Integer> location : contentLocations.keySet()) {
             if (contentLocations.getValue(location) == ContentType.GAME_OBJECT) {
                 objectsLocations.add(location);
             }
@@ -46,9 +45,9 @@ public class ObjectController {
         return objectsLocations;
     }
 
-    public List<IntegerPoint> getSpaceshipsLocations() {
-        List<IntegerPoint> shipsLocations = new ArrayList<>();
-        for (IntegerPoint location : contentLocations.keySet()) {
+    public List<Point<Integer>> getSpaceshipsLocations() {
+        List<Point<Integer>> shipsLocations = new ArrayList<>();
+        for (Point<Integer> location : contentLocations.keySet()) {
             if (contentLocations.getValue(location) == ContentType.SPACESHIP) {
                 shipsLocations.add(location);
             }
@@ -57,9 +56,9 @@ public class ObjectController {
         return shipsLocations;
     }
 
-    public List<IntegerPoint> getSpaceLocations() {
-        List<IntegerPoint> spaceLocations = new ArrayList<>();
-        for (IntegerPoint location : contentLocations.keySet()) {
+    public List<Point<Integer>> getSpaceLocations() {
+        List<Point<Integer>> spaceLocations = new ArrayList<>();
+        for (Point<Integer> location : contentLocations.keySet()) {
             if (contentLocations.getValue(location) == ContentType.SPACE) {
                 spaceLocations.add(location);
             }
@@ -68,9 +67,9 @@ public class ObjectController {
         return spaceLocations;
     }
 
-    public List<IntegerPoint> getNonEmptyLocations() {
-        List<IntegerPoint> nonEmptyLocations = new ArrayList<>();
-        for (IntegerPoint location : contentLocations.keySet()) {
+    public List<Point<Integer>> getNonEmptyLocations() {
+        List<Point<Integer>> nonEmptyLocations = new ArrayList<>();
+        for (Point<Integer> location : contentLocations.keySet()) {
             if (contentLocations.getValue(location) != ContentType.SPACE) {
                 nonEmptyLocations.add(location);
             }
@@ -80,37 +79,37 @@ public class ObjectController {
     }
 
     public void clearGameObjects() {
-        List<IntegerPoint> gameObjects = getGameObjectsLocations();
-        for (IntegerPoint location : gameObjects) {
+        List<Point<Integer>> gameObjects = getGameObjectsLocations();
+        for (Point<Integer> location : gameObjects) {
             setEmpty(location);
         }
     }
 
-    public void setEmpty(IntegerPoint location) {
+    public void setEmpty(Point<Integer> location) {
         contentLocations.removeKey(location);
         contentLocations.put(location, ContentType.SPACE);
     }
 
-    public void setSpaceship(IntegerPoint location) {
+    public void setSpaceship(Point<Integer> location) {
         contentLocations.removeKey(location);
         contentLocations.put(location, ContentType.SPACESHIP);
     }
 
-    public void setGameObject(IntegerPoint location) {
+    public void setGameObject(Point<Integer> location) {
         contentLocations.removeKey(location);
         contentLocations.put(location, ContentType.GAME_OBJECT);
     }
 
     public void update() {
-        for (IntegerPoint gameObjectLocation : getGameObjectsLocations()) {
+        for (Point<Integer> gameObjectLocation : getGameObjectsLocations()) {
             contentLocations.getValue(gameObjectLocation).decreaseLiveTime();
         }
     }
 
-    public List<IntegerPoint> getExpiredGameObjectLocations() {
-        List<IntegerPoint> expiredGameObjectLocations = new ArrayList<>();
+    public List<Point<Integer>> getExpiredGameObjectLocations() {
+        List<Point<Integer>> expiredGameObjectLocations = new ArrayList<>();
 
-        for (IntegerPoint gameObjectLocation : getGameObjectsLocations()) {
+        for (Point<Integer> gameObjectLocation : getGameObjectsLocations()) {
             if (contentLocations.getValue(gameObjectLocation).isExpired()) {
                 expiredGameObjectLocations.add(gameObjectLocation);
             }

@@ -5,7 +5,7 @@ import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Path;
-import com.imit.cosma.util.IntegerPoint;
+import com.imit.cosma.util.Point;
 
 public class ShipMovementAnimation extends CompoundAnimation {
     private final SoundType contentSoundType;
@@ -14,7 +14,7 @@ public class ShipMovementAnimation extends CompoundAnimation {
     private final String idleShipAtlasPath;
 
     private final int mainAnimationIndex;
-    private IntegerPoint targetBoardPoint;
+    private Point<Integer> targetBoardPoint;
 
     public ShipMovementAnimation(Spaceship spaceship){
         this.defaultRotation = spaceship.getSide().getDefaultRotation();
@@ -25,7 +25,7 @@ public class ShipMovementAnimation extends CompoundAnimation {
     }
 
     @Override
-    public void init(Path boardPath, Path screenPath){
+    public void init(Path<Integer> boardPath, Path<Float> screenPath){
         super.init(boardPath, screenPath);
         this.targetBoardPoint = boardPath.getTarget();
         SequentialObjectAnimation sequentialObjectAnimation = objectsAnimations.get(mainAnimationIndex);
@@ -49,7 +49,7 @@ public class ShipMovementAnimation extends CompoundAnimation {
 
         shipSimpleMovementAnimation.init(screenPath, targetRotation);
 
-        shipRotationAnimationToDefault.init(new Path(screenPath.getTarget(), screenPath.getTarget()), sequentialObjectAnimation.rotation);
+        shipRotationAnimationToDefault.init(new Path<>(screenPath.getTarget(), screenPath.getTarget()), sequentialObjectAnimation.rotation);
 
         sequentialObjectAnimation.phases.add(shipRotationAnimation);
         sequentialObjectAnimation.phases.add(shipSimpleMovementAnimation);
@@ -61,7 +61,7 @@ public class ShipMovementAnimation extends CompoundAnimation {
     }
 
     @Override
-    public boolean isAnimatedObject(IntegerPoint objectLocation) {
+    public boolean isAnimatedObject(Point<Integer> objectLocation) {
         return isAnimated() && targetBoardPoint.equals(objectLocation);
     }
 
