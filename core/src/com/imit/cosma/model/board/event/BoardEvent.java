@@ -12,6 +12,6 @@ public interface BoardEvent {
     boolean isIdle();
     boolean changesActorLocation();
     List<Path<Integer>> getContentsPaths();
-    Map<Point<Integer>, String> getLocationsOfAddedContents();
-    List<Point<Integer>> getLocationsOfRemovedContents();
+    Map<Point<Float>, String> getLocationsOfAddedContents();
+    List<Point<Float>> getLocationsOfRemovedContents();
 }

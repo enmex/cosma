@@ -49,10 +49,10 @@ public class Space implements Content{
     }
 
     @Override
-    public void setStepMode(TurnType turnType) {}
+    public void setTurnType(TurnType turnType) {}
 
     @Override
-    public TurnType getStepMode() {
+    public TurnType getTurnType() {
         return TurnType.COMPLETED;
     }
 

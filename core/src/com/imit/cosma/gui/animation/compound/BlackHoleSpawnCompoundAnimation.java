@@ -1,36 +1,35 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.model.spaceship.Spaceship;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
-    private final Point<Integer> spawnPoint;
+    private final Point<Float> spawnPoint;
     private final boolean spawnedOnShip;
     private final String victimSpaceshipIdleAtlas, victimSpaceshipDestructionAtlas;
 
-    public BlackHoleSpawnCompoundAnimation(Point<Integer> spawnPoint) {
+    public BlackHoleSpawnCompoundAnimation(Point<Float> spawnPoint) {
+        super(spawnPoint);
         this.spawnPoint = spawnPoint;
         victimSpaceshipDestructionAtlas = "";
         victimSpaceshipIdleAtlas = "";
         spawnedOnShip = false;
     }
 
-    public BlackHoleSpawnCompoundAnimation(Point<Integer> spawnPoint, Spaceship victimSpaceship) {
+    public BlackHoleSpawnCompoundAnimation(Point<Float> spawnPoint, Spaceship victimSpaceship) {
+        super(spawnPoint);
         this.defaultRotation = victimSpaceship.getSide().getDefaultRotation();
         this.victimSpaceshipIdleAtlas = victimSpaceship.getIdleAnimationPath();
         this.victimSpaceshipDestructionAtlas = victimSpaceship.getSkeleton().getDestructionAnimationPath();
-
         this.spawnPoint = spawnPoint;
         spawnedOnShip = true;
-    }
-
-    @Override
-    public boolean isAnimatedObject(Point<Integer> objectLocation) {
-        return spawnPoint.equals(objectLocation) && getBlackHoleSpawnAnimation().isAnimated();
     }
 
     @Override
@@ -39,16 +38,14 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
     }
 
     @Override
-    public void init(Point<Integer> boardPoint, Point<Float> screenPoint) {
-        super.init(boardPoint, screenPoint);
-
+    public void start() {
         SequentialObjectAnimation blackHoleSpawnAnimation = getBlackHoleSpawnAnimation();
         blackHoleSpawnAnimation.currentPhase = 0;
 
         IdleAnimation blackHoleSpawn = new IdleAnimation(
                 Config.getInstance().BLACK_HOLE_SPAWN_ATLAS_PATH,
                 Animation.PlayMode.NORMAL,
-                screenPoint,
+                spawnPoint,
                 0
         );
 
@@ -58,25 +55,23 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
             IdleAnimation blackHoleIdle = new IdleAnimation(
                     Config.getInstance().BLACK_HOLE_IDLE_ATLAS_PATH,
                     Animation.PlayMode.LOOP,
-                    screenPoint,
+                    spawnPoint,
                     0
             );
             blackHoleSpawnAnimation.phases.add(blackHoleIdle);
 
-            SequentialObjectAnimation shipDestructionAnimation = new SequentialObjectAnimation();
-            shipDestructionAnimation.phases = new Array<>(2);
-            shipDestructionAnimation.currentPhase = 0;
+            SequentialObjectAnimation shipDestructionAnimation = new SequentialObjectAnimation(defaultRotation, new Path<>(spawnPoint, spawnPoint));
 
             IdleAnimation victimShipIdle = new IdleAnimation(
                     victimSpaceshipIdleAtlas,
                     Animation.PlayMode.LOOP,
-                     screenPoint,
+                     spawnPoint,
                     defaultRotation);
 
             IdleAnimation victimShipDestruction = new IdleAnimation(
                     victimSpaceshipDestructionAtlas,
                     Animation.PlayMode.NORMAL,
-                    screenPoint, defaultRotation);
+                    spawnPoint, defaultRotation);
 
             shipDestructionAnimation.phases.add(victimShipIdle);
             shipDestructionAnimation.phases.add(victimShipDestruction);
@@ -88,16 +83,16 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
     }
 
     @Override
-    public void render(float delta) {
+    public void render(Batch batch, float delta) {
         SequentialObjectAnimation blackHoleAnimation = getBlackHoleSpawnAnimation();
 
-        blackHoleAnimation.render(delta);
+        blackHoleAnimation.render(batch, delta);
 
         if (spawnedOnShip) {
             SequentialObjectAnimation victimShipAnimation = getShipDestructionAnimation();
 
             if (victimShipAnimation.isAnimated()) {
-                victimShipAnimation.render(delta);
+                victimShipAnimation.render(batch, delta);
             }
 
             if (victimShipAnimation.currentPhase == 0 && blackHoleAnimation.currentPhase == 1) {

@@ -17,8 +17,8 @@ public interface Content extends Cloneable {
 
     Side getSide();
 
-    void setStepMode(TurnType turnType);
-    TurnType getStepMode();
+    void setTurnType(TurnType turnType);
+    TurnType getTurnType();
 
     void setDamage(int damage);
 

@@ -1,5 +1,8 @@
 package com.imit.cosma.util;
 
+import com.badlogic.gdx.utils.Array;
+
+import java.util.Collection;
 import java.util.Objects;
 
 public class Path<T extends Number> {
@@ -39,6 +42,14 @@ public class Path<T extends Number> {
 
     public boolean isNull() {
         return to.equals(from);
+    }
+
+    public boolean contains(Point<T> point) {
+        return to.equals(point) || from.equals(point);
+    }
+
+    public boolean containsAny(Array<Point<T>> collection) {
+        return collection.contains(to, false) || collection.contains(from, false);
     }
 
     @Override

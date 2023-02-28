@@ -1,5 +1,7 @@
 package com.imit.cosma.gui.animation.compound;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
 import com.imit.cosma.util.Path;
@@ -10,6 +12,12 @@ public class SequentialObjectAnimation {
     protected Array<SimpleAnimation> phases;
     protected int currentPhase;
     protected boolean isLastPhase;
+
+    public SequentialObjectAnimation(float rotation, Path<Float> path) {
+        this.rotation = rotation;
+        this.path = path;
+        phases = new Array<>();
+    }
 
     public Path<Float> getPath() {
         return path;
@@ -34,9 +42,9 @@ public class SequentialObjectAnimation {
         getCurrentPhase().setAnimated(true);
     }
 
-    public void render(float delta) {
+    public void render(Batch batch, float delta) {
         if (getCurrentPhase().isAnimated()) {
-            getCurrentPhase().render(delta);
+            getCurrentPhase().render(batch, delta);
         }
     }
 

@@ -19,6 +19,7 @@ public class Config {
 
     public final float ANIMATION_DURATION = 60;
     public final float ROTATION_VELOCITY = 2f;
+    public final float MOVEMENT_VELOCITY = 1.5f;
     public final double PANEL_TO_SCREEN_RATIO = 0.3;
     public final double PANEL_OFFSET = 0.03;
     public final int BOARD_SIZE = 8;

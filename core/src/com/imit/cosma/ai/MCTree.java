@@ -70,6 +70,7 @@ public class MCTree extends DecisionTree {
             totalReward += childNode.reward;
             node.addChild(childNode);
             node = childNode;
+            clonedBoard.doTurn(path);
         }
 
         parentNode.reward = totalReward;
@@ -176,7 +177,8 @@ class MCTreeNode {
     }
 
     public void setAdvantage(ArtificialBoard board, Path<Integer> path) {
-        reward = board.getDamagePoints(path.getTarget()) / board.getHealthPoints(path.getTarget());
+        int hp = board.getHealthPoints(path.getTarget());
+        reward = hp != 0 ? board.getDamagePoints(path.getTarget()) / board.getHealthPoints(path.getTarget()) : 0;
     }
 
     public MCTreeNode clone() {

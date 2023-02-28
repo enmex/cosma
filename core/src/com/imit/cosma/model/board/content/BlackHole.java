@@ -49,12 +49,12 @@ public class BlackHole implements Content {
     }
 
     @Override
-    public void setStepMode(TurnType turnType) {
+    public void setTurnType(TurnType turnType) {
         this.turnType = turnType;
     }
 
     @Override
-    public TurnType getStepMode() {
+    public TurnType getTurnType() {
         return turnType;
     }
 

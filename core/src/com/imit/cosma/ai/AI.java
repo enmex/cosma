@@ -17,7 +17,7 @@ public class AI {
     public AI(final Board board){
         this.board = new ArtificialBoard(board);
         tree = new MCTree(this.board);
-        generator = new PathGenerator(this.board);
+        generator = new PathGenerator();
     }
 
     public Path<Integer> getPath(Board board){

@@ -9,7 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.event.CellChangeEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
-import com.imit.cosma.gui.animation.ContentAnimation;
+import com.imit.cosma.gui.animation.compound.CompoundAnimation;
+import com.imit.cosma.gui.animation.compound.IdleAnimation;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.event.BoardEvent;
@@ -25,16 +26,16 @@ public class PlayingField extends Actor {
     private final Stage stage;
     private final Sprite selectedCell;
     private final Board board;
-    private final ContentAnimation contentAnimation;
+    private CompoundAnimation boardAnimation;
     private Point<Integer> touchPoint;
     private boolean acted;
 
     public PlayingField() {
         board = new Board();
         board.initAI();
-        contentAnimation = new ContentAnimation();
         touchPoint = new Point<>(-1, -1);
         stage = new Stage();
+        boardAnimation = new IdleAnimation();
 
         grid = new Texture(Config.getInstance().GRID_PATH);
         selectedCell = new Sprite(new Texture(Config.getInstance().SELECTED_CELL_PATH));
@@ -57,11 +58,11 @@ public class PlayingField extends Actor {
             acted = true;
             BoardEvent boardEvent = board.getCurrentEvent(selectedBoardPoint);
             fire(new CellChangeEvent(board.getSelected()));
-            for (Point<Integer> location : boardEvent.getLocationsOfRemovedContents()) {
-                stage.getActors().removeValue(getActorByScreenLocation(toScreenPoint(location)), false);
+            for (Point<Float> location : boardEvent.getLocationsOfRemovedContents()) {
+                stage.getActors().removeValue(getActorByScreenLocation(location), false);
             }
-            for (Map.Entry<Point<Integer>, String> entry : boardEvent.getLocationsOfAddedContents().entrySet()) {
-                stage.addActor(new AnimatedSprite(Config.getInstance().FRAME_DURATION, entry.getValue(), toScreenPoint(entry.getKey()), 0, Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT));
+            for (Map.Entry<Point<Float>, String> entry : boardEvent.getLocationsOfAddedContents().entrySet()) {
+                stage.addActor(new AnimatedSprite(Config.getInstance().FRAME_DURATION, entry.getValue(), entry.getKey(), 0, Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT));
             }
             for (Path<Integer> contentPath : boardEvent.getContentsPaths()) {
                 Point<Float> target = toScreenPoint(contentPath.getTarget());
@@ -72,6 +73,8 @@ public class PlayingField extends Actor {
             }
             if (!boardEvent.isIdle()) {
                 board.updateSide();
+                boardAnimation = boardEvent.getAnimationType();
+                boardAnimation.start();
             }
         }
     }
@@ -109,17 +112,17 @@ public class PlayingField extends Actor {
     }
 
     private void drawBoardObjects(Batch batch, float delta){
-        //draw idle objs
+        //draw idle board objects
         for (Actor actor : stage.getActors()) {
             Point<Float> screenLocation = ((AnimatedSprite) actor).getScreenLocation();
-            if (!contentAnimation.isAnimatedObject(toBoardPoint(screenLocation))) {
+            if (!boardAnimation.isAnimatedObject(screenLocation)) {
                 actor.draw(batch, delta);
             }
         }
 
-        //draw animated
-        if(contentAnimation.isAnimated()) {
-            contentAnimation.render(delta);
+        //draw board animation
+        if(boardAnimation.isAnimated()) {
+            boardAnimation.render(batch, delta);
         }
     }
 
@@ -169,7 +172,7 @@ public class PlayingField extends Actor {
     }
 
     private boolean boardIsNotAnimated(){
-        return !contentAnimation.isAnimated();
+        return !boardAnimation.isAnimated();
     }
 
     public boolean isPlayerTurn(){

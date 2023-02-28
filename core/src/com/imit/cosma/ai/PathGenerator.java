@@ -9,13 +9,18 @@ import com.imit.cosma.util.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PathGenerator {
     private final List<Path<Integer>> pathsAI, pathsPlayer;
 
-    public PathGenerator(ArtificialBoard board){
+    public PathGenerator(){
         pathsAI = new ArrayList<>();
         pathsPlayer = new ArrayList<>();
+    }
+
+    public PathGenerator(ArtificialBoard board) {
+        this();
         update(board);
     }
 
@@ -74,10 +79,10 @@ public class PathGenerator {
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && !board.getSide(x, y).isPlayer()){
-                    for (Point<Integer> point : board.getAvailableCellsForMove(x, y)) {
+                    for (Point<Integer> point : board.getAvailableCells(x, y)) {
                         pathsAI.add(new Path<>(x, y, point.x, point.y));
                     }
-                    for (Point<Integer> point : board.getAvailableCellsForFire(x, y)) {
+                    for (Point<Integer> point : board.getAvailableCells(x, y)) {
                         pathsAI.add(new Path<>(x, y, point.x, point.y));
                     }
                 }
@@ -87,10 +92,7 @@ public class PathGenerator {
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && board.getSide(x, y).isPlayer()){
-                    for (Point<Integer> point : board.getAvailableCellsForMove(x, y)) {
-                        pathsPlayer.add(new Path<>(x, y, point.x, point.y));
-                    }
-                    for (Point<Integer> point : board.getAvailableCellsForFire(x, y)) {
+                    for (Point<Integer> point : board.getAvailableCells(x, y)) {
                         pathsPlayer.add(new Path<>(x, y, point.x, point.y));
                     }
                 }
@@ -100,7 +102,13 @@ public class PathGenerator {
 
     public static Path<Integer> getRandomShipPath(ArtificialBoard board) {
         Point<Integer> randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer() ? board.getPlayerShipLocations() : board.getEnemyShipLocations());
-        Point<Integer> randomTargetLocation = Randomizer.getRandom(new ArrayList<>(board.getAvailableCellsForMove(randomShipLocation)));
+        Set<Point<Integer>> availableCells = board.getAvailableCells(randomShipLocation);
+        while (availableCells.isEmpty()) {
+            randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer() ? board.getPlayerShipLocations() : board.getEnemyShipLocations());
+            availableCells = board.getAvailableCells(randomShipLocation);
+        }
+        
+        Point<Integer> randomTargetLocation = Randomizer.getRandom(new ArrayList<>(board.getAvailableCells(randomShipLocation)));
 
         return new Path<>(randomShipLocation, randomTargetLocation);
     }

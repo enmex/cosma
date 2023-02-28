@@ -12,8 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.CosmaGame;
 import com.imit.cosma.config.Config;
 
-import org.graalvm.compiler.replacements.Log;
-
 public class MainMenuScreen implements Screen {
     private Stage stage;
 

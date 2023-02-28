@@ -52,7 +52,7 @@ public abstract class Loot implements Content {
     }
 
     @Override
-    public TurnType getStepMode() {
+    public TurnType getTurnType() {
         return TurnType.COMPLETED;
     }
 

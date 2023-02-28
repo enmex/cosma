@@ -67,6 +67,7 @@ public class ArtificialBoard implements Cloneable {
     }
 
     public void update(Board board) {
+        controller.clear();
         int size = Config.getInstance().BOARD_SIZE;
 
         for (int y = 0; y < size; y++) {
@@ -74,9 +75,7 @@ public class ArtificialBoard implements Cloneable {
                 sidesField[y][x] = board.getSide(x, y);
                 if (sidesField[y][x].isPlayer()) {
                     controller.addPlayerShip(new Point<>(x, y));
-                }
-
-                if (sidesField[y][x].isPlayingSide()) {
+                } else if (sidesField[y][x].isPlayingSide()) {
                     controller.addEnemyShip(new Point<>(x, y));
                 }
 
@@ -120,14 +119,14 @@ public class ArtificialBoard implements Cloneable {
 
         if(selectedCanMoveTo(target)){
             setSelectedPosition(target);
-
+            updateSide();
             setSelected(target);
 
             mode = TurnType.MOVE;
         }
         else if(selectedCanFireTo(target)){
             damageShip(target, damageField[selectedPoint.y][selectedPoint.x]);
-
+            updateSide();
             mode = TurnType.ATTACK;
         }
 
@@ -233,20 +232,15 @@ public class ArtificialBoard implements Cloneable {
                 && availableForAttack.contains(target);
     }
 
-    public Set<Point<Integer>> getAvailableCellsForMove(Point<Integer> target) {
-        return getAvailableCellsForMove(target.x, target.y);
+    public Set<Point<Integer>> getAvailableCells(Point<Integer> target) {
+        Set<Point<Integer>> availableCells = getAvailableForMove(target);
+        Set<Point<Integer>> availableForAttack = getAvailableForAttack(target);
+        availableCells.addAll(availableForAttack);
+        return availableCells;
     }
 
-    public Set<Point<Integer>> getAvailableCellsForMove(int x, int y) {
-        return isShip(x, y) && turnTypeField[y][x] == TurnType.MOVE
-                ? getAvailableForMove(new Point<Integer>(x, y))
-                : emptySet;
-    }
-
-    public Set<Point<Integer>> getAvailableCellsForFire(int x, int y) {
-        return isShip(x, y) && turnTypeField[y][x] == TurnType.ATTACK
-                ? getAvailableForAttack(new Point<Integer>(x, y))
-                : emptySet;
+    public Set<Point<Integer>> getAvailableCells(int x, int y) {
+        return getAvailableCells(new Point<>(x, y));
     }
 
     public boolean inBoard(Point<Integer> target){
@@ -259,6 +253,12 @@ public class ArtificialBoard implements Cloneable {
 
     public boolean isEnemyShip(Point<Integer> target) {
         return isEnemyShip(target.x, target.y);
+    }
+
+    public boolean isEnemyShip(Point<Integer> source, Point<Integer> target) {
+        return isShip(target.x, target.y)
+                && (sidesField[source.y][source.x].isPlayer() && !sidesField[target.y][target.x].isPlayer()
+                || !sidesField[source.y][source.x].isPlayer() && sidesField[target.y][target.x].isPlayer());
     }
 
     public boolean isEnemyShip(int x, int y) {
@@ -356,7 +356,7 @@ public class ArtificialBoard implements Cloneable {
         for (Direction direction : Direction.getStraight()) {
             for (int i = 0; i < firingRadius; i++) {
                 offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-                if (inBoard(offset) && isEnemyShip(offset)) {
+                if (inBoard(offset) && isEnemyShip(target, offset)) {
                     availableForAttack.add(new Point<>(offset));
                 }
             }
@@ -366,7 +366,7 @@ public class ArtificialBoard implements Cloneable {
         if (firingRadius > 1) {
             for (Direction direction : Direction.getDiagonal()) {
                 offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-                if (inBoard(offset) && isEnemyShip(offset)) {
+                if (inBoard(offset) && isEnemyShip(target, offset)) {
                     availableForAttack.add(new Point<>(offset));
                 }
                 offset.set(target);
@@ -376,7 +376,7 @@ public class ArtificialBoard implements Cloneable {
         if (firingRadius > 2) {
             for (Direction direction : Direction.getHorseDirections()) {
                 offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-                if (inBoard(offset) && isEnemyShip(offset)) {
+                if (inBoard(offset) && isEnemyShip(target, offset)) {
                     availableForAttack.add(new Point<>(offset));
                 }
                 offset.set(target);
@@ -426,5 +426,10 @@ class ArtificialSpaceshipController {
 
     public List<Point<Integer>> getPlayerShipLocations() {
         return playerShipLocations;
+    }
+
+    public void clear() {
+        playerShipLocations.clear();
+        enemyShipLocations.clear();
     }
 }

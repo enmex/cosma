@@ -2,11 +2,9 @@ package com.imit.cosma.gui.animation.simple;
 
 import static com.imit.cosma.config.Config.getInstance;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
@@ -14,76 +12,45 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 import com.imit.cosma.util.Vector;
 
-public class SimpleMovementAnimation implements SimpleAnimation{
-    private final SpriteBatch batch;
-    private final Sprite sprite;
-
-    private final Animation<TextureRegion> animation;
-
+public class SimpleMovementAnimation extends SimpleAnimation{
     private final SoundEffect movementSound;
 
     private float elapsedTime = 0f;
 
-    private float rotation;
-    private double distance, traveledDistance;
-    private final float velocity;
-    private float moveVelocityX;
-    private float moveVelocityY;
+    private final float rotation;
+    private final double distance;
+    private double traveledDistance;
+    private final float moveVelocityX;
+    private final float moveVelocityY;
     private boolean animated;
 
-    private Point<Float> targetLocation;
-    private Point<Float> currentLocation;
+    private final Point<Float> targetLocation;
+    private final Point<Float> currentLocation;
 
-    public SimpleMovementAnimation(String atlasPath, SoundType soundType, float velocity){
+    public SimpleMovementAnimation(String atlasPath, SoundType soundType, float velocity, Path<Float> path, float rotation){
+        super(atlasPath, getInstance().MOVEMENT_ANIMATION_REGION_NAME, Animation.PlayMode.LOOP);
         movementSound = new SoundEffect(soundType);
-
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
-
-        animation = new Animation<TextureRegion>(getInstance().FRAME_DURATION,
-                atlas.findRegions(getInstance().MOVEMENT_ANIMATION_REGION_NAME),
-                Animation.PlayMode.LOOP);
-
-        sprite = new Sprite();
-        sprite.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
-        sprite.setOrigin(getInstance().BOARD_CELL_WIDTH / 2f ,
-                getInstance().BOARD_CELL_HEIGHT / 2f);
-
-        batch = new SpriteBatch();
-
-        this.velocity = velocity;
-    }
-
-    public SimpleMovementAnimation(String atlasPath, SoundType soundType) {
-        this(atlasPath, soundType, 1f);
-    }
-
-    @Override
-    public void init(Path<Float> path, float rotation) {
         this.rotation = rotation;
-
         currentLocation = new Point<>(path.getSource());
-
         Vector destinationVector = new Vector(
                 path.getTarget().x - path.getSource().x,
                 path.getTarget().y - path.getSource().y
         );
-
         distance = path.getDistance();
-
         traveledDistance = 0;
-
-        double velocity = this.velocity * distance / getInstance().ANIMATION_DURATION; //x
-
+        double velocity1 = velocity * distance / getInstance().ANIMATION_DURATION; //x
         double radians = Math.toRadians(rotation < 0 ? rotation - 90 : rotation + 90);
-
-        moveVelocityX = (float) (Math.abs(Math.cos(radians)) * velocity * Math.signum(destinationVector.getX()));
-        moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity * Math.signum(destinationVector.getY()));
-
+        moveVelocityX = (float) (Math.abs(Math.cos(radians)) * velocity1 * Math.signum(destinationVector.getX()));
+        moveVelocityY = (float) (Math.abs(Math.sin(radians)) * velocity1 * Math.signum(destinationVector.getY()));
         targetLocation = new Point<>(path.getTarget());
     }
 
+    public SimpleMovementAnimation(String atlasPath, SoundType soundType, Path<Float> path, float rotation) {
+        this(atlasPath, soundType, 1f, path, rotation);
+    }
+
     @Override
-    public void render(float delta) {
+    public void render(Batch batch, float delta) {
         elapsedTime += delta;
 
         if(isArrived()){
@@ -95,14 +62,12 @@ public class SimpleMovementAnimation implements SimpleAnimation{
             traveledDistance += Math.sqrt(moveVelocityX * moveVelocityX + moveVelocityY * moveVelocityY);
         }
 
-        TextureRegion currentFrame = animation.getKeyFrame(elapsedTime, true);
+        TextureRegion currentFrame = objectAnimation.getKeyFrame(elapsedTime, true);
 
-        batch.begin();
-        sprite.setRegion(currentFrame);
-        sprite.setOriginBasedPosition(currentLocation.x, currentLocation.y);
-        sprite.setRotation(rotation);
-        sprite.draw(batch);
-        batch.end();
+        animatedObject.setRegion(currentFrame);
+        animatedObject.setOriginBasedPosition(currentLocation.x, currentLocation.y);
+        animatedObject.setRotation(rotation);
+        animatedObject.draw(batch);
     }
 
     private boolean isArrived(){

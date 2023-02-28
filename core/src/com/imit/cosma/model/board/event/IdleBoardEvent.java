@@ -6,6 +6,7 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,13 +32,13 @@ public class IdleBoardEvent implements BoardEvent {
     }
 
     @Override
-    public Map<Point<Integer>, String> getLocationsOfAddedContents() {
-        return Config.getInstance().EMPTY_MAP;
+    public Map<Point<Float>, String> getLocationsOfAddedContents() {
+        return new HashMap<>();
     }
 
     @Override
-    public List<Point<Integer>> getLocationsOfRemovedContents() {
-        return Config.getInstance().EMPTY_LIST;
+    public List<Point<Float>> getLocationsOfRemovedContents() {
+        return new ArrayList<>();
     }
 
 }

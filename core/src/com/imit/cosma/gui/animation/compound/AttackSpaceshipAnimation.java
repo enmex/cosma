@@ -2,7 +2,8 @@ package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.simple.FontAnimation;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
@@ -24,9 +25,14 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
     private final String enemyShipAtlasPath;
     private final String enemyShipDestructionAtlasPath;
 
-    private Point<Integer> sourceBoardCell, targetBoardCell;
+    private final Point<Float> playerScreenLocation, enemyScreenLocation;
+    private final Path<Float> shotsPath;
 
-    public AttackSpaceshipAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy){
+    public AttackSpaceshipAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy, Path<Float> shotsPath){
+        super(shotsPath);
+        this.shotsPath = shotsPath;
+        this.playerScreenLocation = shotsPath.getSource();
+        this.enemyScreenLocation = shotsPath.getTarget();
         this.defaultRotation = spaceshipPlayer.getSide().getDefaultRotation();
         this.weaponList = spaceshipPlayer.getWeapons();
         playerShipAtlasPath = spaceshipPlayer.getIdleAnimationPath();
@@ -34,57 +40,50 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
         enemyShipDestructionAtlasPath = spaceshipEnemy.getSkeleton().getDestructionAnimationPath();
 
         isKillAttack = spaceshipPlayer.getDamagePoints() >= spaceshipEnemy.getHealthPoints();
+
     }
 
     @Override
-    public void init(Path<Integer> boardPath, Path<Float> screenPath) {
-        super.init(boardPath, screenPath);
-
-        SequentialObjectAnimation shotsAnimation = getShotsAnimation();
-
-        this.sourceBoardCell = boardPath.getSource().clone();
-        this.targetBoardCell = boardPath.getTarget().clone();
-
+    public void start() {
+        SequentialObjectAnimation shotsAnimation = null;
         float rotation = shotsAnimation.rotation;
         if (rotation != 180) {
             rotation *= getOrientation();
         }
-
         float targetRotation = defaultRotation + rotation;
 
         //init main animation
-        SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath, defaultRotation, targetRotation);
+        SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath, defaultRotation, targetRotation, playerScreenLocation);
 
         SimpleAnimation shipRotationToDefault = new RotationAnimation(playerShipAtlasPath,
-                targetRotation, defaultRotation);
-
-        shipRotation.init(screenPath, rotation);
-
-        shipRotationToDefault.init(screenPath, rotation);
+                targetRotation, defaultRotation, playerScreenLocation);
 
         shotsAnimation.phases.add(shipRotation);
 
         for(Weapon weapon : weaponList){
             SimpleMovementAnimation shotMovement = new SimpleMovementAnimation(
-                    weapon.getShotAnimationPath(), weapon.getSoundAttack());
+                    weapon.getShotAnimationPath(),
+                    weapon.getSoundAttack(),
+                    Config.getInstance().MOVEMENT_VELOCITY,
+                    shotsPath,
+                    rotation);
 
             IdleAnimation explosion = new IdleAnimation(
                     weapon.getExplosionAnimationPath(),
                     Animation.PlayMode.NORMAL,
                     weapon.getSoundExplosion(),
-                    screenPath.getTarget(),
+                    enemyScreenLocation,
                     0);
 
             FontAnimation damageInfo = new FontAnimation(
+                    enemyScreenLocation,
                     -weapon.getDamage() + "HP",
                     Color.RED
             );
 
-            damageInfo.init(new Path(screenPath.getTarget(), screenPath.getTarget()), targetRotation);
-            shotMovement.init(screenPath, targetRotation);
             shotsAnimation.phases.add(shotMovement);
             shotsAnimation.phases.add(explosion);
-            shotsAnimation.phases.add(damageInfo);
+            //shotsAnimation.phases.add(damageInfo);
         }
 
         if (isKillAttack) {
@@ -92,7 +91,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
                     enemyShipDestructionAtlasPath,
                     Animation.PlayMode.NORMAL,
                     SoundType.ION_CANNON_EXPLOSION,
-                    screenPath.getTarget(),
+                    enemyScreenLocation,
                     180 - defaultRotation);
             shotsAnimation.phases.add(destruction);
         }
@@ -102,32 +101,25 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
         shotsAnimation.start();
 
         //init player staticPlayerShip
-        SequentialObjectAnimation staticPlayerShip = new SequentialObjectAnimation();
+        SequentialObjectAnimation staticPlayerShip = new SequentialObjectAnimation(180 - defaultRotation, new Path<>(playerScreenLocation, playerScreenLocation));
         IdleAnimation playerShipStanding = new IdleAnimation(
                 playerShipAtlasPath,
                 Animation.PlayMode.LOOP,
-                screenPath.getSource(), targetRotation);
-        staticPlayerShip.phases = new Array<>(1);
+                playerScreenLocation, targetRotation);
         staticPlayerShip.phases.add(playerShipStanding);
-        staticPlayerShip.path = new Path(screenPath.getSource(), screenPath.getSource());
-        staticPlayerShip.currentPhase = 0;
-
         objectsAnimations.add(staticPlayerShip);
 
         //init enemy static ship
-        SequentialObjectAnimation staticEnemyShip = new SequentialObjectAnimation();
-        IdleAnimation enemyStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP, screenPath.getTarget(), 180 - defaultRotation);
-        staticEnemyShip.phases = new Array<>(1);
+        SequentialObjectAnimation staticEnemyShip = new SequentialObjectAnimation(180 - defaultRotation, new Path<>(enemyScreenLocation, enemyScreenLocation));
+        IdleAnimation enemyStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP, enemyScreenLocation, 180 - defaultRotation);
         staticEnemyShip.phases.add(enemyStanding);
-        staticEnemyShip.path = new Path(screenPath.getTarget(), screenPath.getTarget());
-        staticEnemyShip.currentPhase = 0;
 
         staticEnemyShip.start();
         objectsAnimations.add(staticEnemyShip);
     }
 
     @Override
-    public void render(float delta) {
+    public void render(Batch batch, float delta) {
         SequentialObjectAnimation shotsAnimation = getShotsAnimation();
         SequentialObjectAnimation standingEnemyShipAnimation = getStandingEnemyShipAnimation();
         SequentialObjectAnimation standingPlayerShipAnimation = getStandingPLayerShipAnimation();
@@ -142,19 +134,13 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
             standingEnemyShipAnimation.stop();
         }
 
-        standingEnemyShipAnimation.render(delta);
-        shotsAnimation.render(delta);
-        standingPlayerShipAnimation.render(delta);
+        standingEnemyShipAnimation.render(batch, delta);
+        shotsAnimation.render(batch, delta);
+        standingPlayerShipAnimation.render(batch, delta);
 
         if (!shotsAnimation.isAnimated() && !shotsAnimation.isCompleted()) {
             shotsAnimation.nextPhase();
         }
-    }
-
-    @Override
-    public boolean isAnimatedObject(Point<Integer> objectLocation) {
-        return isAnimated() && (objectLocation.equals(sourceBoardCell) ||
-                objectLocation.equals(targetBoardCell) && getStandingEnemyShipAnimation().isAnimated());
     }
 
     @Override

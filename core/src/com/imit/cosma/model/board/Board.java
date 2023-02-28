@@ -10,11 +10,8 @@ import com.imit.cosma.model.board.content.Loot;
 import com.imit.cosma.model.board.event.BlackHoleSpawnEvent;
 import com.imit.cosma.model.board.event.BoardEvent;
 import com.imit.cosma.model.board.event.IdleBoardEvent;
-import com.imit.cosma.model.board.event.LootSpawnEvent;
 import com.imit.cosma.model.board.event.SpaceshipAttackBoardEvent;
 import com.imit.cosma.model.board.event.SpaceshipMovementBoardEvent;
-import com.imit.cosma.model.board.event.SpaceDebrisAttackEvent;
-import com.imit.cosma.model.board.event.SpaceshipPicksLootBoardEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Direction;
@@ -174,7 +171,9 @@ public class Board {
             } else if (turn instanceof EnemySide) {
                 return getCurrentEnemyEvent();
             } else {
-                return getCurrentBoardEvent();
+                //stub
+                updateSide();
+                return new IdleBoardEvent();
             }
         }
         return new IdleBoardEvent();
@@ -222,7 +221,7 @@ public class Board {
         setSelectedShipPosition(targetPoint);
         setSelected(targetPoint);
 
-        return new SpaceshipPicksLootBoardEvent(getCell(targetPoint), lootCell, currentPath);
+        return new SpaceshipMovementBoardEvent(getCell(targetPoint), currentPath);
     }
 
     public Path<Integer> getCurrentPath() {
@@ -522,7 +521,7 @@ public class Board {
             spaceshipLocations.remove(target);
         }
 
-        return new SpaceDebrisAttackEvent(targets, damages, spaceships);
+        return null;
     }
 
     private BoardEvent getLootSpawnEvent() {
@@ -534,7 +533,7 @@ public class Board {
         Cell lootCell = new Cell(loot);
         setCell(currentContentSpawnPoint, lootCell);
 
-        return new LootSpawnEvent(lootCell, currentContentSpawnPoint);
+        return null;
     }
 
     private void setCell(Point<Integer> target, Cell newCell) {

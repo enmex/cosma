@@ -21,7 +21,7 @@ public class HealthKit extends Loot {
     }
 
     @Override
-    public void setStepMode(TurnType turnType) {}
+    public void setTurnType(TurnType turnType) {}
 
     @Override
     public void setDamage(int damage) {}

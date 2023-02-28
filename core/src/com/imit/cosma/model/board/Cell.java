@@ -54,14 +54,14 @@ public class Cell {
     }
 
     public TurnType getStepMode(){
-        return content.getStepMode();
+        return content.getTurnType();
     }
 
     public Side getSide(){
         return content.getSide();
     }
     public void setStepMode(TurnType turnType){
-        content.setStepMode(turnType);
+        content.setTurnType(turnType);
     }
 
     public void swapContents(Cell cell){

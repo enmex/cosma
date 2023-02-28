@@ -1,6 +1,7 @@
 package com.imit.cosma.pkg;
 
 import com.imit.cosma.config.Config;
+import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
@@ -26,6 +27,10 @@ public class CoordinateConverter {
                 (int) (screenPoint.x / Config.getInstance().BOARD_CELL_WIDTH),
                 (int) ((screenPoint.y - Config.getInstance().BOARD_Y) / Config.getInstance().BOARD_CELL_HEIGHT)
         );
+    }
+
+    public static Path<Float> toScreenPath(Path<Integer> boardPath) {
+        return new Path<>(toScreenPoint(boardPath.getSource()), toScreenPoint(boardPath.getTarget()));
     }
 
     public static List<Point<Float>> toScreenPoints(List<Point<Integer>> boardPoints) {
