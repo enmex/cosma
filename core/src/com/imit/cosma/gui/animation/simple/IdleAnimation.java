@@ -4,7 +4,6 @@ import static com.imit.cosma.config.Config.getInstance;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
@@ -19,7 +18,7 @@ public class IdleAnimation extends SimpleAnimation {
     private final Point<Float> locationOnScreen;
 
     public IdleAnimation(String atlasPath, PlayMode playMode, SoundType soundType, Point<Float> locationOnScreen, float rotation){
-        super(atlasPath, getInstance().IDLE_ANIMATION_REGION_NAME, playMode);
+        super(atlasPath, getInstance().IDLE_ANIMATION_REGION_NAME, playMode, 2.5f);
         this.playMode = playMode;
         this.rotation = rotation;
         elapsedTime = 0f;

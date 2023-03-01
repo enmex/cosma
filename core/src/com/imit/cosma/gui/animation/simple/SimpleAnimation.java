@@ -13,15 +13,19 @@ public abstract class SimpleAnimation {
     protected Sprite animatedObject;
     protected Animation<TextureRegion> objectAnimation;
 
-    protected SimpleAnimation(String atlasPath, String regionName, Animation.PlayMode playMode) {
+    protected SimpleAnimation(String atlasPath, String regionName, Animation.PlayMode playMode, float frameDuration) {
         animatedObject = new Sprite();
         animatedObject.setSize(getInstance().BOARD_CELL_WIDTH, getInstance().BOARD_CELL_HEIGHT);
         animatedObject.setOrigin(getInstance().BOARD_CELL_WIDTH / 2f ,
                 getInstance().BOARD_CELL_HEIGHT / 2f);
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
-        objectAnimation = new Animation<TextureRegion>(getInstance().FRAME_DURATION,
+        objectAnimation = new Animation<TextureRegion>(frameDuration,
                 atlas.findRegions(regionName),
                 playMode);
+    }
+
+    protected SimpleAnimation(String atlasPath, String regionName, Animation.PlayMode playMode) {
+        this(atlasPath, regionName, playMode, getInstance().FRAME_DURATION);
     }
 
     public abstract void render(Batch batch, float delta);

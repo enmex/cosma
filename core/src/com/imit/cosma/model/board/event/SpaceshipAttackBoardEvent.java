@@ -1,6 +1,5 @@
 package com.imit.cosma.model.board.event;
 
-import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.gui.animation.compound.AttackSpaceshipAnimation;
 import com.imit.cosma.model.board.Cell;
@@ -41,9 +40,7 @@ public class SpaceshipAttackBoardEvent implements BoardEvent {
 
     @Override
     public List<Path<Integer>> getContentsPaths() {
-        List<Path<Integer>> list = new ArrayList<>();
-        list.add(contentPath);
-        return list;
+        return new ArrayList<>();
     }
 
     @Override

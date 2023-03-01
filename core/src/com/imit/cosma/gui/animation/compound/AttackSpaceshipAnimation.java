@@ -14,6 +14,7 @@ import com.imit.cosma.model.spaceship.Weapon;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
+import com.imit.cosma.util.Vector;
 
 import java.util.List;
 
@@ -30,9 +31,18 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
 
     public AttackSpaceshipAnimation(Spaceship spaceshipPlayer, Spaceship spaceshipEnemy, Path<Float> shotsPath){
         super(shotsPath);
-        this.shotsPath = shotsPath;
-        this.playerScreenLocation = shotsPath.getSource();
-        this.enemyScreenLocation = shotsPath.getTarget();
+        this.shotsPath = new Path<>(
+                new Point<>(
+                        shotsPath.getSource().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
+                        shotsPath.getSource().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
+                ),
+                new Point<>(
+                        shotsPath.getTarget().x + Config.getInstance().BOARD_CELL_WIDTH / 2,
+                        shotsPath.getTarget().y + Config.getInstance().BOARD_CELL_HEIGHT / 2
+                )
+        );
+        this.playerScreenLocation = this.shotsPath.getSource();
+        this.enemyScreenLocation = this.shotsPath.getTarget();
         this.defaultRotation = spaceshipPlayer.getSide().getDefaultRotation();
         this.weaponList = spaceshipPlayer.getWeapons();
         playerShipAtlasPath = spaceshipPlayer.getIdleAnimationPath();
@@ -40,15 +50,21 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
         enemyShipDestructionAtlasPath = spaceshipEnemy.getSkeleton().getDestructionAnimationPath();
 
         isKillAttack = spaceshipPlayer.getDamagePoints() >= spaceshipEnemy.getHealthPoints();
-
     }
 
     @Override
     public void start() {
-        SequentialObjectAnimation shotsAnimation = null;
-        float rotation = shotsAnimation.rotation;
+        float orientation = (float) Math.cos(Math.toRadians(defaultRotation));
+        Vector normalVector = new Vector(0, orientation);
+        Vector destinationVector = new Vector(
+                shotsPath.getTarget().x - shotsPath.getSource().x,
+                orientation * (shotsPath.getTarget().y - shotsPath.getSource().y)
+        );
+        float rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector))) - defaultRotation;
+
+        SequentialObjectAnimation shotsAnimation = new SequentialObjectAnimation(rotation, shotsPath);
         if (rotation != 180) {
-            rotation *= getOrientation();
+            rotation *= orientation;
         }
         float targetRotation = defaultRotation + rotation;
 
@@ -99,6 +115,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
         shotsAnimation.phases.add(shipRotationToDefault);
 
         shotsAnimation.start();
+        objectsAnimations.add(shotsAnimation);
 
         //init player staticPlayerShip
         SequentialObjectAnimation staticPlayerShip = new SequentialObjectAnimation(180 - defaultRotation, new Path<>(playerScreenLocation, playerScreenLocation));
@@ -140,16 +157,14 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
 
         if (!shotsAnimation.isAnimated() && !shotsAnimation.isCompleted()) {
             shotsAnimation.nextPhase();
+        } else if (shotsAnimation.isCompleted()) {
+            animatedObjectsLocations.clear();
         }
     }
 
     @Override
     public boolean isAnimated() {
         return !getShotsAnimation().isCompleted();
-    }
-
-    private int getOrientation(){
-        return (int) Math.signum(getShotsAnimation().path.getSource().x - getShotsAnimation().path.getTarget().x);
     }
 
     private SequentialObjectAnimation getShotsAnimation() {
