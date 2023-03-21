@@ -53,7 +53,7 @@ public abstract class Loot implements Content {
 
     @Override
     public TurnType getTurnType() {
-        return TurnType.COMPLETED;
+        return TurnType.UNDEFINED;
     }
 
     @Override

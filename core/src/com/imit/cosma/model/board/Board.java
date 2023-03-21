@@ -22,6 +22,7 @@ import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.TurnType;
 import com.imit.cosma.model.spaceship.ShipRandomizer;
+import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.pkg.random.Randomizer;
@@ -38,25 +39,18 @@ import java.util.Set;
 
 public class Board {
     private final Set<Point<Integer>> emptySet;
-
     private final ObjectController objectController;
-
     private final Cell[][] cells;
     private Cell selected;
     private final Cell interacted;
     private final Set<Point<Integer>> interactedCells;
-
     private Side turn;
-
     private final Point<Integer> selectedPoint;
-
     private AI enemyAI;
     private Path<Integer> currentPath;
     private Point<Integer> currentContentSpawnPoint;
-
     private Set<Point<Integer>> availableForMove;
     private Map<Point<Integer>, Boolean> availableForAttack;
-
     private final Side playerSide;
     private final Side enemySide;
     private final CycledList<Side> sides;
@@ -80,46 +74,27 @@ public class Board {
         sides.add(playerSide);
 
         selectedPoint = new Point<>();
-        /*
-        IntegerPoint pShip1 = new IntegerPoint(4, 4);
-        IntegerPoint pShip2 = new IntegerPoint(6, 4);
-        IntegerPoint eShip1 = new IntegerPoint(1, 5);
-        IntegerPoint eShip2 = new IntegerPoint(2, 5);
 
-        for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
-            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
-                IntegerPoint point = new IntegerPoint(x, y);
-                if (point.equals(pShip1)) {
-                    cells[y][x] = new Cell(spaceshipBuilder.setSide(playerSide)
+        Point<Integer> playerShipLocation = new Point<>(3, 2);
+        Point<Integer> enemyShipLocation = new Point<>(3, 4);
+/*
+        //initialise space cells
+        for (int y = 0; y < Config.getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
+                cells[y][x] = new Cell();
+                Point<Integer> currentLocation = new Point<>(x, y);
+                if (playerShipLocation.equals(currentLocation) || enemyShipLocation.equals(currentLocation)) {
+                    Spaceship spaceship = spaceshipBuilder.setSide(playerShipLocation.equals(currentLocation) ? playerSide : enemySide)
                             .addSkeleton(Skeleton.DREADNOUGHT)
-                            .addWeapon(8)
-                            .setMoveType(MoveType.QUEEN).build());
-                    objectController.addSpaceship(x, y);
-                } else if (point.equals(pShip2)) {
-                    cells[y][x] = new Cell(spaceshipBuilder.setSide(playerSide)
-                            .addSkeleton(Skeleton.DREADNOUGHT)
-                            .addWeapon(8)
-                            .setMoveType(MoveType.QUEEN).build());
-                    objectController.addSpaceship(x, y);
-                } else if (point.equals(eShip1)) {
-                    cells[y][x] = new Cell(spaceshipBuilder.setSide(enemySide)
-                            .addSkeleton(Skeleton.DREADNOUGHT)
-                            .addWeapon(2)
-                            .setMoveType(MoveType.OFFICER).build());
-                    objectController.addSpaceship(x, y);
-                } else if (point.equals(eShip2)) {
-                    cells[y][x] = new Cell(spaceshipBuilder.setSide(enemySide)
-                            .addSkeleton(Skeleton.DREADNOUGHT)
-                            .addWeapon(2)
-                            .setMoveType(MoveType.OFFICER).build());
-                    objectController.addSpaceship(x, y);
+                            .addWeapon(1)
+                            .setMoveType(MoveType.WEAK_ROOK).build();
+                    cells[y][x].setContent(spaceship);
+                    objectController.addSpaceship(currentLocation);
                 } else {
-                    cells[y][x] = Cell.initWithSpace();
                     objectController.addSpace(x, y);
                 }
             }
         }*/
-
 
         //initialise player ships
         for (int y = 0; y < 1; y++) {
@@ -182,7 +157,7 @@ public class Board {
     public BoardEvent getCurrentPlayerEvent(Point<Integer> targetPoint){
         currentPath = new Path<>(this.selectedPoint, targetPoint);
 
-        if(selected.containsShip() && selected.getStepMode() != TurnType.COMPLETED && selected.getSide() == turn) {
+        if(selected.containsShip() && selected.getSide().equals(turn)) {
             if (selectedCanMoveTo(targetPoint)) {
                 enemyAI.savePlayerTurn(currentPath, TurnType.MOVE);
 
@@ -239,7 +214,7 @@ public class Board {
             selected.setStepMode(TurnType.ATTACK);
         }
 
-        if (selected.containsShip() && selected.getStepMode() != TurnType.COMPLETED && selected.getSide().equals(turn)) {
+        if (selected.containsShip() && selected.getSide().equals(turn)) {
             if (selectedCanMoveTo(target)) {
                 setSelectedShipPosition(target);
                 setSelectedEnemyTurn(target);
@@ -287,7 +262,6 @@ public class Board {
         interacted.setContent(cells[target.y][target.x].getContent().clone());
 
         cells[target.y][target.x].setDamage(damage);
-        selected.setStepMode(TurnType.COMPLETED);
         interactedCells.add(selectedPoint.clone());
 
         if(cells[target.y][target.x].getContent().getHealthPoints() <= 0){
@@ -371,7 +345,6 @@ public class Board {
         interacted.setContent(cells[destination.y][destination.x].getContent().clone());
 
         swapCells(selectedPoint, destination);
-        cells[destination.y][destination.x].setStepMode(TurnType.COMPLETED);
 
         objectController.setSpaceship(new Point<>(destination));
         objectController.setEmpty(new Point<>(selectedPoint));
@@ -428,10 +401,6 @@ public class Board {
             availableForMove = selected.getStepMode() == TurnType.MOVE
                     ? getAvailableForMove(selectedPoint)
                     : emptySet;
-
-            if (selected.getStepMode() == TurnType.ATTACK && availableForAttack.isEmpty()) {
-                selected.setStepMode(TurnType.COMPLETED);
-            }
         }
     }
 

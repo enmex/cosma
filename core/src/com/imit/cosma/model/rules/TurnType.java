@@ -3,7 +3,7 @@ package com.imit.cosma.model.rules;
 public enum TurnType {
     MOVE(1),
     ATTACK(2),
-    COMPLETED(3);
+    UNDEFINED(3);
 
     public final int id;
 

@@ -5,7 +5,7 @@ import com.imit.cosma.model.rules.TurnType;
 public class NeutralSide extends Side{
 
     public NeutralSide() {
-        super(0, 0, TurnType.COMPLETED);
+        super(0, 0, TurnType.UNDEFINED);
     }
 
     @Override

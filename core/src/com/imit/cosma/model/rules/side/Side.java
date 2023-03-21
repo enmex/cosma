@@ -9,7 +9,7 @@ public abstract class Side implements Cloneable{
     protected TurnType turnType;
 
     protected Side(float defaultRotation){
-        this(defaultRotation, Config.getInstance().DEFAULT_SHIPS_NUMBER, TurnType.COMPLETED);
+        this(defaultRotation, Config.getInstance().DEFAULT_SHIPS_NUMBER, TurnType.UNDEFINED);
     }
 
     protected Side(float defaultRotation, int shipsNumber, TurnType turnType) {

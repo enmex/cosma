@@ -33,9 +33,7 @@ public class SpaceshipDetails extends SelectedCellDetails {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 TurnType turnType = spaceship.getTurnType();
-                if (turnType != TurnType.COMPLETED) {
-                    spaceship.setTurnType(turnType == TurnType.MOVE ? TurnType.ATTACK : TurnType.MOVE);
-                }
+                spaceship.setTurnType(turnType == TurnType.MOVE ? TurnType.ATTACK : TurnType.MOVE);
             }
         });
         modeSwitcherButton.setPosition(parentWidth / 2f, parentLocation.y + parentHeight / 2f);

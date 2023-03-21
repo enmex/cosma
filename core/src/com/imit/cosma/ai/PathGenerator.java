@@ -82,9 +82,6 @@ public class PathGenerator {
                     for (Point<Integer> point : board.getAvailableCells(x, y)) {
                         pathsAI.add(new Path<>(x, y, point.x, point.y));
                     }
-                    for (Point<Integer> point : board.getAvailableCells(x, y)) {
-                        pathsAI.add(new Path<>(x, y, point.x, point.y));
-                    }
                 }
             }
         }
@@ -102,13 +99,16 @@ public class PathGenerator {
 
     public static Path<Integer> getRandomShipPath(ArtificialBoard board) {
         Point<Integer> randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer() ? board.getPlayerShipLocations() : board.getEnemyShipLocations());
-        Set<Point<Integer>> availableCells = board.getAvailableCells(randomShipLocation);
-        while (availableCells.isEmpty()) {
-            randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer() ? board.getPlayerShipLocations() : board.getEnemyShipLocations());
-            availableCells = board.getAvailableCells(randomShipLocation);
+        Set<Point<Integer>> availableCells = board.getAvailableForAttack(randomShipLocation);
+        if (availableCells.isEmpty()) {
+            availableCells = board.getAvailableForMove(randomShipLocation);
         }
-        
-        Point<Integer> randomTargetLocation = Randomizer.getRandom(new ArrayList<>(board.getAvailableCells(randomShipLocation)));
+
+        if (availableCells.isEmpty()) {
+            board.getAvailableCells(randomShipLocation);
+        }
+
+        Point<Integer> randomTargetLocation = Randomizer.getRandom(new ArrayList<>(availableCells));
 
         return new Path<>(randomShipLocation, randomTargetLocation);
     }

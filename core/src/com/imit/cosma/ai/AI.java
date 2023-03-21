@@ -16,7 +16,7 @@ public class AI {
 
     public AI(final Board board){
         this.board = new ArtificialBoard(board);
-        tree = new MCTree(this.board);
+        tree = new MCTree();
         generator = new PathGenerator();
     }
 
@@ -24,7 +24,9 @@ public class AI {
         this.board.update(board);
         generator.update(board);
         tree.climbDown(playerPath, playerTurnType);
-        Path<Integer> currentPath = tree.treeSearch(this.board);
+        tree.treeSearch(AI.this.board);
+        Path<Integer> currentPath = tree.getPath();
+
         TurnType turnType = this.board.getTurnTypeByPath(currentPath);
         tree.climbDown(currentPath, turnType);
         return currentPath;
