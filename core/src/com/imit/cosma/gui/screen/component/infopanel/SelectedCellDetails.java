@@ -16,7 +16,4 @@ public abstract class SelectedCellDetails extends Actor {
     public abstract boolean isShip();
 
     public abstract boolean isObject();
-
-    @Override
-    public abstract void act(float delta);
 }

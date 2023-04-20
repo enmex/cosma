@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Config {
-    public final int GAME_OBJECT_LIVE_TIME = 3;
+    public final int GAME_OBJECT_LIVE_TIME = 2;
     public final int DEFAULT_SHIPS_NUMBER = 24;
     private static Config instance;
 
@@ -43,8 +43,8 @@ public class Config {
     public final List<Point<Integer>> EMPTY_LIST = new ArrayList<>();
     public final Map<Point<Integer>, String> EMPTY_MAP = new HashMap<>();
     public final float SPACE_DEBRIS_SPAWN_CHANCE = 0.3f;
-    public final float BLACK_HOLE_SPAWN_CHANCE = 0.3f;
-    public final float LOOT_SPAWN_CHANCE = 0.3f;
+    public final float BLACK_HOLE_SPAWN_CHANCE = 0.15f;
+    public final float LOOT_SPAWN_CHANCE = 0.45f;
 
     public final int WORLD_WIDTH = Gdx.graphics.getWidth();
     public final int WORLD_HEIGHT = Gdx.graphics.getHeight();
@@ -63,6 +63,7 @@ public class Config {
     private final String SPACESHIP_ANIMATIONS_DIRECTORY = "animation\\spaceship\\";
     private final String GAME_OBJECT_ANIMATIONS_DIRECTORY = "animation\\game_object\\";
     private final String WEAPON_ANIMATIONS_DIRECTORY = "animation\\weapon\\";
+    public final String SCORE_DELIMITER_ANIMATION_DIRECTORY = "animation\\score_delimiter\\score_delimiter.atlas";
 
     public final String CORVETTE_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_corvette.atlas";
     public final String DESTROYER_IDLE_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "idle_destroyer.atlas";
@@ -79,17 +80,19 @@ public class Config {
     public final String DREADNOUGHT_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_dreadnought.atlas";
     public final String BATTLESHIP_MOVEMENT_ATLAS_PATH = SPACESHIP_ANIMATIONS_DIRECTORY + "movement_battleship.atlas";
 
-    public final String BLACK_HOLE_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_black_hole.atlas";
-    public final String HEALTH_KIT_IDLE_ATLAS_PATH = BLACK_HOLE_IDLE_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_health_kit.atlas";
+    public final String BLACK_HOLE_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "blackhole_idle.atlas";
+    public final String HEALTH_KIT_IDLE_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "health_idle.atlas";
     public final String DAMAGE_KIT_IDLE_ATLAS_PATH = BLACK_HOLE_IDLE_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "idle_damage_kit.atlas";
     public final String SPACE_DEBRIS_1_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_1.atlas";
     public final String SPACE_DEBRIS_2_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_2.atlas";
     public final String SPACE_DEBRIS_3_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_3.atlas";
     public final String SPACE_DEBRIS_4_MOVEMENT_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "space_debris_4.atlas";
 
-    public final String BLACK_HOLE_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_black_hole.atlas";
-    public final String HEALTH_KIT_SPAWN_ATLAS_PATH = BLACK_HOLE_SPAWN_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_health_kit.atlas";
+    public final String BLACK_HOLE_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "blackhole_spawn.atlas";
+    public final String HEALTH_KIT_SPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "health_spawn.atlas";
     public final String DAMAGE_KIT_SPAWN_ATLAS_PATH = BLACK_HOLE_SPAWN_ATLAS_PATH;//GAME_OBJECT_ANIMATIONS_DIRECTORY + "spawn_damage_kit.atlas";
+
+    public final String HEALTH_KIT_DESPAWN_ATLAS_PATH = GAME_OBJECT_ANIMATIONS_DIRECTORY + "health_despawn.atlas";
 
     public final String MACHINE_GUN_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_machine_gun.atlas";
     public final String LASER_SHOT_ATLAS_PATH = WEAPON_ANIMATIONS_DIRECTORY + "shot_laser.atlas";

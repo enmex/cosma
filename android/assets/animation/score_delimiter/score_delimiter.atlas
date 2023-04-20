@@ -1,5 +1,5 @@
 
-spawn_black_hole.png
+score_delimiter.png
 size: 1024, 256
 format: RGBA8888
 filter: Nearest, Nearest
@@ -46,10 +46,3 @@ idle
   orig: 128, 128
   offset: 0, 0
   index: 6
-idle
-  rotate: false
-  xy: 782, 4
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 7

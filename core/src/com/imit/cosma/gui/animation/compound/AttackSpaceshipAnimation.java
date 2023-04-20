@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.event.AnimationCompletedEvent;
 import com.imit.cosma.gui.animation.simple.FontAnimation;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
@@ -58,15 +59,12 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
         Vector normalVector = new Vector(0, orientation);
         Vector destinationVector = new Vector(
                 shotsPath.getTarget().x - shotsPath.getSource().x,
-                orientation * (shotsPath.getTarget().y - shotsPath.getSource().y)
+                shotsPath.getTarget().y - shotsPath.getSource().y
         );
-        float rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector))) - defaultRotation;
 
-        SequentialObjectAnimation shotsAnimation = new SequentialObjectAnimation(rotation, shotsPath);
-        if (rotation != 180) {
-            rotation *= orientation;
-        }
-        float targetRotation = defaultRotation + rotation;
+        float targetRotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector)));
+        targetRotation = targetRotation * getOrientation(targetRotation) + defaultRotation;
+        SequentialObjectAnimation shotsAnimation = new SequentialObjectAnimation(targetRotation, shotsPath);
 
         //init main animation
         SimpleAnimation shipRotation = new RotationAnimation(playerShipAtlasPath, defaultRotation, targetRotation, playerScreenLocation);
@@ -82,7 +80,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
                     weapon.getSoundAttack(),
                     Config.getInstance().MOVEMENT_VELOCITY,
                     shotsPath,
-                    rotation);
+                    targetRotation);
 
             IdleAnimation explosion = new IdleAnimation(
                     weapon.getExplosionAnimationPath(),
@@ -94,12 +92,13 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
             FontAnimation damageInfo = new FontAnimation(
                     enemyScreenLocation,
                     -weapon.getDamage() + "HP",
-                    Color.RED
+                    Color.RED,
+                    1f
             );
 
             shotsAnimation.phases.add(shotMovement);
             shotsAnimation.phases.add(explosion);
-            //shotsAnimation.phases.add(damageInfo);
+            shotsAnimation.phases.add(damageInfo);
         }
 
         if (isKillAttack) {
@@ -177,5 +176,14 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
 
     private SequentialObjectAnimation getStandingEnemyShipAnimation() {
         return objectsAnimations.get(2);
+    }
+
+    private int getOrientation(float rotation){
+        if (rotation == 180) {
+            return 1;
+        }
+        int orientation = (int) Math.cos(Math.toRadians(defaultRotation));
+        return orientation * (int) Math.signum(shotsPath.getSource().x
+                - shotsPath.getTarget().x);
     }
 }

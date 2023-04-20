@@ -1,21 +1,10 @@
 package com.imit.cosma.model.board.content;
 
-import com.imit.cosma.config.Config;
-import com.imit.cosma.model.rules.move.MoveType;
-import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
-import com.imit.cosma.model.rules.side.Side;
-import com.imit.cosma.model.rules.TurnType;
 
-public class BlackHole implements Content {
-    private TurnType turnType;
-
-    private MoveType moveType;
-    private Side side;
-
+public class BlackHole extends GameObject {
     public BlackHole(){
-        moveType = MoveType.IDLE;
-        side = new NeutralSide();
+        super(GameObjectType.BLACK_HOLE);
     }
 
     @Override
@@ -34,37 +23,10 @@ public class BlackHole implements Content {
     }
 
     @Override
-    public MoveType getMoveType() {
-        return moveType;
-    }
-
-    @Override
-    public String getIdleAnimationPath() {
-        return Config.getInstance().BLACK_HOLE_IDLE_ATLAS_PATH;
-    }
-
-    @Override
-    public Side getSide() {
-        return side;
-    }
-
-    @Override
-    public void setTurnType(TurnType turnType) {
-        this.turnType = turnType;
-    }
-
-    @Override
-    public TurnType getTurnType() {
-        return turnType;
-    }
-
-    @Override
     public void setDamage(int damage) {}
 
     @Override
-    public void addHealthPoints(int healthPoints) {
-
-    }
+    public void addHealthPoints(int healthPoints) {}
 
     @Override
     public int getDamagePoints() {

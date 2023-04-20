@@ -1,0 +1,20 @@
+
+switcher.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+attack
+  rotate: true
+  xy: 1, 125
+  size: 128, 384
+  orig: 384, 128
+  offset: 0, 0
+  index: -1
+move
+  rotate: true
+  xy: 1, 255
+  size: 128, 384
+  orig: 384, 128
+  offset: 0, 0
+  index: -1

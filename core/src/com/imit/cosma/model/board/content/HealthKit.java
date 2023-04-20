@@ -8,7 +8,7 @@ public class HealthKit extends Loot {
     private int healthPoints;
 
     public HealthKit() {
-        super(LootType.HEALTH_KIT);
+        super(GameObjectType.HEALTH_KIT);
         healthPoints = Randomizer.generateInLine(
                 Config.getInstance().MIN_HEALTH_KIT_HEALTH_POINTS,
                 Config.getInstance().MAX_HEALTH_KIT_HEALTH_POINTS

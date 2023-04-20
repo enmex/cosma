@@ -24,7 +24,7 @@ public class MCTree extends DecisionTree {
         if(root.getChildren().isEmpty()) {
             expand(board, root, !board.getTurn().isPlayer());
         }
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
             MCTreeNode bestNode = select(root);
             board.doTurn(bestNode.getPath());
             expand(board, bestNode, !board.getTurn().isPlayer());

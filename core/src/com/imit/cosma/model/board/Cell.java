@@ -53,7 +53,7 @@ public class Cell {
         return content.getIdleAnimationPath();
     }
 
-    public TurnType getStepMode(){
+    public TurnType getTurnType(){
         return content.getTurnType();
     }
 

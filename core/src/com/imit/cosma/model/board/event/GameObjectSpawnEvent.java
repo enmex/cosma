@@ -2,7 +2,8 @@ package com.imit.cosma.model.board.event;
 
 import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.CompoundAnimation;
-import com.imit.cosma.gui.animation.compound.BlackHoleSpawnCompoundAnimation;
+import com.imit.cosma.gui.animation.compound.ObjectSpawnCompoundAnimation;
+import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.CoordinateConverter;
 import com.imit.cosma.util.Path;
@@ -13,15 +14,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BlackHoleSpawnEvent implements BoardEvent {
+public class GameObjectSpawnEvent implements BoardEvent {
     private final Point<Float> spawnPoint;
+    private final GameObject gameObject;
     private final Spaceship victimSpaceship;
 
-    public BlackHoleSpawnEvent(Point<Integer> spawnPoint) {
-        this(spawnPoint, null);
+    public GameObjectSpawnEvent(GameObject gameObject, Point<Integer> spawnPoint) {
+        this(gameObject, spawnPoint, null);
     }
 
-    public BlackHoleSpawnEvent(Point<Integer> spawnPoint, Spaceship victimSpaceship) {
+    public GameObjectSpawnEvent(GameObject gameObject, Point<Integer> spawnPoint, Spaceship victimSpaceship) {
+        this.gameObject = gameObject;
         this.spawnPoint = CoordinateConverter.toScreenPoint(spawnPoint);
         this.victimSpaceship = victimSpaceship;
     }
@@ -29,17 +32,12 @@ public class BlackHoleSpawnEvent implements BoardEvent {
     @Override
     public CompoundAnimation getAnimationType() {
         return victimSpaceship == null
-                ? new BlackHoleSpawnCompoundAnimation(spawnPoint)
-                : new BlackHoleSpawnCompoundAnimation(spawnPoint, victimSpaceship);
+                ? new ObjectSpawnCompoundAnimation(gameObject, spawnPoint)
+                : new ObjectSpawnCompoundAnimation(gameObject, spawnPoint, victimSpaceship);
     }
 
     @Override
     public boolean isIdle() {
-        return false;
-    }
-
-    @Override
-    public boolean changesActorLocation() {
         return false;
     }
 
@@ -51,7 +49,7 @@ public class BlackHoleSpawnEvent implements BoardEvent {
     @Override
     public Map<Point<Float>, String> getLocationsOfAddedContents() {
         Map<Point<Float>, String> addedContents = new HashMap<>();
-        addedContents.put(spawnPoint, Config.getInstance().BLACK_HOLE_IDLE_ATLAS_PATH);
+        addedContents.put(spawnPoint, gameObject.getIdleAnimationPath());
 
         return addedContents;
     }

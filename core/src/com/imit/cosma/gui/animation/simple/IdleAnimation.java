@@ -18,7 +18,7 @@ public class IdleAnimation extends SimpleAnimation {
     private final Point<Float> locationOnScreen;
 
     public IdleAnimation(String atlasPath, PlayMode playMode, SoundType soundType, Point<Float> locationOnScreen, float rotation){
-        super(atlasPath, getInstance().IDLE_ANIMATION_REGION_NAME, playMode, 2.5f);
+        super(atlasPath, getInstance().IDLE_ANIMATION_REGION_NAME, playMode, 0.1f);
         this.playMode = playMode;
         this.rotation = rotation;
         elapsedTime = 0f;

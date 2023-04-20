@@ -1,0 +1,48 @@
+
+infopanel.png
+size: 2048, 256
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+panel
+  rotate: false
+  xy: 2, 4
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: 1
+panel
+  rotate: false
+  xy: 260, 4
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: 2
+panel
+  rotate: false
+  xy: 518, 4
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: 3
+panel
+  rotate: false
+  xy: 776, 4
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: 4
+panel
+  rotate: false
+  xy: 1034, 4
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: 5
+panel
+  rotate: false
+  xy: 1292, 4
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: 6

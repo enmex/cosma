@@ -5,6 +5,7 @@ import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CoordinateConverter {
@@ -22,6 +23,13 @@ public class CoordinateConverter {
         );
     }
 
+    public static Point<Float> toOriginCenter(Point<Float> screenPoint) {
+        return new Point<>(
+                screenPoint.x + Config.getInstance().BOARD_CELL_WIDTH / 2f,
+                screenPoint.y + Config.getInstance().BOARD_CELL_HEIGHT / 2f
+        );
+    }
+
     public static Point<Integer> toBoardPoint(Point<Float> screenPoint) {
         return new Point<>(
                 (int) (screenPoint.x / Config.getInstance().BOARD_CELL_WIDTH),
@@ -33,7 +41,7 @@ public class CoordinateConverter {
         return new Path<>(toScreenPoint(boardPath.getSource()), toScreenPoint(boardPath.getTarget()));
     }
 
-    public static List<Point<Float>> toScreenPoints(List<Point<Integer>> boardPoints) {
+    public static List<Point<Float>> toScreenPoints(Collection<Point<Integer>> boardPoints) {
         List<Point<Float>> screenPoints = new ArrayList<>();
         for (Point<Integer> boardPoint : boardPoints) {
             screenPoints.add(toScreenPoint(boardPoint));

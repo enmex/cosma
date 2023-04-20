@@ -16,7 +16,6 @@ public class AnimatedSprite extends Actor {
     private TextureRegion currentFrame;
     private final Animation<TextureRegion> animation;
     private final float rotation;
-
     public AnimatedSprite(float frameTime, String atlasPath, Point<Float> locationOnScreen, float rotation, float width, float height) {
         setBounds(locationOnScreen.x, locationOnScreen.y, width, height);
         this.rotation = rotation;
@@ -24,6 +23,19 @@ public class AnimatedSprite extends Actor {
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
         animation = new Animation<TextureRegion>(frameTime,
                 atlas.findRegions(Config.getInstance().IDLE_ANIMATION_REGION_NAME));
+        animation.setPlayMode(Animation.PlayMode.LOOP);
+        currentFrame = animation.getKeyFrame(elapsedTime, true);
+
+        sprite = new Sprite();
+    }
+
+    public AnimatedSprite(float frameTime, String atlasPath, String regionName, Point<Float> locationOnScreen, float rotation, float width, float height) {
+        setBounds(locationOnScreen.x, locationOnScreen.y, width, height);
+        this.rotation = rotation;
+
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
+        animation = new Animation<TextureRegion>(frameTime,
+                atlas.findRegions(regionName));
         animation.setPlayMode(Animation.PlayMode.LOOP);
         currentFrame = animation.getKeyFrame(elapsedTime, true);
 

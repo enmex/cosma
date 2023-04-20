@@ -2,16 +2,18 @@ package com.imit.cosma.gui.screen.component;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 
 public class HealthBar extends Actor {
-    private final ShapeRenderer bar;
-    private final Color barColor;
+    private final Sprite bar;
+    private Color barColor;
     private int healthPoints;
     private final int maxHealthPoints;
     private final Point<Float> barLocation;
@@ -25,9 +27,9 @@ public class HealthBar extends Actor {
         this.barLocation = barLocation;
         this.height = height;
         this.width = width;
-        bar = new ShapeRenderer();
+        bar = new Sprite(new Texture(Gdx.files.internal("shape.png")));
 
-        float g = (float) healthPoints / healthPoints;
+        float g = (float) healthPoints / maxHealthPoints;
         float r = 1f - g;
 
         barColor = new Color(r, g, 0f, 1f);
@@ -40,18 +42,19 @@ public class HealthBar extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         //showing healthBar
-        bar.begin(ShapeRenderer.ShapeType.Filled);
+        bar.setBounds(barLocation.x, barLocation.y, width * healthPoints / maxHealthPoints, height);
         bar.setColor(barColor);
-        bar.rect(barLocation.x, barLocation.y, width * healthPoints / maxHealthPoints, height);
-        bar.end();
+        bar.draw(batch);
 
-        //showing hp points
-        font.draw(batch, healthPoints + " OF " + maxHealthPoints + "HP",
-                fontLocation.x, fontLocation.y,
-                width, 1, true);
+        font.draw(batch, String.format("%d", healthPoints),
+                fontLocation.x, fontLocation.y, width, 1, true);
     }
 
     public void setHealthPoints(int healthPoints) {
         this.healthPoints = healthPoints;
+        float g = (float) healthPoints / maxHealthPoints;
+        float r = 1f - g;
+
+        barColor = new Color(r, g, 0f, 1f);
     }
 }

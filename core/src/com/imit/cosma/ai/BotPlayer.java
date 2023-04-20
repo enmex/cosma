@@ -4,7 +4,7 @@ import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.rules.TurnType;
 import com.imit.cosma.util.Path;
 
-public class AI {
+public class BotPlayer {
     private final PathGenerator generator;
 
     private final DecisionTree tree;
@@ -14,7 +14,7 @@ public class AI {
 
     private final ArtificialBoard board;
 
-    public AI(final Board board){
+    public BotPlayer(final Board board){
         this.board = new ArtificialBoard(board);
         tree = new MCTree();
         generator = new PathGenerator();
@@ -24,7 +24,7 @@ public class AI {
         this.board.update(board);
         generator.update(board);
         tree.climbDown(playerPath, playerTurnType);
-        tree.treeSearch(AI.this.board);
+        tree.treeSearch(BotPlayer.this.board);
         Path<Integer> currentPath = tree.getPath();
 
         TurnType turnType = this.board.getTurnTypeByPath(currentPath);

@@ -5,6 +5,7 @@ import com.imit.cosma.model.rules.TurnType;
 
 public abstract class Side implements Cloneable{
     protected final float defaultRotation;
+    protected int score;
     protected int shipsNumber;
     protected TurnType turnType;
 
@@ -40,4 +41,12 @@ public abstract class Side implements Cloneable{
 
     @Override
     public abstract Side clone();
+
+    public void addScore(int score) {
+        this.score += score;
+    }
+
+    public int getScore() {
+        return score;
+    }
 }

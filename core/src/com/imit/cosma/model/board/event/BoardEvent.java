@@ -10,7 +10,6 @@ import java.util.Map;
 public interface BoardEvent {
     CompoundAnimation getAnimationType();
     boolean isIdle();
-    boolean changesActorLocation();
     List<Path<Integer>> getContentsPaths();
     Map<Point<Float>, String> getLocationsOfAddedContents();
     List<Point<Float>> getLocationsOfRemovedContents();

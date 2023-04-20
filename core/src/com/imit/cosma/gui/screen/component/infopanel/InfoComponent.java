@@ -1,32 +1,49 @@
 package com.imit.cosma.gui.screen.component.infopanel;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.imit.cosma.config.Config;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.event.CellChangeEvent;
+import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.screen.component.Component;
 import com.imit.cosma.gui.screen.component.PlayingField;
 import com.imit.cosma.model.board.content.Content;
+import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.board.content.Space;
+import com.imit.cosma.model.rules.TurnType;
+import com.imit.cosma.model.rules.move.MoveType;
+import com.imit.cosma.model.rules.side.PlayerSide;
+import com.imit.cosma.model.spaceship.ShipRandomizer;
 import com.imit.cosma.model.spaceship.Spaceship;
+import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.util.Point;
 
 import static com.imit.cosma.config.Config.*;
 
 public class InfoComponent extends Component {
     private SelectedCellDetails selectedCellDetails;
-    private final TextureRegion panel;
+    private final AnimatedSprite panel;
 
     public InfoComponent(PlayingField playingField){
         super(new Point<>(0f, (float) getInstance().INFO_PANEL_BOTTOM),
                 getInstance().INFO_PANEL_WIDTH,
                 getInstance().INFO_PANEL_HEIGHT);
+        panel = new AnimatedSprite(1 / 2f,
+                "infopanel.atlas",
+                "panel",
+                location,
+                0,
+                componentWidth,
+                componentHeight);
         selectedCellDetails = new SpaceDetails(location, componentWidth, componentHeight);
-        panel = new TextureRegion(new Texture(Config.getInstance().INFORMATION_PANEL_PATH),
-                0, 0, 256, 128);
 
         playingField.addListener(new EventListener() {
             @Override
@@ -42,6 +59,8 @@ public class InfoComponent extends Component {
                                 componentHeight);
                     } else if (content instanceof Space) {
                         selectedCellDetails = new SpaceDetails(location, componentWidth, componentHeight);
+                    } else if (content instanceof GameObject) {
+                        selectedCellDetails = new GameObjectInfo((GameObject) content, location, componentWidth, componentHeight);
                     }
                     return true;
                 }
@@ -52,16 +71,22 @@ public class InfoComponent extends Component {
 
     @Override
     public void act(float delta) {
+        panel.act(delta);
         selectedCellDetails.act(delta);
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        batch.draw(panel, location.x,
-                location.y,
-                componentWidth,
-                componentHeight);
-
+        panel.draw(batch, parentAlpha);
         selectedCellDetails.draw(batch, parentAlpha);
+    }
+
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        if (x > location.x && x < location.x + componentWidth && y > location.y && y < location.y + componentHeight) {
+            return selectedCellDetails.hit(x, y, touchable);
+        } else {
+            return null;
+        }
     }
 }

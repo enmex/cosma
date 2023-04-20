@@ -1,9 +1,15 @@
 package com.imit.cosma.gui.animation.compound;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.event.AnimationCompletedEvent;
+import com.imit.cosma.gui.animation.simple.FontAnimation;
+import com.imit.cosma.gui.animation.simple.IdleAnimation;
 import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
+import com.imit.cosma.model.board.content.Loot;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Path;
@@ -14,10 +20,16 @@ public class ShipMovementAnimation extends CompoundAnimation {
     private final SoundType contentSoundType;
     private final String movingShipAtlasPath;
     private final String idleShipAtlasPath;
-    private final int mainAnimationIndex;
     private final Path<Float> shipScreenPath;
+    private final String lootDespawnAnimationPath, lootIdleAnimationPath;
+    private final SequentialObjectAnimation shipMovementAnimation;
+    private SequentialObjectAnimation lootAnimation;
 
     public ShipMovementAnimation(Spaceship spaceship, Path<Float> shipScreenPath){
+        this(spaceship, null, shipScreenPath);
+    }
+
+    public ShipMovementAnimation(Spaceship spaceship, Loot loot, Path<Float> shipScreenPath) {
         super(shipScreenPath);
         this.shipScreenPath = new Path<>(
                 new Point<>(
@@ -32,53 +44,83 @@ public class ShipMovementAnimation extends CompoundAnimation {
         this.defaultRotation = spaceship.getSide().getDefaultRotation();
         movingShipAtlasPath = spaceship.getSkeleton().getMovementAnimationPath();
         idleShipAtlasPath = spaceship.getSkeleton().getIdleAnimationPath();
-        mainAnimationIndex = 0;
         contentSoundType = spaceship.getSoundType();
+        lootDespawnAnimationPath = loot == null ? "" : loot.getDespawnAnimationPath();
+        lootIdleAnimationPath = loot == null ? "" : loot.getIdleAnimationPath();
         float orientation = (float) Math.cos(Math.toRadians(defaultRotation));
         Vector normalVector = new Vector(0, orientation);
         Vector destinationVector = new Vector(
                 shipScreenPath.getTarget().x - shipScreenPath.getSource().x,
-                orientation * (shipScreenPath.getTarget().y - shipScreenPath.getSource().y)
+                shipScreenPath.getTarget().y - shipScreenPath.getSource().y
         );
 
-        SequentialObjectAnimation data = new SequentialObjectAnimation(
-                (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector))) - defaultRotation,
+        float rotation = (float) Math.toDegrees(Math.acos((float) normalVector.cos(destinationVector)));
+
+        shipMovementAnimation = new SequentialObjectAnimation(
+                rotation,
                 shipScreenPath
         );
-
-        objectsAnimations.add(data);
     }
 
     @Override
     public void start(){
-        SequentialObjectAnimation sequentialObjectAnimation = objectsAnimations.get(mainAnimationIndex);
+        float targetRotation = shipMovementAnimation.rotation * getOrientation() + defaultRotation;
 
-        float rotation = sequentialObjectAnimation.rotation;
-        if (rotation != 180) {
-            rotation *= getOrientation();
-        }
-
-        float targetRotation = rotation;
-        
         SimpleMovementAnimation shipSimpleMovementAnimation = new SimpleMovementAnimation(
-                movingShipAtlasPath, contentSoundType, shipScreenPath, rotation);
+                movingShipAtlasPath, contentSoundType, shipScreenPath, targetRotation);
 
         RotationAnimation shipRotationAnimation = new RotationAnimation(idleShipAtlasPath,
                 defaultRotation, targetRotation, shipScreenPath.getSource());
 
         RotationAnimation shipRotationAnimationToDefault = new RotationAnimation(idleShipAtlasPath,
                 targetRotation, defaultRotation, shipScreenPath.getTarget());
-        sequentialObjectAnimation.phases.add(shipRotationAnimation);
-        sequentialObjectAnimation.phases.add(shipSimpleMovementAnimation);
-        sequentialObjectAnimation.phases.add(shipRotationAnimationToDefault);
+        shipMovementAnimation.phases.add(shipRotationAnimation);
+        shipMovementAnimation.phases.add(shipSimpleMovementAnimation);
+        shipMovementAnimation.phases.add(shipRotationAnimationToDefault);
+        objectsAnimations.add(shipMovementAnimation);
 
-        sequentialObjectAnimation.currentPhase = 0;
+        if (!lootDespawnAnimationPath.isEmpty()) {
+            lootAnimation = new SequentialObjectAnimation(0, new Path<>(shipScreenPath.getTarget(), shipScreenPath.getTarget()));
+            lootAnimation.phases.add(new IdleAnimation(lootIdleAnimationPath, Animation.PlayMode.LOOP, shipScreenPath.getTarget(), 0f));
+            lootAnimation.phases.add(new IdleAnimation(lootDespawnAnimationPath, Animation.PlayMode.NORMAL, shipScreenPath.getTarget(), 0f));
+            lootAnimation.phases.add(new FontAnimation(shipScreenPath.getTarget(), "Healed", Color.LIME, 1f));
+            lootAnimation.start();
+            objectsAnimations.add(lootAnimation);
+        }
 
-        sequentialObjectAnimation.start();
+        shipMovementAnimation.currentPhase = 0;
+
+        shipMovementAnimation.start();
+    }
+
+    @Override
+    public void render(Batch batch, float delta) {
+        if (lootAnimation != null) {
+            lootAnimation.render(batch, delta);
+            if (!lootAnimation.isAnimated() && !lootAnimation.isCompleted()) {
+                lootAnimation.nextPhase();
+            }
+        }
+        shipMovementAnimation.render(batch, delta);
+        if (!shipMovementAnimation.isAnimated() && !shipMovementAnimation.isCompleted()) {
+            shipMovementAnimation.nextPhase();
+            if (shipMovementAnimation.isLastPhase() && lootAnimation != null) {
+                lootAnimation.nextPhase();
+            }
+        } else if (shipMovementAnimation.isCompleted()) {
+            animatedObjectsLocations.removeValue(shipMovementAnimation.path.getTarget(), false);
+        }
+        if (!isAnimated()) {
+            animatedObjectsLocations.clear();
+        }
     }
 
     private int getOrientation(){
-        return (int) Math.signum(objectsAnimations.get(mainAnimationIndex).path.getSource().x
-                - objectsAnimations.get(mainAnimationIndex).path.getTarget().x);
+        if (shipMovementAnimation.rotation == 180) {
+            return 1;
+        }
+        int orientation = (int) Math.cos(Math.toRadians(defaultRotation));
+        return orientation * (int) Math.signum(shipMovementAnimation.path.getSource().x
+                - shipMovementAnimation.path.getTarget().x);
     }
 }

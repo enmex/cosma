@@ -3,7 +3,6 @@ package com.imit.cosma.gui.animation.compound;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.util.Point;
-import com.imit.cosma.util.Vector;
 import com.imit.cosma.util.Path;
 
 public abstract class CompoundAnimation {
@@ -20,9 +19,12 @@ public abstract class CompoundAnimation {
     public CompoundAnimation(Point<Float> screenPoint) {
         SequentialObjectAnimation data = new SequentialObjectAnimation(0, new Path<>(screenPoint, screenPoint));
         data.phases = new Array<>();
+        animatedObjectsLocations.add(screenPoint);
 
         objectsAnimations.add(data);
     }
+
+    public CompoundAnimation() {}
 
     public void render(Batch batch, float delta){
         for(SequentialObjectAnimation animation : objectsAnimations){

@@ -28,6 +28,9 @@ public abstract class SimpleAnimation {
         this(atlasPath, regionName, playMode, getInstance().FRAME_DURATION);
     }
 
+    protected SimpleAnimation() {
+    }
+
     public abstract void render(Batch batch, float delta);
     public abstract boolean isAnimated();
     public abstract void setAnimated(boolean animated);

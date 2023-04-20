@@ -10,11 +10,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.Player;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.gui.screen.component.ScoreComponent;
 import com.imit.cosma.gui.screen.component.infopanel.InfoComponent;
 import com.imit.cosma.gui.screen.component.PlayingField;
 
@@ -23,6 +25,7 @@ public class GameScreen implements Screen {
 
     private final PlayingField playingField;
     private final InfoComponent infoPanel;
+    private final ScoreComponent scorePanel;
 
     private final Texture background;
 
@@ -36,6 +39,7 @@ public class GameScreen implements Screen {
         player = new Player();
         playingField = new PlayingField();
         infoPanel = new InfoComponent(playingField);
+        scorePanel = new ScoreComponent(playingField);
         background = new Texture(getInstance().BACKGROUND_PATH);
 
         batch = new SpriteBatch();
@@ -70,8 +74,9 @@ public class GameScreen implements Screen {
         });
 
         stage.addActor(playingField);
-        stage.addActor(infoPanel);
         stage.addActor(soundSwitcher);
+        stage.addActor(infoPanel);
+        stage.addActor(scorePanel);
     }
 
     @Override
@@ -80,7 +85,7 @@ public class GameScreen implements Screen {
         batch.draw(background, 0, 0, getInstance().WORLD_WIDTH, getInstance().WORLD_HEIGHT);
         batch.end();
 
-        if(player.touchedScreen() || !playingField.isPlayerTurn()){
+        if((player.touchedScreen() || !playingField.isPlayerTurn()) && playingField.inField(player.getTouchPoint())){
             playingField.setTouchPoint(player.getTouchPoint());
         }
 

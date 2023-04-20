@@ -6,7 +6,7 @@ public class DamageKit extends Loot {
     private double damageBonus;
 
     public DamageKit() {
-        super(LootType.DAMAGE_KIT);
+        super(GameObjectType.DAMAGE_KIT);
         damageBonus = Math.random() * 2 + 1;
     }
 

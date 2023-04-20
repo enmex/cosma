@@ -2,13 +2,15 @@ package com.imit.cosma.model.board;
 
 import static com.imit.cosma.config.Config.getInstance;
 
-import com.imit.cosma.ai.AI;
+import com.imit.cosma.ai.BotPlayer;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.model.board.content.DamageKit;
+import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.board.content.HealthKit;
 import com.imit.cosma.model.board.content.Loot;
-import com.imit.cosma.model.board.event.BlackHoleSpawnEvent;
+import com.imit.cosma.model.board.event.GameObjectSpawnEvent;
 import com.imit.cosma.model.board.event.BoardEvent;
+import com.imit.cosma.model.board.event.GameObjectsDespawnEvent;
 import com.imit.cosma.model.board.event.IdleBoardEvent;
 import com.imit.cosma.model.board.event.SpaceshipAttackBoardEvent;
 import com.imit.cosma.model.board.event.SpaceshipMovementBoardEvent;
@@ -16,16 +18,17 @@ import com.imit.cosma.model.board.weather.SpaceDebris;
 import com.imit.cosma.model.board.weather.SpaceWeather;
 import com.imit.cosma.model.rules.Direction;
 import com.imit.cosma.model.rules.move.MoveType;
+import com.imit.cosma.model.rules.side.ClearingSide;
 import com.imit.cosma.model.rules.side.EnemySide;
 import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.TurnType;
 import com.imit.cosma.model.spaceship.ShipRandomizer;
-import com.imit.cosma.model.spaceship.Skeleton;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.pkg.random.Randomizer;
+import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.CycledList;
 import com.imit.cosma.util.Point;
@@ -46,7 +49,7 @@ public class Board {
     private final Set<Point<Integer>> interactedCells;
     private Side turn;
     private final Point<Integer> selectedPoint;
-    private AI enemyAI;
+    private BotPlayer enemyBotPlayer;
     private Path<Integer> currentPath;
     private Point<Integer> currentContentSpawnPoint;
     private Set<Point<Integer>> availableForMove;
@@ -71,12 +74,10 @@ public class Board {
         sides = new CycledList<>();
         sides.add(enemySide);
         sides.add(new NeutralSide());
+        sides.add(new ClearingSide());
         sides.add(playerSide);
 
         selectedPoint = new Point<>();
-
-        Point<Integer> playerShipLocation = new Point<>(3, 2);
-        Point<Integer> enemyShipLocation = new Point<>(3, 4);
 /*
         //initialise space cells
         for (int y = 0; y < Config.getInstance().BOARD_SIZE; y++) {
@@ -104,7 +105,7 @@ public class Board {
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType(MoveType.QUEEN).build();
                 cells[y][x] = new Cell(spaceship);
-                objectController.addSpaceship(x, y);
+                objectController.addSpaceship(spaceship, x, y);
             }
         }
 
@@ -112,7 +113,6 @@ public class Board {
         for (int y = 1; y < Config.getInstance().BOARD_SIZE - 1; y++) {
             for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
-                objectController.addSpace(x, y);
             }
         }
 
@@ -124,7 +124,7 @@ public class Board {
                         .addWeapon(ShipRandomizer.getRandomAmount())
                         .setMoveType().build();
                 cells[y][x] = new Cell(spaceship);
-                objectController.addSpaceship(x, y);
+                objectController.addSpaceship(spaceship, x, y);
             }
         }
 
@@ -136,19 +136,19 @@ public class Board {
     }
 
     public void initAI(){
-        enemyAI = new AI(this);
+        enemyBotPlayer = new BotPlayer(this);
     }
 
     public BoardEvent getCurrentEvent(Point<Integer> selected) {
         if(inBoard(selected)){
             if (turn.isPlayer()) {
                 return getCurrentPlayerEvent(selected);
-            } else if (turn instanceof EnemySide) {
+            } else if (turn.isPlayingSide()) {
                 return getCurrentEnemyEvent();
+            } else if (turn instanceof NeutralSide){
+                return getCurrentBoardEvent();
             } else {
-                //stub
-                updateSide();
-                return new IdleBoardEvent();
+                return getBoardClearingEvent();
             }
         }
         return new IdleBoardEvent();
@@ -159,7 +159,7 @@ public class Board {
 
         if(selected.containsShip() && selected.getSide().equals(turn)) {
             if (selectedCanMoveTo(targetPoint)) {
-                enemyAI.savePlayerTurn(currentPath, TurnType.MOVE);
+                enemyBotPlayer.savePlayerTurn(currentPath, TurnType.MOVE);
 
                 if (isSupplyKit(targetPoint)) {
                     return getCurrentSupplyKitEvent(targetPoint);
@@ -167,11 +167,11 @@ public class Board {
 
                 setSelectedShipPosition(targetPoint);
                 setSelected(targetPoint);
-                return new SpaceshipMovementBoardEvent(turn.isPlayer() ? getCell(targetPoint) : selected, currentPath);
+                return new SpaceshipMovementBoardEvent(turn.isPlayer() ? getCell(targetPoint) : selected, getCell(targetPoint), currentPath);
             } else if (selectedCanFireTo(targetPoint)) {
                 damageShip(targetPoint, selected.getDamagePoints());
 
-                enemyAI.savePlayerTurn(currentPath, TurnType.ATTACK);
+                enemyBotPlayer.savePlayerTurn(currentPath, TurnType.ATTACK);
                 return new SpaceshipAttackBoardEvent(selected, interacted, currentPath);
             }
         }
@@ -196,31 +196,31 @@ public class Board {
         setSelectedShipPosition(targetPoint);
         setSelected(targetPoint);
 
-        return new SpaceshipMovementBoardEvent(getCell(targetPoint), currentPath);
-    }
-
-    public Path<Integer> getCurrentPath() {
-        return currentPath;
+        return new SpaceshipMovementBoardEvent(getCell(targetPoint), lootCell, currentPath);
     }
 
     public BoardEvent getCurrentEnemyEvent(){
-        currentPath = enemyAI.getPath(this);
+        currentPath = enemyBotPlayer.getPath(this);
         Point<Integer> source = currentPath.getSource();
-        Point<Integer> target = currentPath.getTarget();
+        Point<Integer> targetPoint = currentPath.getTarget();
 
         setSelectedEnemyTurn(source);
 
-        if (isShip(target)) {
+        if (isShip(targetPoint)) {
             selected.setStepMode(TurnType.ATTACK);
         }
 
         if (selected.containsShip() && selected.getSide().equals(turn)) {
-            if (selectedCanMoveTo(target)) {
-                setSelectedShipPosition(target);
-                setSelectedEnemyTurn(target);
-                return new SpaceshipMovementBoardEvent(selected, currentPath);
-            } else if (selectedCanFireTo(target)) {
-                damageShip(target, selected.getDamagePoints());
+            if (selectedCanMoveTo(targetPoint)) {
+                if (isSupplyKit(targetPoint)) {
+                    return getCurrentSupplyKitEvent(targetPoint);
+                }
+
+                setSelectedShipPosition(targetPoint);
+                setSelectedEnemyTurn(targetPoint);
+                return new SpaceshipMovementBoardEvent(selected, getCell(targetPoint), currentPath);
+            } else if (selectedCanFireTo(targetPoint)) {
+                damageShip(targetPoint, selected.getDamagePoints());
                 return new SpaceshipAttackBoardEvent(selected, interacted, currentPath);
             }
         }
@@ -228,12 +228,17 @@ public class Board {
     }
 
     public void updateSide(){
+        turn.addScore(0);
         changeTurn();
 
         for(Point<Integer> point : interactedCells){
             cells[point.y][point.x].setStepMode(TurnType.MOVE);
         }
         interactedCells.clear();
+    }
+
+    public List<Point<Integer>> getExpiredObjects() {
+        return new ArrayList<>(objectController.getExpiredGameObjectLocations());
     }
 
     public boolean isShip(Point<Integer> target) {
@@ -263,8 +268,8 @@ public class Board {
 
         cells[target.y][target.x].setDamage(damage);
         interactedCells.add(selectedPoint.clone());
-
         if(cells[target.y][target.x].getContent().getHealthPoints() <= 0){
+            turn.addScore(cells[target.y][target.x].getContent().getMaxHealthPoints());
             destroyShip(target, Cell.initWithSpace());
             objectController.setEmpty(new Point<>(target));
         }
@@ -296,13 +301,13 @@ public class Board {
         return selected.containsShip()
                 && cells[target.y][target.x] != selected
                 && availableForMove.contains(target)
-                && selected.getStepMode() == TurnType.MOVE && isPassable(target);
+                && selected.getTurnType() == TurnType.MOVE && isPassable(target);
     }
 
     public boolean selectedCanFireTo(Point<Integer> target){
         return selected != null && isShipSelected() && isShip(target)
                 && selected.getSide() != cells[target.y][target.x].getSide()
-                && selected.getStepMode() == TurnType.ATTACK
+                && selected.getTurnType() == TurnType.ATTACK
                 && availableForAttack.get(target) != null;
     }
 
@@ -315,24 +320,24 @@ public class Board {
     }
 
     public Set<Point<Integer>> getAvailableCellsForMove() {
-        return selected.containsShip() && selected.getStepMode() == TurnType.MOVE && selected.getSide() == turn
+        return selected.containsShip() && selected.getTurnType() == TurnType.MOVE && selected.getSide() == turn
                 ? availableForMove : emptySet;
     }
 
     public Set<Point<Integer>> getAvailableCellsForMove(int x, int y) {
-        return isShip(x, y) && cells[y][x].getStepMode() == TurnType.MOVE
+        return isShip(x, y) && cells[y][x].getTurnType() == TurnType.MOVE
                 ? getAvailableForMove(new Point<>(x, y))
                 : emptySet;
     }
 
     public Map<Point<Integer>, Boolean> getAvailableCellsForFire(){
-        return selected.containsShip() && selected.getStepMode() == TurnType.ATTACK
+        return selected.containsShip() && selected.getTurnType() == TurnType.ATTACK
                 ? availableForAttack
                 : new HashMap<Point<Integer>, Boolean>();
     }
 
     public Map<Point<Integer>, Boolean> getAvailableCellsForFire(int x, int y) {
-        return isShip(x, y) && cells[y][x].getStepMode() == TurnType.ATTACK
+        return isShip(x, y) && cells[y][x].getTurnType() == TurnType.ATTACK
                 ? getAvailableForAttack(new Point<>(x, y))
                 : new HashMap<Point<Integer>, Boolean>();
     }
@@ -343,10 +348,10 @@ public class Board {
 
     private void setSelectedShipPosition(Point<Integer> destination) {
         interacted.setContent(cells[destination.y][destination.x].getContent().clone());
-
+        Spaceship spaceship = (Spaceship) getCell(selectedPoint).getContent();
         swapCells(selectedPoint, destination);
 
-        objectController.setSpaceship(new Point<>(destination));
+        objectController.setSpaceship(spaceship, new Point<>(destination));
         objectController.setEmpty(new Point<>(selectedPoint));
 
         interactedCells.add(destination.clone());
@@ -395,12 +400,8 @@ public class Board {
         selectedPoint.set(target);
 
         if(selected.containsShip()) {
-            availableForAttack = selected.getStepMode() == TurnType.ATTACK
-                    ? getAvailableForAttack(selectedPoint)
-                    : new HashMap<Point<Integer>, Boolean>();
-            availableForMove = selected.getStepMode() == TurnType.MOVE
-                    ? getAvailableForMove(selectedPoint)
-                    : emptySet;
+            availableForAttack = getAvailableForAttack(selectedPoint);
+            availableForMove = getAvailableForMove(selectedPoint);
         }
     }
 
@@ -409,7 +410,7 @@ public class Board {
     }
 
     public TurnType getStepMode(int x, int y) {
-        return cells[y][x].getStepMode();
+        return cells[y][x].getTurnType();
     }
 
     public int getMaxHealthPoints(int x, int y) {
@@ -429,40 +430,54 @@ public class Board {
     }
 
     public BoardEvent getCurrentBoardEvent() {
-        if (Math.random() < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
-            return getSpaceDebrisSpawnEvent();
-        }
-
-        if (Math.random() < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
+        //if (Math.random() < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
+          //  return getSpaceDebrisSpawnEvent();
+        //}
+        if (0 < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
             return getSpawnBlackHoleEvent();
         }
 
-        if (Math.random() < getInstance().LOOT_SPAWN_CHANCE) {
-            return getLootSpawnEvent();
-        }
+        //if (Math.random() < getInstance().LOOT_SPAWN_CHANCE) {
+          //  return getLootSpawnEvent();
+        //}
+        updateSide();
         return new IdleBoardEvent();
+    }
+
+    public BoardEvent getBoardClearingEvent() {
+        objectController.updateLiveTime();
+        MutualLinkedMap<GameObject, Point<Integer>> objectToLocationMap = new MutualLinkedMap<>();
+        for (Point<Integer> objectLocation : getExpiredObjects()) {
+            objectToLocationMap.put((GameObject) getCell(objectLocation).getContent(), objectLocation);
+            setCell(objectLocation, Cell.initWithSpace());
+        }
+        objectController.clearExpiredGameObjects();
+        return new GameObjectsDespawnEvent(objectToLocationMap);
     }
 
     private BoardEvent getSpawnBlackHoleEvent() {
         currentContentSpawnPoint = Randomizer.generatePoint(0, getInstance().BOARD_SIZE - 1);
-        objectController.addGameObject(currentContentSpawnPoint);
 
         Point<Integer> blackHoleSpawnPoint = currentContentSpawnPoint.clone();
         Cell cellWithBlackHole = Cell.initWithBlackHole();
+        objectController.addGameObject((GameObject) cellWithBlackHole.getContent(), currentContentSpawnPoint);
 
         currentPath = new Path<>(blackHoleSpawnPoint, blackHoleSpawnPoint);
         if (isShip(blackHoleSpawnPoint)) {
             Spaceship victimSpaceship = (Spaceship) cells[blackHoleSpawnPoint.y][blackHoleSpawnPoint.x].getContent();
-
+            if (victimSpaceship.getSide().isPlayer()) {
+                enemySide.addScore(victimSpaceship.getDamagePoints());
+            } else {
+                playerSide.addScore(victimSpaceship.getDamagePoints());
+            }
             destroyShip(blackHoleSpawnPoint, cellWithBlackHole);
             setCell(blackHoleSpawnPoint, cellWithBlackHole);
 
-            return new BlackHoleSpawnEvent(blackHoleSpawnPoint, victimSpaceship);
+            return new GameObjectSpawnEvent((GameObject) cellWithBlackHole.getContent(), blackHoleSpawnPoint, victimSpaceship);
         } else {
             setCell(blackHoleSpawnPoint, cellWithBlackHole);
-            objectController.setGameObject(blackHoleSpawnPoint);
 
-            return new BlackHoleSpawnEvent(blackHoleSpawnPoint);
+            return new GameObjectSpawnEvent((GameObject) cellWithBlackHole.getContent(), blackHoleSpawnPoint);
         }
     }
 
@@ -498,11 +513,13 @@ public class Board {
 
         int randomValue = (int) (Math.random() * 2);
         
-        Loot loot = randomValue == 0 ? new HealthKit() : new DamageKit();
+        //Loot loot = randomValue == 0 ? new HealthKit() : new DamageKit();
+        Loot loot = new HealthKit();
         Cell lootCell = new Cell(loot);
         setCell(currentContentSpawnPoint, lootCell);
+        objectController.setGameObject(loot, currentContentSpawnPoint);
 
-        return null;
+        return new GameObjectSpawnEvent(loot, currentContentSpawnPoint);
     }
 
     private void setCell(Point<Integer> target, Cell newCell) {
@@ -515,10 +532,6 @@ public class Board {
 
     public boolean isGameOver() {
         return playerSide.getShipsNumber() == 0 || enemySide.getShipsNumber() == 0;
-    }
-
-    public Point<Integer> getCurrentContentSpawnPoint() {
-        return currentContentSpawnPoint;
     }
 
     private Set<Point<Integer>> getAvailableForMove(Point<Integer> target) {
@@ -579,5 +592,21 @@ public class Board {
         }
 
         return availableForAttack;
+    }
+
+    public boolean selectedInAttackMode() {
+        return selected.getContent().getTurnType() == TurnType.ATTACK;
+    }
+
+    public int getCurrentPlayerScore() {
+        return turn.getScore();
+    }
+
+    public int getEnemySideScore() {
+        return enemySide.getScore();
+    }
+
+    public int getPlayerSideScore() {
+        return playerSide.getScore();
     }
 }

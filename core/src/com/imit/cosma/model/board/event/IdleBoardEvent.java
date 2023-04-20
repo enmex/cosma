@@ -1,6 +1,5 @@
 package com.imit.cosma.model.board.event;
 
-import com.imit.cosma.config.Config;
 import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
@@ -19,11 +18,6 @@ public class IdleBoardEvent implements BoardEvent {
     @Override
     public boolean isIdle() {
         return true;
-    }
-
-    @Override
-    public boolean changesActorLocation() {
-        return false;
     }
 
     @Override

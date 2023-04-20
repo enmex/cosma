@@ -2,63 +2,68 @@ package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.utils.Array;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.event.AnimationCompletedEvent;
 import com.imit.cosma.gui.animation.simple.IdleAnimation;
+import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.spaceship.Spaceship;
+import com.imit.cosma.pkg.CoordinateConverter;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
-public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
+public class ObjectSpawnCompoundAnimation extends CompoundAnimation {
     private final Point<Float> spawnPoint;
     private final boolean spawnedOnShip;
-    private final String victimSpaceshipIdleAtlas, victimSpaceshipDestructionAtlas;
+    private final String victimSpaceshipIdleAtlas, victimSpaceshipDestructionAtlas, gameObjectSpawnAtlas, gameObjectIdleAtlas;
 
-    public BlackHoleSpawnCompoundAnimation(Point<Float> spawnPoint) {
+    public ObjectSpawnCompoundAnimation(GameObject gameObject, Point<Float> spawnPoint) {
         super(spawnPoint);
-        this.spawnPoint = spawnPoint;
+        this.spawnPoint = CoordinateConverter.toOriginCenter(spawnPoint);
         victimSpaceshipDestructionAtlas = "";
         victimSpaceshipIdleAtlas = "";
+        gameObjectSpawnAtlas = gameObject.getSpawnAnimationPath();
+        gameObjectIdleAtlas = gameObject.getIdleAnimationPath();
         spawnedOnShip = false;
     }
 
-    public BlackHoleSpawnCompoundAnimation(Point<Float> spawnPoint, Spaceship victimSpaceship) {
+    public ObjectSpawnCompoundAnimation(GameObject gameObject, Point<Float> spawnPoint, Spaceship victimSpaceship) {
         super(spawnPoint);
         this.defaultRotation = victimSpaceship.getSide().getDefaultRotation();
         this.victimSpaceshipIdleAtlas = victimSpaceship.getIdleAnimationPath();
         this.victimSpaceshipDestructionAtlas = victimSpaceship.getSkeleton().getDestructionAnimationPath();
-        this.spawnPoint = spawnPoint;
+        gameObjectSpawnAtlas = gameObject.getSpawnAnimationPath();
+        gameObjectIdleAtlas = gameObject.getIdleAnimationPath();
+        this.spawnPoint = CoordinateConverter.toOriginCenter(spawnPoint);
         spawnedOnShip = true;
     }
 
     @Override
     public boolean isAnimated() {
-        return getBlackHoleSpawnAnimation().isAnimated();
+        return getGameObjectSpawnAnimation().isAnimated();
     }
 
     @Override
     public void start() {
-        SequentialObjectAnimation blackHoleSpawnAnimation = getBlackHoleSpawnAnimation();
-        blackHoleSpawnAnimation.currentPhase = 0;
+        SequentialObjectAnimation gameObjectSpawnAnimation = getGameObjectSpawnAnimation();
+        gameObjectSpawnAnimation.currentPhase = 0;
 
-        IdleAnimation blackHoleSpawn = new IdleAnimation(
-                Config.getInstance().BLACK_HOLE_SPAWN_ATLAS_PATH,
+        IdleAnimation gameObjectSpawn = new IdleAnimation(
+                gameObjectSpawnAtlas,
                 Animation.PlayMode.NORMAL,
                 spawnPoint,
                 0
         );
 
-        blackHoleSpawnAnimation.phases.add(blackHoleSpawn);
+        gameObjectSpawnAnimation.phases.add(gameObjectSpawn);
 
         if (spawnedOnShip) {
-            IdleAnimation blackHoleIdle = new IdleAnimation(
-                    Config.getInstance().BLACK_HOLE_IDLE_ATLAS_PATH,
+            IdleAnimation gameObjectIdle = new IdleAnimation(
+                    gameObjectIdleAtlas,
                     Animation.PlayMode.LOOP,
                     spawnPoint,
                     0
             );
-            blackHoleSpawnAnimation.phases.add(blackHoleIdle);
+            gameObjectSpawnAnimation.phases.add(gameObjectIdle);
 
             SequentialObjectAnimation shipDestructionAnimation = new SequentialObjectAnimation(defaultRotation, new Path<>(spawnPoint, spawnPoint));
 
@@ -79,14 +84,14 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
             objectsAnimations.add(shipDestructionAnimation);
         }
 
-        blackHoleSpawnAnimation.start();
+        gameObjectSpawnAnimation.start();
     }
 
     @Override
     public void render(Batch batch, float delta) {
-        SequentialObjectAnimation blackHoleAnimation = getBlackHoleSpawnAnimation();
+        SequentialObjectAnimation gameObjectAnimation = getGameObjectSpawnAnimation();
 
-        blackHoleAnimation.render(batch, delta);
+        gameObjectAnimation.render(batch, delta);
 
         if (spawnedOnShip) {
             SequentialObjectAnimation victimShipAnimation = getShipDestructionAnimation();
@@ -95,21 +100,24 @@ public class BlackHoleSpawnCompoundAnimation extends CompoundAnimation {
                 victimShipAnimation.render(batch, delta);
             }
 
-            if (victimShipAnimation.currentPhase == 0 && blackHoleAnimation.currentPhase == 1) {
+            if (victimShipAnimation.currentPhase == 0 && gameObjectAnimation.currentPhase == 1) {
                 victimShipAnimation.nextPhase();
             }
 
             if (!victimShipAnimation.isAnimated()) {
-                blackHoleAnimation.stop();
+                gameObjectAnimation.stop();
             }
         }
 
-        if (!blackHoleAnimation.isAnimated() && !blackHoleAnimation.isCompleted()) {
-            blackHoleAnimation.nextPhase();
+        if (!gameObjectAnimation.isAnimated() && !gameObjectAnimation.isCompleted()) {
+            gameObjectAnimation.nextPhase();
+        }
+        if (gameObjectAnimation.isCompleted()) {
+            animatedObjectsLocations.clear();
         }
     }
 
-    private SequentialObjectAnimation getBlackHoleSpawnAnimation() {
+    private SequentialObjectAnimation getGameObjectSpawnAnimation() {
         return objectsAnimations.get(0);
     }
 

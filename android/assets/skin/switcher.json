@@ -1,0 +1,14 @@
+{
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	default: {
+		up: move
+		checked: attack
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+        default: {
+                up: move
+                checked: attack
+        }
+}
+}

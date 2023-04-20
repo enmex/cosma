@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 
-public class FontAnimation {
+public class FontAnimation extends SimpleAnimation {
     private boolean animated;
 
     private final BitmapFont font;
@@ -24,20 +24,20 @@ public class FontAnimation {
 
     private final Point<Float> screenLocation;
 
-    public FontAnimation(Point<Float> screenLocation, String text, Color fontColor) {
+    public FontAnimation(Point<Float> screenLocation, String text, Color fontColor, float fontSize) {
         super();
         this.text = text;
         this.fontColor = fontColor;
         font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         font.setColor(fontColor);
-        font.getData().scale(0.3f);
+        font.getData().scale(fontSize);
         alpha = fontColor.a;
         this.screenLocation = new Point<>(
                 screenLocation.x- Config.getInstance().BOARD_CELL_WIDTH / 2f,
                 screenLocation.y
         );
         velocity = maxOffset / Config.getInstance().ANIMATION_DURATION;
-        fadeStep = velocity / 100;
+        fadeStep = velocity / 150;
     }
 
     public void render(Batch batch, float delta) {

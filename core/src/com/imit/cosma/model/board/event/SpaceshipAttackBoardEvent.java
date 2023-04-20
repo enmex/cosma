@@ -34,11 +34,6 @@ public class SpaceshipAttackBoardEvent implements BoardEvent {
     }
 
     @Override
-    public boolean changesActorLocation() {
-        return false;
-    }
-
-    @Override
     public List<Path<Integer>> getContentsPaths() {
         return new ArrayList<>();
     }
