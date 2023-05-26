@@ -4,9 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.event.AnimationCompletedEvent;
 import com.imit.cosma.gui.animation.simple.FontAnimation;
-import com.imit.cosma.gui.animation.simple.IdleAnimation;
+import com.imit.cosma.gui.animation.simple.StaticAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleAnimation;
@@ -82,7 +81,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
                     shotsPath,
                     targetRotation);
 
-            IdleAnimation explosion = new IdleAnimation(
+            StaticAnimation explosion = new StaticAnimation(
                     weapon.getExplosionAnimationPath(),
                     Animation.PlayMode.NORMAL,
                     weapon.getSoundExplosion(),
@@ -102,7 +101,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
         }
 
         if (isKillAttack) {
-            IdleAnimation destruction = new IdleAnimation(
+            StaticAnimation destruction = new StaticAnimation(
                     enemyShipDestructionAtlasPath,
                     Animation.PlayMode.NORMAL,
                     SoundType.ION_CANNON_EXPLOSION,
@@ -118,7 +117,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
 
         //init player staticPlayerShip
         SequentialObjectAnimation staticPlayerShip = new SequentialObjectAnimation(180 - defaultRotation, new Path<>(playerScreenLocation, playerScreenLocation));
-        IdleAnimation playerShipStanding = new IdleAnimation(
+        StaticAnimation playerShipStanding = new StaticAnimation(
                 playerShipAtlasPath,
                 Animation.PlayMode.LOOP,
                 playerScreenLocation, targetRotation);
@@ -127,7 +126,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
 
         //init enemy static ship
         SequentialObjectAnimation staticEnemyShip = new SequentialObjectAnimation(180 - defaultRotation, new Path<>(enemyScreenLocation, enemyScreenLocation));
-        IdleAnimation enemyStanding = new IdleAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP, enemyScreenLocation, 180 - defaultRotation);
+        StaticAnimation enemyStanding = new StaticAnimation(enemyShipAtlasPath, Animation.PlayMode.LOOP, enemyScreenLocation, 180 - defaultRotation);
         staticEnemyShip.phases.add(enemyStanding);
 
         staticEnemyShip.start();

@@ -10,20 +10,18 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.Player;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.controller.PlayingFieldPresenter;
 import com.imit.cosma.gui.screen.component.ScoreComponent;
 import com.imit.cosma.gui.screen.component.infopanel.InfoComponent;
-import com.imit.cosma.gui.screen.component.PlayingField;
 
 public class GameScreen implements Screen {
     private final Player player;
-
-    private final PlayingField playingField;
+    private final PlayingFieldPresenter playingFieldPresenter;
     private final InfoComponent infoPanel;
     private final ScoreComponent scorePanel;
 
@@ -31,20 +29,18 @@ public class GameScreen implements Screen {
 
     private final SpriteBatch batch;
 
-    private final BitmapFont font;
-
     private final Stage stage;
 
     public GameScreen(){
         player = new Player();
-        playingField = new PlayingField();
-        infoPanel = new InfoComponent(playingField);
-        scorePanel = new ScoreComponent(playingField);
         background = new Texture(getInstance().BACKGROUND_PATH);
+        playingFieldPresenter = new PlayingFieldPresenter();
+        infoPanel = new InfoComponent(playingFieldPresenter);
+        scorePanel = new ScoreComponent(playingFieldPresenter);
 
         batch = new SpriteBatch();
 
-        font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
+        BitmapFont font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         font.getData().setScale(6);
         font.setColor(Color.RED);
 
@@ -73,7 +69,7 @@ public class GameScreen implements Screen {
             }
         });
 
-        stage.addActor(playingField);
+        stage.addActor(playingFieldPresenter);
         stage.addActor(soundSwitcher);
         stage.addActor(infoPanel);
         stage.addActor(scorePanel);
@@ -85,8 +81,8 @@ public class GameScreen implements Screen {
         batch.draw(background, 0, 0, getInstance().WORLD_WIDTH, getInstance().WORLD_HEIGHT);
         batch.end();
 
-        if((player.touchedScreen() || !playingField.isPlayerTurn()) && playingField.inField(player.getTouchPoint())){
-            playingField.setTouchPoint(player.getTouchPoint());
+        if((player.touchedScreen() || !playingFieldPresenter.isPlayerTurn()) && playingFieldPresenter.inField(player.getTouchPoint())){
+            playingFieldPresenter.setTouchPoint(player.getTouchPoint());
         }
 
         stage.act(delta);
@@ -108,13 +104,5 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
-    }
-
-    private void drawFont() {
-        batch.begin();
-        font.draw(batch, "GAME OVER",
-                0, getInstance().WORLD_HEIGHT * 0.9f,
-                getInstance().WORLD_WIDTH, 1, true);
-        batch.end();
     }
 }

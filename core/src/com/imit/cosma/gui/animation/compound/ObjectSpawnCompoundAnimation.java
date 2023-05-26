@@ -2,9 +2,7 @@ package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.imit.cosma.config.Config;
-import com.imit.cosma.event.AnimationCompletedEvent;
-import com.imit.cosma.gui.animation.simple.IdleAnimation;
+import com.imit.cosma.gui.animation.simple.StaticAnimation;
 import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.pkg.CoordinateConverter;
@@ -47,7 +45,7 @@ public class ObjectSpawnCompoundAnimation extends CompoundAnimation {
         SequentialObjectAnimation gameObjectSpawnAnimation = getGameObjectSpawnAnimation();
         gameObjectSpawnAnimation.currentPhase = 0;
 
-        IdleAnimation gameObjectSpawn = new IdleAnimation(
+        StaticAnimation gameObjectSpawn = new StaticAnimation(
                 gameObjectSpawnAtlas,
                 Animation.PlayMode.NORMAL,
                 spawnPoint,
@@ -57,7 +55,7 @@ public class ObjectSpawnCompoundAnimation extends CompoundAnimation {
         gameObjectSpawnAnimation.phases.add(gameObjectSpawn);
 
         if (spawnedOnShip) {
-            IdleAnimation gameObjectIdle = new IdleAnimation(
+            StaticAnimation gameObjectIdle = new StaticAnimation(
                     gameObjectIdleAtlas,
                     Animation.PlayMode.LOOP,
                     spawnPoint,
@@ -67,13 +65,13 @@ public class ObjectSpawnCompoundAnimation extends CompoundAnimation {
 
             SequentialObjectAnimation shipDestructionAnimation = new SequentialObjectAnimation(defaultRotation, new Path<>(spawnPoint, spawnPoint));
 
-            IdleAnimation victimShipIdle = new IdleAnimation(
+            StaticAnimation victimShipIdle = new StaticAnimation(
                     victimSpaceshipIdleAtlas,
                     Animation.PlayMode.LOOP,
                      spawnPoint,
                     defaultRotation);
 
-            IdleAnimation victimShipDestruction = new IdleAnimation(
+            StaticAnimation victimShipDestruction = new StaticAnimation(
                     victimSpaceshipDestructionAtlas,
                     Animation.PlayMode.NORMAL,
                     spawnPoint, defaultRotation);

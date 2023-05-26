@@ -12,7 +12,7 @@ public class SpaceDebris implements SpaceWeather {
         maxPiecesNumber = 10; //TODO config
 
         minDamage = 100;
-        maxDamage = 500;
+        maxDamage = 1000;
     }
 
     @Override

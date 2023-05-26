@@ -3,7 +3,8 @@ package com.imit.cosma.model.board;
 import static com.imit.cosma.config.Config.getInstance;
 
 import com.imit.cosma.ai.BotPlayer;
-import com.imit.cosma.config.Config;
+import com.imit.cosma.config.BoardConfig;
+import com.imit.cosma.config.ShipConfig;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.board.content.HealthKit;
@@ -12,6 +13,7 @@ import com.imit.cosma.model.board.event.GameObjectSpawnEvent;
 import com.imit.cosma.model.board.event.BoardEvent;
 import com.imit.cosma.model.board.event.GameObjectsDespawnEvent;
 import com.imit.cosma.model.board.event.IdleBoardEvent;
+import com.imit.cosma.model.board.event.SpaceDebrisBoardEvent;
 import com.imit.cosma.model.board.event.SpaceshipAttackBoardEvent;
 import com.imit.cosma.model.board.event.SpaceshipMovementBoardEvent;
 import com.imit.cosma.model.board.weather.SpaceDebris;
@@ -24,9 +26,9 @@ import com.imit.cosma.model.rules.side.NeutralSide;
 import com.imit.cosma.model.rules.side.PlayerSide;
 import com.imit.cosma.model.rules.side.Side;
 import com.imit.cosma.model.rules.TurnType;
-import com.imit.cosma.model.spaceship.ShipRandomizer;
 import com.imit.cosma.model.spaceship.Spaceship;
 import com.imit.cosma.model.spaceship.SpaceshipBuilder;
+import com.imit.cosma.model.spaceship.Weapon;
 import com.imit.cosma.pkg.random.Randomizer;
 import com.imit.cosma.util.MutualLinkedMap;
 import com.imit.cosma.util.Path;
@@ -49,7 +51,7 @@ public class Board {
     private final Set<Point<Integer>> interactedCells;
     private Side turn;
     private final Point<Integer> selectedPoint;
-    private BotPlayer enemyBotPlayer;
+    private final BotPlayer enemyBotPlayer;
     private Path<Integer> currentPath;
     private Point<Integer> currentContentSpawnPoint;
     private Set<Point<Integer>> availableForMove;
@@ -78,53 +80,25 @@ public class Board {
         sides.add(playerSide);
 
         selectedPoint = new Point<>();
-/*
-        //initialise space cells
-        for (int y = 0; y < Config.getInstance().BOARD_SIZE; y++) {
-            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
+
+        Map<Point<Integer>, ShipConfig> boardConfig = BoardConfig.getInstance().getProductionConfig();
+        for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
+            for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
-                Point<Integer> currentLocation = new Point<>(x, y);
-                if (playerShipLocation.equals(currentLocation) || enemyShipLocation.equals(currentLocation)) {
-                    Spaceship spaceship = spaceshipBuilder.setSide(playerShipLocation.equals(currentLocation) ? playerSide : enemySide)
-                            .addSkeleton(Skeleton.DREADNOUGHT)
-                            .addWeapon(1)
-                            .setMoveType(MoveType.WEAK_ROOK).build();
+                Point<Integer> point = new Point<>(x, y);
+                if (boardConfig.containsKey(point)) {
+                    ShipConfig shipConfig = boardConfig.get(point);
+                    SpaceshipBuilder spaceshipBuilderTemp = spaceshipBuilder
+                            .setSide(shipConfig.getSide() == 0 ? playerSide : enemySide)
+                            .addSkeleton(shipConfig.getSkeleton())
+                            .setMoveType(shipConfig.getMoveType());
+                    for (Weapon weapon : shipConfig.getWeaponList()) {
+                        spaceshipBuilderTemp = spaceshipBuilderTemp.addWeapon(weapon);
+                    }
+                    Spaceship spaceship = spaceshipBuilderTemp.build();
                     cells[y][x].setContent(spaceship);
-                    objectController.addSpaceship(currentLocation);
-                } else {
-                    objectController.addSpace(x, y);
+                    objectController.addSpaceship(spaceship, point);
                 }
-            }
-        }*/
-
-        //initialise player ships
-        for (int y = 0; y < 1; y++) {
-            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
-                Spaceship spaceship = spaceshipBuilder.setSide(playerSide)
-                        .addSkeleton()
-                        .addWeapon(ShipRandomizer.getRandomAmount())
-                        .setMoveType(MoveType.QUEEN).build();
-                cells[y][x] = new Cell(spaceship);
-                objectController.addSpaceship(spaceship, x, y);
-            }
-        }
-
-        //initialise space cells
-        for (int y = 1; y < Config.getInstance().BOARD_SIZE - 1; y++) {
-            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
-                cells[y][x] = new Cell();
-            }
-        }
-
-        //initialise enemy ships
-        for (int y = Config.getInstance().BOARD_SIZE - 1; y < Config.getInstance().BOARD_SIZE; y++) {
-            for (int x = 0; x < Config.getInstance().BOARD_SIZE; x++) {
-                Spaceship spaceship = spaceshipBuilder.setSide(enemySide)
-                        .addSkeleton()
-                        .addWeapon(ShipRandomizer.getRandomAmount())
-                        .setMoveType().build();
-                cells[y][x] = new Cell(spaceship);
-                objectController.addSpaceship(spaceship, x, y);
             }
         }
 
@@ -133,9 +107,6 @@ public class Board {
 
         availableForMove = new HashSet<>();
         availableForAttack = new HashMap<>();
-    }
-
-    public void initAI(){
         enemyBotPlayer = new BotPlayer(this);
     }
 
@@ -253,10 +224,6 @@ public class Board {
         return selected.containsShip();
     }
 
-    public boolean isObjectSelected() {
-        return selected.isGameObject();
-    }
-
     public boolean isEnemyShip(Point<Integer> target){
         return isShip(target)
                 && (selected.getSide().isPlayer() && !cells[target.y][target.x].getSide().isPlayer()
@@ -291,6 +258,14 @@ public class Board {
 
     public boolean isPassable(int x, int y) {
         return inBoard(x, y) && cells[y][x].isPassable();
+    }
+
+    public boolean isPickable(Point<Integer> target) {
+        return isPickable(target.x, target.y);
+    }
+
+    public boolean isPickable(int x, int y) {
+        return inBoard(x, y) && cells[y][x].isPickable();
     }
 
     public Cell getSelected() {
@@ -430,16 +405,17 @@ public class Board {
     }
 
     public BoardEvent getCurrentBoardEvent() {
-        //if (Math.random() < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
-          //  return getSpaceDebrisSpawnEvent();
-        //}
-        if (0 < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
+        if (Math.random() < getInstance().SPACE_DEBRIS_SPAWN_CHANCE) {
+            return getSpaceDebrisSpawnEvent();
+        }
+
+        if (Math.random() < getInstance().BLACK_HOLE_SPAWN_CHANCE) {
             return getSpawnBlackHoleEvent();
         }
 
-        //if (Math.random() < getInstance().LOOT_SPAWN_CHANCE) {
-          //  return getLootSpawnEvent();
-        //}
+        if (Math.random() < getInstance().LOOT_SPAWN_CHANCE) {
+            return getLootSpawnEvent();
+        }
         updateSide();
         return new IdleBoardEvent();
     }
@@ -482,9 +458,7 @@ public class Board {
     }
 
     private BoardEvent getSpaceDebrisSpawnEvent() {
-        List<Point<Integer>> targets = new ArrayList<>();
-        List<Integer> damages = new ArrayList<>();
-        List<Spaceship> spaceships = new ArrayList<>();
+        Map<Point<Integer>, Spaceship> locationToSpaceshipMap = new HashMap<>();
 
         SpaceWeather debris = new SpaceDebris();
 
@@ -496,16 +470,25 @@ public class Board {
             Point<Integer> target = Randomizer.getRandom(spaceshipLocations);
             int damage = debris.generateDamage();
 
-            targets.add(target);
-            damages.add(damage);
-            spaceships.add((Spaceship) getCell(target).getContent().clone());
+            Spaceship spaceship = (Spaceship) getCell(target).getContent().clone();
+            spaceship.setDamage(damage);
+
+            if (spaceship.getHealthPoints() <= 0) {
+                if (spaceship.getSide().isPlayer()) {
+                    enemySide.addScore(spaceship.getMaxHealthPoints());
+                } else {
+                    playerSide.addScore(spaceship.getMaxHealthPoints());
+                }
+            }
+
+            locationToSpaceshipMap.put(target, spaceship);
 
             damageShip(target, damage);
 
             spaceshipLocations.remove(target);
         }
 
-        return null;
+        return new SpaceDebrisBoardEvent(locationToSpaceshipMap);
     }
 
     private BoardEvent getLootSpawnEvent() {
@@ -560,11 +543,15 @@ public class Board {
         int firingRadius = isShip(target) ? ((Spaceship) getCell(target).getContent()).getFiringRadius() : 0;
 
         Point<Integer> offset = new Point<>(target);
+        List<Direction> unpassableContentDirections = new ArrayList<>();
 
         for (Direction direction : Direction.getStraight()) {
             for (int i = 0; i < firingRadius; i++) {
                 offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-                if (inBoard(offset)) {
+                if (inBoard(offset) && !unpassableContentDirections.contains(direction)) {
+                    if (!isPassable(offset)) {
+                        unpassableContentDirections.add(direction);
+                    }
                     availableForAttack.put(new Point<>(offset), isEnemyShip(offset));
                 }
             }
@@ -574,7 +561,10 @@ public class Board {
         if (firingRadius > 1) {
             for (Direction direction : Direction.getDiagonal()) {
                 offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-                if (inBoard(offset)) {
+                if (inBoard(offset) && !unpassableContentDirections.contains(direction)) {
+                    if (!isPassable(offset)) {
+                        unpassableContentDirections.add(direction);
+                    }
                     availableForAttack.put(new Point<>(offset), isEnemyShip(offset));
                 }
                 offset.set(target);
@@ -584,7 +574,10 @@ public class Board {
         if (firingRadius > 2) {
             for (Direction direction : Direction.getHorseDirections()) {
                 offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-                if (inBoard(offset)) {
+                if (inBoard(offset) && !unpassableContentDirections.contains(direction)) {
+                    if (!isPassable(offset)) {
+                        unpassableContentDirections.add(direction);
+                    }
                     availableForAttack.put(new Point<>(offset), isEnemyShip(offset));
                 }
                 offset.set(target);

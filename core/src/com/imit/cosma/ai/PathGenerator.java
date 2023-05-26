@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class PathGenerator {
-    private final List<Path<Integer>> pathsAI, pathsPlayer;
+    private final List<Path<Integer>> pathsEnemy, pathsPlayer;
 
     public PathGenerator(){
-        pathsAI = new ArrayList<>();
+        pathsEnemy = new ArrayList<>();
         pathsPlayer = new ArrayList<>();
     }
 
@@ -24,13 +24,13 @@ public class PathGenerator {
         update(board);
     }
 
-    public PathGenerator(List<Path<Integer>> pathsAI, List<Path<Integer>> pathsPlayer) {
-        this.pathsAI = pathsAI;
+    public PathGenerator(List<Path<Integer>> pathsEnemy, List<Path<Integer>> pathsPlayer) {
+        this.pathsEnemy = pathsEnemy;
         this.pathsPlayer = pathsPlayer;
     }
 
     public List<Path<Integer>> getEnemyPaths(){
-        return pathsAI;
+        return pathsEnemy;
     }
 
     public List<Path<Integer>> getPlayerPaths() {
@@ -38,18 +38,18 @@ public class PathGenerator {
     }
 
     public void update(Board board){
-        pathsAI.clear();
+        pathsEnemy.clear();
         pathsPlayer.clear();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && !board.getSide(x, y).isPlayer()){
                     for (Point<Integer> point : board.getAvailableCellsForMove(x, y)) {
-                        pathsAI.add(new Path<>(x, y, point.x, point.y));
+                        pathsEnemy.add(new Path<>(x, y, point.x, point.y));
                     }
                     for (Map.Entry<Point<Integer>, Boolean> entry : board.getAvailableCellsForFire(x, y).entrySet()) {
                         if (entry.getValue()) {
                             Point<Integer> point = entry.getKey();
-                            pathsAI.add(new Path<>(x, y, point.x, point.y));
+                            pathsEnemy.add(new Path<>(x, y, point.x, point.y));
                         }
                     }
                 }
@@ -74,13 +74,14 @@ public class PathGenerator {
     }
 
     public void update(ArtificialBoard board) {
-        pathsAI.clear();
+        pathsEnemy.clear();
         pathsPlayer.clear();
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && !board.getSide(x, y).isPlayer()){
-                    for (Point<Integer> point : board.getAvailableCells(x, y)) {
-                        pathsAI.add(new Path<>(x, y, point.x, point.y));
+                    Set<Point<Integer>> availableCells = board.getAvailableCells(x, y);
+                    for (Point<Integer> point : availableCells) {
+                        pathsEnemy.add(new Path<>(x, y, point.x, point.y));
                     }
                 }
             }
@@ -89,7 +90,8 @@ public class PathGenerator {
         for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
             for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
                 if(board.isShip(x, y) && board.getSide(x, y).isPlayer()){
-                    for (Point<Integer> point : board.getAvailableCells(x, y)) {
+                    Set<Point<Integer>> availableCells = board.getAvailableCells(x, y);
+                    for (Point<Integer> point : availableCells) {
                         pathsPlayer.add(new Path<>(x, y, point.x, point.y));
                     }
                 }
@@ -98,7 +100,9 @@ public class PathGenerator {
     }
 
     public static Path<Integer> getRandomShipPath(ArtificialBoard board) {
-        Point<Integer> randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer() ? board.getPlayerShipLocations() : board.getEnemyShipLocations());
+        Point<Integer> randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer()
+                ? board.getAvailablePlayerShipLocations()
+                : board.getAvailableEnemyShipLocations());
         Set<Point<Integer>> availableCells = board.getAvailableForAttack(randomShipLocation);
         if (availableCells.isEmpty()) {
             availableCells = board.getAvailableForMove(randomShipLocation);
@@ -114,7 +118,7 @@ public class PathGenerator {
     }
 
     public PathGenerator clone() {
-        List<Path<Integer>> pathsAIClone = new ArrayList<>(pathsAI);
+        List<Path<Integer>> pathsAIClone = new ArrayList<>(pathsEnemy);
         List<Path<Integer>> pathsPlayerClone = new ArrayList<>(pathsPlayer);
 
         return new PathGenerator(pathsAIClone, pathsPlayerClone);

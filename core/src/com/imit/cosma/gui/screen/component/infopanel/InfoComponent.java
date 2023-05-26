@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.imit.cosma.controller.PlayingFieldPresenter;
 import com.imit.cosma.event.CellChangeEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.screen.component.Component;
@@ -32,7 +33,7 @@ public class InfoComponent extends Component {
     private SelectedCellDetails selectedCellDetails;
     private final AnimatedSprite panel;
 
-    public InfoComponent(PlayingField playingField){
+    public InfoComponent(PlayingFieldPresenter playingFieldPresenter){
         super(new Point<>(0f, (float) getInstance().INFO_PANEL_BOTTOM),
                 getInstance().INFO_PANEL_WIDTH,
                 getInstance().INFO_PANEL_HEIGHT);
@@ -45,7 +46,7 @@ public class InfoComponent extends Component {
                 componentHeight);
         selectedCellDetails = new SpaceDetails(location, componentWidth, componentHeight);
 
-        playingField.addListener(new EventListener() {
+        playingFieldPresenter.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
                 if (event instanceof CellChangeEvent) {

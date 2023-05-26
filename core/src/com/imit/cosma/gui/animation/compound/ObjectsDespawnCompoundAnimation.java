@@ -1,7 +1,7 @@
 package com.imit.cosma.gui.animation.compound;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.imit.cosma.gui.animation.simple.IdleAnimation;
+import com.imit.cosma.gui.animation.simple.StaticAnimation;
 import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.pkg.CoordinateConverter;
 import com.imit.cosma.util.MutualLinkedMap;
@@ -15,7 +15,7 @@ public class ObjectsDespawnCompoundAnimation extends CompoundAnimation {
             Point<Float> objectLocation = objectsToLocations.getValue(gameObject);
             Point<Float> originObjectLocation = CoordinateConverter.toOriginCenter(objectLocation);
             SequentialObjectAnimation objectDespawnAnimation = new SequentialObjectAnimation(0, new Path<Float>(originObjectLocation, originObjectLocation));
-            objectDespawnAnimation.phases.add(new IdleAnimation(
+            objectDespawnAnimation.phases.add(new StaticAnimation(
                     gameObject.getDespawnAnimationPath(),
                     Animation.PlayMode.NORMAL,
                     originObjectLocation,

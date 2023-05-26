@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.controller.PlayingFieldPresenter;
 import com.imit.cosma.event.UpdateScoreEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.util.Point;
@@ -20,9 +21,9 @@ public class ScoreComponent extends Actor {
     private float playerScore = 0, enemyScore = 0, targetPlayerScore, targetEnemyScore;
     private float velocity;
 
-    public ScoreComponent(PlayingField playingField) {
+    public ScoreComponent(PlayingFieldPresenter playingFieldPresenter) {
         setBounds(0, Gdx.graphics.getHeight() * 0.85f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.03f);
-        playingField.addListener(new EventListener() {
+        playingFieldPresenter.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
                 if (event instanceof UpdateScoreEvent) {
@@ -46,7 +47,7 @@ public class ScoreComponent extends Actor {
         font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         font.getData().scale(2);
         playerLine = new Sprite(new Texture(Gdx.files.internal("shape.png")));
-        playerLine.setPosition(getX(), getY());
+        playerLine.setPosition(getX(), getY() + 32);
         playerLine.setColor(0.1f, 0.1f, 1f, 1f);
         enemyLine = new Sprite(new Texture(Gdx.files.internal("shape.png")));
 
@@ -82,6 +83,6 @@ public class ScoreComponent extends Actor {
         playerLine.setSize(newPlayerLineWidth, getHeight());
         enemyLine.setPosition(newPlayerLineWidth, getY());
         enemyLine.setSize(getWidth() - newPlayerLineWidth, getHeight());
-        scoreDelimiter.setBounds(newPlayerLineWidth * 0.91f, getY() * 0.985f, getWidth() * 0.08f, getHeight() *2.8f);
+        scoreDelimiter.setBounds(newPlayerLineWidth - scoreDelimiter.getWidth() / 2, getY() * 0.985f, getWidth() * 0.08f, getHeight() *2.8f);
     }
 }

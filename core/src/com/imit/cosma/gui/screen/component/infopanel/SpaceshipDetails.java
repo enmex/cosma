@@ -32,7 +32,7 @@ public class SpaceshipDetails extends SelectedCellDetails {
         int healthBarHeight = (int) (0.1 * parentHeight);
         Point<Float> barLocation = new Point<>(healthBarX, healthBarY);
         fontLocation = new Point<>(parentLocation.x + 0.06f * parentWidth, parentLocation.y + parentHeight * 0.95f);
-        healthBar = new HealthBar(spaceship.getMaxHealthPoints(), barLocation, healthBarHeight, healthBarWidth);
+        healthBar = new HealthBar(spaceship.getHealthPoints(), spaceship.getMaxHealthPoints(), barLocation, healthBarHeight, healthBarWidth);
         font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         font.getData().scale(1.5f);
         Skin modeSwitcherSkin = new Skin(Gdx.files.internal("skin/switcher.json"));

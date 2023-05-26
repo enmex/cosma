@@ -4,9 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.event.AnimationCompletedEvent;
 import com.imit.cosma.gui.animation.simple.FontAnimation;
-import com.imit.cosma.gui.animation.simple.IdleAnimation;
+import com.imit.cosma.gui.animation.simple.StaticAnimation;
 import com.imit.cosma.gui.animation.simple.RotationAnimation;
 import com.imit.cosma.gui.animation.simple.SimpleMovementAnimation;
 import com.imit.cosma.model.board.content.Loot;
@@ -81,8 +80,8 @@ public class ShipMovementAnimation extends CompoundAnimation {
 
         if (!lootDespawnAnimationPath.isEmpty()) {
             lootAnimation = new SequentialObjectAnimation(0, new Path<>(shipScreenPath.getTarget(), shipScreenPath.getTarget()));
-            lootAnimation.phases.add(new IdleAnimation(lootIdleAnimationPath, Animation.PlayMode.LOOP, shipScreenPath.getTarget(), 0f));
-            lootAnimation.phases.add(new IdleAnimation(lootDespawnAnimationPath, Animation.PlayMode.NORMAL, shipScreenPath.getTarget(), 0f));
+            lootAnimation.phases.add(new StaticAnimation(lootIdleAnimationPath, Animation.PlayMode.LOOP, shipScreenPath.getTarget(), 0f));
+            lootAnimation.phases.add(new StaticAnimation(lootDespawnAnimationPath, Animation.PlayMode.NORMAL, shipScreenPath.getTarget(), 0f));
             lootAnimation.phases.add(new FontAnimation(shipScreenPath.getTarget(), "Healed", Color.LIME, 1f));
             lootAnimation.start();
             objectsAnimations.add(lootAnimation);

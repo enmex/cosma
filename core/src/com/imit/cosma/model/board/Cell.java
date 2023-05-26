@@ -93,4 +93,8 @@ public class Cell {
     public boolean isGameObject() {
         return content.isGameObject();
     }
+
+    public boolean isPickable() {
+        return content.isPickable();
+    }
 }

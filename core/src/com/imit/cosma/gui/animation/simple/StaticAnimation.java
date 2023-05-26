@@ -9,7 +9,7 @@ import com.imit.cosma.pkg.soundtrack.sound.SoundEffect;
 import com.imit.cosma.pkg.soundtrack.sound.SoundType;
 import com.imit.cosma.util.Point;
 
-public class IdleAnimation extends SimpleAnimation {
+public class StaticAnimation extends SimpleAnimation {
     private final PlayMode playMode;
     private final SoundEffect soundEffect;
     private float elapsedTime;
@@ -17,7 +17,7 @@ public class IdleAnimation extends SimpleAnimation {
     private boolean animated;
     private final Point<Float> locationOnScreen;
 
-    public IdleAnimation(String atlasPath, PlayMode playMode, SoundType soundType, Point<Float> locationOnScreen, float rotation){
+    public StaticAnimation(String atlasPath, PlayMode playMode, SoundType soundType, Point<Float> locationOnScreen, float rotation){
         super(atlasPath, getInstance().IDLE_ANIMATION_REGION_NAME, playMode, 0.1f);
         this.playMode = playMode;
         this.rotation = rotation;
@@ -28,7 +28,7 @@ public class IdleAnimation extends SimpleAnimation {
         this.locationOnScreen = locationOnScreen;
     }
 
-    public IdleAnimation(String atlasPath, PlayMode playMode, Point<Float> locationOnScreen, float rotation){
+    public StaticAnimation(String atlasPath, PlayMode playMode, Point<Float> locationOnScreen, float rotation){
         super(atlasPath, getInstance().IDLE_ANIMATION_REGION_NAME, playMode);
         this.playMode = playMode;
         this.rotation = rotation;

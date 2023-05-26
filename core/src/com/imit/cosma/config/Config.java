@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 public class Config {
-    public final int GAME_OBJECT_LIVE_TIME = 2;
+    public final int GAME_OBJECT_LIVE_TIME = 3;
     public final int DEFAULT_SHIPS_NUMBER = 24;
     private static Config instance;
 
     public final float FRAME_DURATION = 1 / 8f;
 
     public final float ANIMATION_DURATION = 60;
-    public final float ROTATION_VELOCITY = 2f;
+    public final float ROTATION_VELOCITY = 3f;
     public final float MOVEMENT_VELOCITY = 1.5f;
     public final double PANEL_TO_SCREEN_RATIO = 0.3;
     public final double PANEL_OFFSET = 0.03;
@@ -42,8 +42,8 @@ public class Config {
     public final Space SPACE;
     public final List<Point<Integer>> EMPTY_LIST = new ArrayList<>();
     public final Map<Point<Integer>, String> EMPTY_MAP = new HashMap<>();
-    public final float SPACE_DEBRIS_SPAWN_CHANCE = 0.3f;
-    public final float BLACK_HOLE_SPAWN_CHANCE = 0.15f;
+    public final float SPACE_DEBRIS_SPAWN_CHANCE = 0.15f;
+    public final float BLACK_HOLE_SPAWN_CHANCE = 0.3f;
     public final float LOOT_SPAWN_CHANCE = 0.45f;
 
     public final int WORLD_WIDTH = Gdx.graphics.getWidth();

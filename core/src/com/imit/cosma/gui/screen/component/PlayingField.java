@@ -1,6 +1,5 @@
 package com.imit.cosma.gui.screen.component;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,17 +7,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.event.CellChangeEvent;
-import com.imit.cosma.event.UpdateScoreEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.animation.compound.CompoundAnimation;
 import com.imit.cosma.gui.animation.compound.IdleAnimation;
-import com.imit.cosma.model.board.Board;
-import com.imit.cosma.model.board.event.BoardEvent;
 import com.imit.cosma.util.Path;
 import com.imit.cosma.util.Point;
 
 import java.util.Map;
+import java.util.Set;
 
 import static com.imit.cosma.pkg.CoordinateConverter.*;
 
@@ -26,99 +22,44 @@ public class PlayingField extends Actor {
     private final Texture grid;
     private final Stage stage;
     private final Sprite selectedCell;
-    private final Board board;
     private CompoundAnimation boardEventAnimation;
-    private Point<Integer> touchPoint;
-    private boolean acted;
 
     public PlayingField() {
-        board = new Board();
-        board.initAI();
-        touchPoint = new Point<>(-1, -1);
         stage = new Stage();
         boardEventAnimation = new IdleAnimation();
 
         grid = new Texture(Config.getInstance().GRID_PATH);
         selectedCell = new Sprite(new Texture(Config.getInstance().SELECTED_CELL_PATH));
-
-        for (Point<Integer> location : board.getNonEmptyLocations()) {
-            stage.addActor(new AnimatedSprite(Config.getInstance().FRAME_DURATION,
-                    board.getIdleAnimationPath(location), toScreenPoint(location),
-                    board.getDefaultRotation(location),
-                    Config.getInstance().BOARD_CELL_WIDTH,
-                    Config.getInstance().BOARD_CELL_HEIGHT));
-        }
-        acted = false;
     }
 
-    @Override
-    public void act(float delta) {
-        stage.act(delta);
-        Point<Integer> selectedBoardPoint = getSelectedBoardPoint(touchPoint);
-        if (!acted && boardIsNotAnimated() && !isGameOver() && inField(touchPoint)) {
-            acted = true;
-            BoardEvent boardEvent = board.getCurrentEvent(selectedBoardPoint);
-            fire(new UpdateScoreEvent(board.getPlayerSideScore(), board.getEnemySideScore()));
-            fire(new CellChangeEvent(board.getSelected()));
-            for (Point<Float> location : boardEvent.getLocationsOfRemovedContents()) {
-                stage.getActors().removeValue(getActorByScreenLocation(location), false);
-            }
-            for (Map.Entry<Point<Float>, String> entry : boardEvent.getLocationsOfAddedContents().entrySet()) {
-                stage.addActor(new AnimatedSprite(Config.getInstance().FRAME_DURATION, entry.getValue(), entry.getKey(), 0, Config.getInstance().BOARD_CELL_WIDTH, Config.getInstance().BOARD_CELL_HEIGHT));
-            }
-            for (Path<Integer> contentPath : boardEvent.getContentsPaths()) {
-                Point<Float> target = toScreenPoint(contentPath.getTarget());
-                Actor actor = getActorByScreenLocation(toScreenPoint(contentPath.getSource()));
-                if (actor != null) {
-                    actor.setPosition(target.x, target.y);
-                }
-            }
-            if (!boardEvent.isIdle()) {
-                board.updateSide();
-                boardEventAnimation = boardEvent.getAnimationType();
-                boardEventAnimation.start();
-            }
-        }
-    }
-
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        if(!(touchPoint.x == 0 || touchPoint.y == 0) && boardIsNotAnimated() && isPlayerTurn()) {
-            drawSelected(batch);
-        }
-        drawGrid(batch);
-        drawBoardObjects(batch, Gdx.graphics.getDeltaTime());
-    }
-
-    private Point<Integer> getSelectedBoardPoint(Point<Integer> touchPoint) {
-        return new Point<>(getBoardX(touchPoint.x)/Config.getInstance().BOARD_CELL_WIDTH,
-                (getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y)
-                        - Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT);
-    }
-
-    private void drawGrid(Batch batch){
+    public void drawGrid(Batch batch){
         batch.draw(grid, 0,
                 Config.getInstance().BOARD_Y,
                 Config.getInstance().BOARD_WIDTH,
                 Config.getInstance().BOARD_HEIGHT);
     }
 
-    private void drawSelected(Batch batch){
+    public void drawSelected(Batch batch,
+                             Point<Integer> touchPoint,
+                             Set<Point<Integer>> availableCellsForMove,
+                             Map<Point<Integer>, Boolean> availableCellsForAttack,
+                             boolean attackMode){
         if(inField(touchPoint)) {
             batch.draw(selectedCell, getBoardX(touchPoint.x),
                     getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y),
                     Config.getInstance().BOARD_CELL_WIDTH,
                     Config.getInstance().BOARD_CELL_HEIGHT);
-            drawAvailableCells(batch);
+            drawAvailableCells(batch, availableCellsForMove, availableCellsForAttack, attackMode);
         }
     }
 
-    private void drawBoardObjects(Batch batch, float delta){
-        //draw board animation
-        if(boardEventAnimation.isAnimated()) {
-            boardEventAnimation.render(batch, delta);
-        }
+    public void drawStage() {
+        stage.act();
+        stage.draw();
+    }
 
+    public void drawBoardObjects(Batch batch, float delta){
+        stage.act();
         //draw idle board objects
         for (Actor actor : stage.getActors()) {
             Point<Float> screenLocation = ((AnimatedSprite) actor).getScreenLocation();
@@ -126,11 +67,20 @@ public class PlayingField extends Actor {
                 actor.draw(batch, delta);
             }
         }
+        //draw board animation
+        if(boardEventAnimation.isAnimated()) {
+            boardEventAnimation.render(batch, delta);
+        }
     }
 
-    private void drawAvailableCells(Batch batch) {
-        if (!board.selectedInAttackMode()) {
-            for (Point<Integer> point : board.getAvailableCellsForMove()) {
+    private void drawAvailableCells(
+            Batch batch,
+            Set<Point<Integer>> availableCellsForMove,
+            Map<Point<Integer>, Boolean> availableCellsForAttack,
+            boolean attackMode
+    ) {
+        if (!attackMode) {
+            for (Point<Integer> point : availableCellsForMove) {
                 selectedCell.setColor(Color.GREEN);
                 selectedCell.setBounds(point.x * Config.getInstance().BOARD_CELL_WIDTH,
                         point.y * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y,
@@ -138,7 +88,7 @@ public class PlayingField extends Actor {
                 selectedCell.draw(batch);
             }
         } else {
-            for (Map.Entry<Point<Integer>, Boolean> entry : board.getAvailableCellsForFire().entrySet()) {
+            for (Map.Entry<Point<Integer>, Boolean> entry : availableCellsForAttack.entrySet()) {
                 Point<Integer> point = entry.getKey();
 
                 if (entry.getValue()) {
@@ -162,30 +112,38 @@ public class PlayingField extends Actor {
                 <= Config.getInstance().BOARD_Y + Config.getInstance().BOARD_HEIGHT;
     }
 
-    private int getBoardX(int touchX){
-        return (int) Math.floor((double) touchX/Config.getInstance().BOARD_CELL_WIDTH) * Config.getInstance().BOARD_CELL_WIDTH;
-    }
-
-    private int getBoardY(int touchY){
-        return (int) Math.floor((double) (touchY-Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT)
-                * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y;
-    }
-
-    private boolean boardIsNotAnimated(){
+    public boolean boardIsNotAnimated(){
         return !boardEventAnimation.isAnimated();
     }
 
-    public boolean isPlayerTurn(){
-        return board.getTurn().isPlayer();
+    public void addActor(String atlasPath, Point<Float> screenLocation, float rotation) {
+        stage.addActor(
+                new AnimatedSprite(
+                        Config.getInstance().FRAME_DURATION,
+                        atlasPath,
+                        screenLocation,
+                        rotation,
+                        Config.getInstance().BOARD_CELL_WIDTH,
+                        Config.getInstance().BOARD_CELL_HEIGHT
+                )
+        );
     }
 
-    public boolean isGameOver() {
-        return board.isGameOver();
+    public void setBoardEventAnimation(CompoundAnimation boardEventAnimation) {
+        this.boardEventAnimation = boardEventAnimation;
+        this.boardEventAnimation.start();
     }
 
-    public void setTouchPoint(Point<Integer> touchPoint) {
-        this.touchPoint = touchPoint.clone();
-        acted = false;
+    public void changeActorPosition(Path<Integer> contentPath) {
+        Point<Float> target = toScreenPoint(contentPath.getTarget());
+        Actor actor = getActorByScreenLocation(toScreenPoint(contentPath.getSource()));
+        if (actor != null) {
+            actor.setPosition(target.x, target.y);
+        }
+    }
+
+    public void removeActor(Point<Float> actorScreenLocation) {
+        stage.getActors().removeValue(getActorByScreenLocation(actorScreenLocation), false);
     }
 
     private Actor getActorByScreenLocation(Point<Float> screenLocation) {
@@ -195,6 +153,15 @@ public class PlayingField extends Actor {
             }
         }
         return null;
+    }
+
+    public int getBoardX(int touchX){
+        return (int) Math.floor((double) touchX/Config.getInstance().BOARD_CELL_WIDTH) * Config.getInstance().BOARD_CELL_WIDTH;
+    }
+
+    public int getBoardY(int touchY){
+        return (int) Math.floor((double) (touchY-Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT)
+                * Config.getInstance().BOARD_CELL_HEIGHT + Config.getInstance().BOARD_Y;
     }
 }
 

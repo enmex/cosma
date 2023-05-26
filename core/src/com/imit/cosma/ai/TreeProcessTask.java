@@ -21,6 +21,5 @@ public class TreeProcessTask implements Runnable {
         board.doTurn(randomChildNode.getPath());
         tree.simulate(board, randomChildNode);
         tree.backpropogate(randomChildNode, randomChildNode.getReward());
-        treeNode.setLocked(false);
     }
 }

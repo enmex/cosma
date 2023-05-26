@@ -6,23 +6,22 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.imit.cosma.config.Config;
 import com.imit.cosma.util.Point;
 
 public class HealthBar extends Actor {
     private final Sprite bar;
-    private Color barColor;
-    private int healthPoints;
+    private final Color barColor;
+    private final int healthPoints;
     private final int maxHealthPoints;
     private final Point<Float> barLocation;
     private final float height, width;
     private final BitmapFont font;
     private final Point<Float> fontLocation;
 
-    public HealthBar(int healthPoints, Point<Float> barLocation, float height, float width) {
-        this.maxHealthPoints = healthPoints;
+    public HealthBar(int healthPoints, int maxHealthPoints, Point<Float> barLocation, float height, float width) {
+        this.maxHealthPoints = maxHealthPoints;
         this.healthPoints = healthPoints;
         this.barLocation = barLocation;
         this.height = height;
@@ -48,13 +47,5 @@ public class HealthBar extends Actor {
 
         font.draw(batch, String.format("%d", healthPoints),
                 fontLocation.x, fontLocation.y, width, 1, true);
-    }
-
-    public void setHealthPoints(int healthPoints) {
-        this.healthPoints = healthPoints;
-        float g = (float) healthPoints / maxHealthPoints;
-        float r = 1f - g;
-
-        barColor = new Color(r, g, 0f, 1f);
     }
 }
