@@ -22,13 +22,15 @@ public class MCTree extends DecisionTree {
         for (int i = 0; i < 3 * root.getChildren().size(); i++) {
             ArtificialBoard clonedBoard = board.clone();
             MCTreeNode bestNode = select(root, clonedBoard);
-            if (bestNode.getChildren().isEmpty()) {
-                expandOneNode(clonedBoard, bestNode, !clonedBoard.getTurn().isPlayer());
+            if (!bestNode.isTerminal()) {
+                if (bestNode.getChildren().isEmpty()) {
+                    expandOneNode(clonedBoard, bestNode, !clonedBoard.getTurn().isPlayer());
+                }
+                MCTreeNode randomChildNode = Randomizer.getRandom(bestNode.getChildren());
+                clonedBoard.doTurn(randomChildNode.getPath());
+                simulate(clonedBoard, randomChildNode);
+                backpropogate(randomChildNode, randomChildNode.getReward());
             }
-            MCTreeNode randomChildNode = Randomizer.getRandom(bestNode.getChildren());
-            clonedBoard.doTurn(randomChildNode.getPath());
-            simulate(clonedBoard, randomChildNode);
-            backpropogate(randomChildNode, randomChildNode.getReward());
         }
         System.out.println();
     }
@@ -149,6 +151,8 @@ class MCTreeNode {
     private MCTreeNode parent;
     private final List<MCTreeNode> children;
 
+    private boolean terminal;
+
     public MCTreeNode() {
         children = new ArrayList<>();
     }
@@ -246,5 +250,10 @@ class MCTreeNode {
     }
 
     public void setTerminal(boolean terminal) {
+        this.terminal = terminal;
+    }
+
+    public boolean isTerminal() {
+        return terminal;
     }
 }

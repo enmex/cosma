@@ -6,9 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.event.BoardResetEvent;
 import com.imit.cosma.event.CellChangeEvent;
+import com.imit.cosma.event.GameOverEvent;
 import com.imit.cosma.event.UpdateScoreEvent;
-import com.imit.cosma.gui.screen.component.PlayingField;
 import com.imit.cosma.model.board.Board;
 import com.imit.cosma.model.board.event.BoardEvent;
 import com.imit.cosma.util.Path;
@@ -17,8 +18,8 @@ import com.imit.cosma.util.Point;
 import java.util.Map;
 
 public class PlayingFieldPresenter extends Actor {
-    private final PlayingField playingField;
-    private final Board board;
+    private PlayingField playingField;
+    private Board board;
 
     private boolean acted;
 
@@ -59,6 +60,8 @@ public class PlayingFieldPresenter extends Actor {
                 board.updateSide();
                 playingField.setBoardEventAnimation(boardEvent.getAnimationType());
             }
+        } else if (board.isGameOver()) {
+            fire(new GameOverEvent(board.getPlayerSide(), board.getEnemySide()));
         }
     }
 
@@ -88,5 +91,24 @@ public class PlayingFieldPresenter extends Actor {
         return new Point<>(playingField.getBoardX(touchPoint.x)/Config.getInstance().BOARD_CELL_WIDTH,
                 (playingField.getBoardY(Config.getInstance().WORLD_HEIGHT - touchPoint.y)
                         - Config.getInstance().BOARD_Y)/Config.getInstance().BOARD_CELL_HEIGHT);
+    }
+
+    public boolean isGameOver() {
+        return board.isGameOver();
+    }
+
+    public void resetBoard() {
+        fire(new BoardResetEvent());
+        board = new Board();
+        playingField = new PlayingField();
+        touchPoint = new Point<>(-1, -1);
+
+        for (Point<Integer> location : board.getNonEmptyLocations()) {
+            playingField.addActor(
+                    board.getIdleAnimationPath(location),
+                    toScreenPoint(location),
+                    board.getDefaultRotation(location)
+            );
+        }
     }
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.event.BoardResetEvent;
 import com.imit.cosma.event.UpdateScoreEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.util.Point;
@@ -30,6 +31,14 @@ public class ScoreComponent extends Actor {
                     targetPlayerScore = updateEvent.getPlayerScore();
                     targetEnemyScore = updateEvent.getEnemyScore();
                     velocity = (targetEnemyScore - enemyScore) / 1.5f + (targetPlayerScore - playerScore) / 1.5f;
+                    updateLines();
+                }
+                if (event instanceof BoardResetEvent) {
+                    playerScore = 0;
+                    enemyScore = 0;
+                    targetPlayerScore = 0;
+                    targetEnemyScore = 0;
+                    velocity = 25f;
                     updateLines();
                 }
                 return true;

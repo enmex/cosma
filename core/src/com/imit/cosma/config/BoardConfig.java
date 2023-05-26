@@ -15,7 +15,7 @@ import java.util.Map;
 public class BoardConfig {
     private static BoardConfig boardConfig;
     private final Map<Point<Integer>, ShipConfig> productionConfig;
-    private static Map<ShipConfig, Point<Integer>> devConfig;
+    private static Map<Point<Integer>, ShipConfig> devConfig;
 
     private BoardConfig() {
         productionConfig = new HashMap<>();
@@ -109,6 +109,25 @@ public class BoardConfig {
                     )
             );
         }
+        devConfig = new HashMap<>();
+        devConfig.put(
+                new Point<>(3, 4),
+                new ShipConfig(
+                        1,
+                        Skeleton.CORVETTE,
+                        MoveType.KING,
+                        Weapon.ION_CANNON
+                )
+        );
+        devConfig.put(
+                new Point<>(3, 3),
+                new ShipConfig(
+                        0,
+                        Skeleton.DREADNOUGHT,
+                        MoveType.KING,
+                        Weapon.ION_CANNON
+                )
+        );
     }
 
     public static BoardConfig getInstance() {
@@ -120,5 +139,9 @@ public class BoardConfig {
 
     public Map<Point<Integer>, ShipConfig> getProductionConfig() {
         return productionConfig;
+    }
+
+    public Map<Point<Integer>, ShipConfig> getDevConfig() {
+        return devConfig;
     }
 }

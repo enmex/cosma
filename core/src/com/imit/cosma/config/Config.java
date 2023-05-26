@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class Config {
     public final int GAME_OBJECT_LIVE_TIME = 3;
-    public final int DEFAULT_SHIPS_NUMBER = 24;
+    public final int DEFAULT_SHIPS_NUMBER = 1;
     private static Config instance;
 
     public final float FRAME_DURATION = 1 / 8f;

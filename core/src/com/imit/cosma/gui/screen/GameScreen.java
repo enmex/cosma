@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.Player;
 import com.imit.cosma.config.Config;
+import com.imit.cosma.gui.screen.component.GameOverComponent;
 import com.imit.cosma.gui.screen.component.PlayingFieldPresenter;
 import com.imit.cosma.gui.screen.component.ScoreComponent;
 import com.imit.cosma.gui.screen.component.infopanel.InfoComponent;
@@ -24,6 +25,7 @@ public class GameScreen implements Screen {
     private final PlayingFieldPresenter playingFieldPresenter;
     private final InfoComponent infoPanel;
     private final ScoreComponent scorePanel;
+    private final GameOverComponent gameOverComponent;
 
     private final Texture background;
 
@@ -37,6 +39,7 @@ public class GameScreen implements Screen {
         playingFieldPresenter = new PlayingFieldPresenter();
         infoPanel = new InfoComponent(playingFieldPresenter);
         scorePanel = new ScoreComponent(playingFieldPresenter);
+        gameOverComponent = new GameOverComponent(playingFieldPresenter);
 
         batch = new SpriteBatch();
 
@@ -73,6 +76,7 @@ public class GameScreen implements Screen {
         stage.addActor(soundSwitcher);
         stage.addActor(infoPanel);
         stage.addActor(scorePanel);
+        stage.addActor(gameOverComponent);
     }
 
     @Override
@@ -87,6 +91,10 @@ public class GameScreen implements Screen {
 
         stage.act(delta);
         stage.draw();
+
+        if (playingFieldPresenter.isGameOver()) {
+            gameOverComponent.setActive(true);
+        }
     }
 
     @Override

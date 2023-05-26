@@ -43,7 +43,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class Board {
-    private final Set<Point<Integer>> emptySet;
     private final ObjectController objectController;
     private final Cell[][] cells;
     private Cell selected;
@@ -62,7 +61,6 @@ public class Board {
 
     public Board() {
         cells = new Cell[getInstance().BOARD_SIZE][getInstance().BOARD_SIZE];
-        emptySet = new HashSet<>();
         selected = new Cell(getInstance().SPACE);
         interacted = new Cell(getInstance().SPACE);
 
@@ -81,7 +79,7 @@ public class Board {
 
         selectedPoint = new Point<>();
 
-        Map<Point<Integer>, ShipConfig> boardConfig = BoardConfig.getInstance().getProductionConfig();
+        Map<Point<Integer>, ShipConfig> boardConfig = BoardConfig.getInstance().getDevConfig();
         for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
@@ -260,14 +258,6 @@ public class Board {
         return inBoard(x, y) && cells[y][x].isPassable();
     }
 
-    public boolean isPickable(Point<Integer> target) {
-        return isPickable(target.x, target.y);
-    }
-
-    public boolean isPickable(int x, int y) {
-        return inBoard(x, y) && cells[y][x].isPickable();
-    }
-
     public Cell getSelected() {
         return selected;
     }
@@ -296,13 +286,13 @@ public class Board {
 
     public Set<Point<Integer>> getAvailableCellsForMove() {
         return selected.containsShip() && selected.getTurnType() == TurnType.MOVE && selected.getSide() == turn
-                ? availableForMove : emptySet;
+                ? availableForMove : new HashSet<Point<Integer>>();
     }
 
     public Set<Point<Integer>> getAvailableCellsForMove(int x, int y) {
         return isShip(x, y) && cells[y][x].getTurnType() == TurnType.MOVE
                 ? getAvailableForMove(new Point<>(x, y))
-                : emptySet;
+                : new HashSet<Point<Integer>>();
     }
 
     public Map<Point<Integer>, Boolean> getAvailableCellsForFire(){
@@ -494,9 +484,6 @@ public class Board {
     private BoardEvent getLootSpawnEvent() {
         currentContentSpawnPoint = Randomizer.getRandom(objectController.getSpaceLocations());
 
-        int randomValue = (int) (Math.random() * 2);
-        
-        //Loot loot = randomValue == 0 ? new HealthKit() : new DamageKit();
         Loot loot = new HealthKit();
         Cell lootCell = new Cell(loot);
         setCell(currentContentSpawnPoint, lootCell);
@@ -514,6 +501,9 @@ public class Board {
     }
 
     public boolean isGameOver() {
+        if (playerSide.getShipsNumber() == 0) {
+            System.out.println();
+        }
         return playerSide.getShipsNumber() == 0 || enemySide.getShipsNumber() == 0;
     }
 
@@ -591,15 +581,19 @@ public class Board {
         return selected.getContent().getTurnType() == TurnType.ATTACK;
     }
 
-    public int getCurrentPlayerScore() {
-        return turn.getScore();
-    }
-
     public int getEnemySideScore() {
         return enemySide.getScore();
     }
 
     public int getPlayerSideScore() {
         return playerSide.getScore();
+    }
+
+    public Side getPlayerSide() {
+        return playerSide;
+    }
+
+    public Side getEnemySide() {
+        return enemySide;
     }
 }
