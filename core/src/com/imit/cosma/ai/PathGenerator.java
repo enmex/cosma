@@ -100,6 +100,7 @@ public class PathGenerator {
     }
 
     public static Path<Integer> getRandomShipPath(ArtificialBoard board) {
+        board.updateBlockedShips();
         Point<Integer> randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer()
                 ? board.getAvailablePlayerShipLocations()
                 : board.getAvailableEnemyShipLocations());

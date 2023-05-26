@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.imit.cosma.Player;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.controller.PlayingFieldPresenter;
+import com.imit.cosma.gui.screen.component.PlayingFieldPresenter;
 import com.imit.cosma.gui.screen.component.ScoreComponent;
 import com.imit.cosma.gui.screen.component.infopanel.InfoComponent;
 

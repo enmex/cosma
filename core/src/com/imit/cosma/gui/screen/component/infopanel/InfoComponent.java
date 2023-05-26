@@ -1,30 +1,17 @@
 package com.imit.cosma.gui.screen.component.infopanel;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.imit.cosma.controller.PlayingFieldPresenter;
+import com.imit.cosma.gui.screen.component.PlayingFieldPresenter;
 import com.imit.cosma.event.CellChangeEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.gui.screen.component.Component;
-import com.imit.cosma.gui.screen.component.PlayingField;
 import com.imit.cosma.model.board.content.Content;
 import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.board.content.Space;
-import com.imit.cosma.model.rules.TurnType;
-import com.imit.cosma.model.rules.move.MoveType;
-import com.imit.cosma.model.rules.side.PlayerSide;
-import com.imit.cosma.model.spaceship.ShipRandomizer;
 import com.imit.cosma.model.spaceship.Spaceship;
-import com.imit.cosma.model.spaceship.SpaceshipBuilder;
 import com.imit.cosma.util.Point;
 
 import static com.imit.cosma.config.Config.*;

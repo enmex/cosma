@@ -19,18 +19,18 @@ public class MCTree extends DecisionTree {
         if(root.getChildren().isEmpty()) {
             expand(board, root, !board.getTurn().isPlayer());
         }
-        for (int i = 0; i < root.getChildren().size(); i++) {
+        for (int i = 0; i < 3 * root.getChildren().size(); i++) {
             ArtificialBoard clonedBoard = board.clone();
-            MCTreeNode bestNode = select(root);
-            clonedBoard.doTurn(bestNode.getPath());
+            MCTreeNode bestNode = select(root, clonedBoard);
             if (bestNode.getChildren().isEmpty()) {
-                expand(clonedBoard, bestNode, !clonedBoard.getTurn().isPlayer());
+                expandOneNode(clonedBoard, bestNode, !clonedBoard.getTurn().isPlayer());
             }
             MCTreeNode randomChildNode = Randomizer.getRandom(bestNode.getChildren());
             clonedBoard.doTurn(randomChildNode.getPath());
             simulate(clonedBoard, randomChildNode);
             backpropogate(randomChildNode, randomChildNode.getReward());
         }
+        System.out.println();
     }
 
     @Override
@@ -68,10 +68,30 @@ public class MCTree extends DecisionTree {
         }
     }
 
+    public void expandOneNode(ArtificialBoard board, MCTreeNode current, boolean playerTurn) {
+        PathGenerator generator = new PathGenerator(board);
+        Path<Integer> path = Randomizer.getRandom(playerTurn
+                ? new ArrayList<>(generator.getEnemyPaths())
+                : new ArrayList<>(generator.getPlayerPaths()));
+
+        ArtificialBoard artificialBoard = board.clone();
+        TurnType turnType = artificialBoard.doTurn(path);
+        MCTreeNode node = current.getChild(path);
+
+        if(node == null) {
+            node = new MCTreeNode(current, path, turnType);
+            node.setReward(board);
+            if (artificialBoard.isGameOver()) {
+                node.setTerminal(true);
+            }
+            current.addChild(node);
+        }
+    }
+
     public void simulate(ArtificialBoard board, MCTreeNode parentNode) {
         ArtificialBoard clonedBoard = board.clone();
         int totalReward = 0;
-        for (int i = 0; i < 5 && !clonedBoard.isGameOver(); i++) {
+        for (int i = 0; i < 50 && !clonedBoard.isGameOver(); i++) {
             Path<Integer> path = PathGenerator.getRandomShipPath(clonedBoard);
             totalReward += clonedBoard.calculateReward(path);
             clonedBoard.doTurn(path);
@@ -97,7 +117,7 @@ public class MCTree extends DecisionTree {
         }
     }
 
-    public MCTreeNode select(MCTreeNode parentNode) {
+    public MCTreeNode select(MCTreeNode parentNode, ArtificialBoard board) {
         if(parentNode.getChildren().isEmpty()) {
             return parentNode;
         }
@@ -111,7 +131,11 @@ public class MCTree extends DecisionTree {
             }
         }
 
-        return isNullNode ? Randomizer.getRandom(parentNode.getChildren()) : current;
+        if (isNullNode) {
+            current = Randomizer.getRandom(parentNode.getChildren());
+        }
+        board.doTurn(current.getPath());
+        return select(current, board);
     }
 }
 
@@ -119,7 +143,6 @@ class MCTreeNode {
     private Path<Integer> path;
     private TurnType turnType;
 
-    private boolean terminal;
     private double reward;
     private int visits;
 
@@ -141,6 +164,7 @@ class MCTreeNode {
         this.path = path;
         this.turnType = turnType;
         this.parent = parent;
+        visits = 1;
     }
 
     public void addChild(MCTreeNode child) {
@@ -161,7 +185,7 @@ class MCTreeNode {
             return Double.NEGATIVE_INFINITY;
         }
 
-        return reward / visits + Math.sqrt(Math.log(parent.visits) / visits);
+        return reward / visits + Math.sqrt(2 * Math.log(parent.visits) / visits);
     }
 
     public void setReward(ArtificialBoard board) {
@@ -222,10 +246,5 @@ class MCTreeNode {
     }
 
     public void setTerminal(boolean terminal) {
-        this.terminal = terminal;
-    }
-
-    public boolean isTerminal() {
-        return terminal;
     }
 }

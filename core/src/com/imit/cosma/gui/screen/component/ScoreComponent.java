@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.imit.cosma.config.Config;
-import com.imit.cosma.controller.PlayingFieldPresenter;
 import com.imit.cosma.event.UpdateScoreEvent;
 import com.imit.cosma.gui.animation.AnimatedSprite;
 import com.imit.cosma.util.Point;
@@ -47,7 +46,7 @@ public class ScoreComponent extends Actor {
         font = new BitmapFont(Gdx.files.internal(Config.getInstance().FONT_PATH), false);
         font.getData().scale(2);
         playerLine = new Sprite(new Texture(Gdx.files.internal("shape.png")));
-        playerLine.setPosition(getX(), getY() + 32);
+        playerLine.setPosition(getX(), getY());
         playerLine.setColor(0.1f, 0.1f, 1f, 1f);
         enemyLine = new Sprite(new Texture(Gdx.files.internal("shape.png")));
 

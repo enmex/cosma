@@ -124,6 +124,21 @@ public class ArtificialBoard implements Cloneable {
         return mode;
     }
 
+    public void updateBlockedShips() {
+        List<Point<Integer>> shipLocations = new ArrayList<>(controller.getPlayerShipLocations());
+        shipLocations.addAll(controller.getEnemyShipLocations());
+
+        List<Point<Integer>> blockedShips = controller.getBlockedShipLocations();
+        for (Point<Integer> shipLocation : shipLocations) {
+            boolean shipBlocked = isShipBlocked(shipLocation);
+            if (shipBlocked && !blockedShips.contains(shipLocation)) {
+                controller.addBlockedShip(shipLocation);
+            } else if (!shipBlocked && blockedShips.contains(shipLocation)) {
+                controller.removeBlockedShip(shipLocation);
+            }
+        }
+    }
+
     private void updateBlockedShips(Point<Integer> target) {
         Point<Integer> offset = new Point<>(target);
         List<Point<Integer>> unblockedShipLocations = new ArrayList<>();
@@ -238,6 +253,7 @@ public class ArtificialBoard implements Cloneable {
 
     public Set<Point<Integer>> getAvailableCells(Point<Integer> target) {
         Set<Point<Integer>> availableForMove = getAvailableForMove(target);
+        boolean b = isShipBlocked(target);
         Set<Point<Integer>> availableForAttack = getAvailableForAttack(target);
         availableForAttack.addAll(availableForMove);
         return availableForAttack;

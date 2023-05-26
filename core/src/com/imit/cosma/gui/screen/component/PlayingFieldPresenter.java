@@ -1,4 +1,4 @@
-package com.imit.cosma.controller;
+package com.imit.cosma.gui.screen.component;
 
 import static com.imit.cosma.pkg.CoordinateConverter.toScreenPoint;
 
