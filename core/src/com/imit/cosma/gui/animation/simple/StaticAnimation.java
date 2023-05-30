@@ -50,7 +50,7 @@ public class StaticAnimation extends SimpleAnimation {
         animatedObject.setRotation(rotation);
         animatedObject.draw(batch);
 
-        if (playMode == PlayMode.NORMAL && objectAnimation.isAnimationFinished(elapsedTime)) {
+        if ((playMode == PlayMode.NORMAL || playMode == PlayMode.REVERSED) && objectAnimation.isAnimationFinished(elapsedTime)) {
             animated = false;
         }
     }

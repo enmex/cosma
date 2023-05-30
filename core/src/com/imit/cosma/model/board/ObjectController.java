@@ -21,6 +21,10 @@ public class ObjectController {
         contentLocations.put(location, spaceship);
     }
 
+    public void removeContent(Point<Integer> location) {
+        contentLocations.removeKey(location);
+    }
+
     public void addSpaceship(Spaceship spaceship, int x, int y) {
         addSpaceship(spaceship, new Point<>(x ,y));
     }
@@ -89,15 +93,20 @@ public class ObjectController {
 
     public void setSpaceship(Spaceship spaceship, Point<Integer> location) {
         contentLocations.removeKey(location);
-        contentLocations.put(location, spaceship);
+        contentLocations.put(location, spaceship.clone());
     }
 
     public void setGameObject(GameObject gameObject, Point<Integer> location) {
         contentLocations.removeKey(location);
-        contentLocations.put(location, gameObject);
+        contentLocations.put(location, gameObject.clone());
     }
 
-    public void updateLiveTime() {
+    public void setContent(Content content, Point<Integer> location) {
+        contentLocations.removeKey(location);
+        contentLocations.put(location, content.clone());
+    }
+
+    public void updateTimeToLive() {
         for (Point<Integer> gameObjectLocation : getGameObjectsLocations()) {
             Content content = contentLocations.getValue(gameObjectLocation);
             if (content.isGameObject()) {

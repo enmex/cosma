@@ -81,16 +81,25 @@ public class ScoreComponent extends Actor {
         playerLine.draw(batch);
         enemyLine.draw(batch);
         scoreDelimiter.draw(batch, parentAlpha);
-        font.draw(batch, String.format("%d  %d", (int) playerScore, (int) enemyScore),
+        font.draw(batch, String.format("%d  %d", Math.round(playerScore), Math.round(enemyScore)),
                 0, getY(), getWidth(), 1, true);
     }
 
     private void updateLines() {
-        float scoreCorrelation = (float) (playerScore + 1) / (enemyScore + 1);
+        float scoreCorrelation = (playerScore + 1) / (enemyScore + 1);
         float newPlayerLineWidth = getWidth() * scoreCorrelation / 2;
+        if (newPlayerLineWidth == 0) {
+            newPlayerLineWidth = 0.05f * getWidth();
+        }
+        if (newPlayerLineWidth > getWidth()) {
+            newPlayerLineWidth = 0.95f * getWidth();
+        }
         playerLine.setSize(newPlayerLineWidth, getHeight());
         enemyLine.setPosition(newPlayerLineWidth, getY());
         enemyLine.setSize(getWidth() - newPlayerLineWidth, getHeight());
-        scoreDelimiter.setBounds(newPlayerLineWidth - scoreDelimiter.getWidth() / 2, getY() * 0.985f, getWidth() * 0.08f, getHeight() *2.8f);
+        scoreDelimiter.setBounds(
+                newPlayerLineWidth - scoreDelimiter.getWidth() / 2,
+                getY() * 0.985f, getWidth() * 0.08f, getHeight() *2.8f
+        );
     }
 }

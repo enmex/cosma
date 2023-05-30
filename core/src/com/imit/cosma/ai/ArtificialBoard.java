@@ -79,6 +79,7 @@ public class ArtificialBoard implements Cloneable {
         }
 
         turn = board.getTurn().clone();
+        updateBlockedShips();
     }
 
     public boolean isShip(int x, int y) {
@@ -99,6 +100,7 @@ public class ArtificialBoard implements Cloneable {
 
     public TurnType doTurn(Path<Integer> path){
         TurnType mode = TurnType.UNDEFINED;
+        boolean playerTurn = turn.isPlayer();
 
         Point<Integer> source = path.getSource();
         Point<Integer> target = path.getTarget();
@@ -111,7 +113,6 @@ public class ArtificialBoard implements Cloneable {
             }
 
             setSpaceshipPosition(source, target);
-            updateBlockedShips(target);
             updateSide();
             mode = TurnType.MOVE;
         }
@@ -119,6 +120,14 @@ public class ArtificialBoard implements Cloneable {
             damageShip(target, damageField[target.y][target.x]);
             updateSide();
             mode = TurnType.ATTACK;
+        }
+        updateBlockedShips();
+        if (allShipsBlocked(!playerTurn)) {
+            if (playerTurn) {
+                enemySide.removeAllShips();
+            } else {
+                playerSide.removeAllShips();
+            }
         }
 
         return mode;
@@ -130,7 +139,7 @@ public class ArtificialBoard implements Cloneable {
 
         List<Point<Integer>> blockedShips = controller.getBlockedShipLocations();
         for (Point<Integer> shipLocation : shipLocations) {
-            boolean shipBlocked = isShipBlocked(shipLocation);
+            boolean shipBlocked = getAvailableCells(shipLocation).isEmpty();
             if (shipBlocked && !blockedShips.contains(shipLocation)) {
                 controller.addBlockedShip(shipLocation);
             } else if (!shipBlocked && blockedShips.contains(shipLocation)) {
@@ -139,32 +148,12 @@ public class ArtificialBoard implements Cloneable {
         }
     }
 
-    private void updateBlockedShips(Point<Integer> target) {
-        Point<Integer> offset = new Point<>(target);
-        List<Point<Integer>> unblockedShipLocations = new ArrayList<>();
-        for (Point<Integer> blockedShipLocation : controller.getBlockedShipLocations()) {
-            if (!isShipBlocked(blockedShipLocation)) {
-                unblockedShipLocations.add(blockedShipLocation);
-            }
-        }
-        for (Point<Integer> unblockedShipLocation : unblockedShipLocations) {
-            controller.removeBlockedShip(unblockedShipLocation);
-        }
-        for (Direction direction : Direction.getStraightAndDiagonal()) {
-            offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-            if (inBoard(offset) && isShip(offset) && isShipBlocked(offset)) {
-                controller.addBlockedShip(new Point<Integer>(offset));
-            }
-            offset.set(target);
-        }
-    }
-
     private boolean isShipBlocked(Point<Integer> shipLocation) {
         MoveType moveType = moveTypeField[shipLocation.y][shipLocation.x];
         Point<Integer> offset = new Point<>(shipLocation);
         for (Direction direction : moveType.getDirections()) {
             offset.set(offset.x + direction.getOffsetX(), offset.y + direction.getOffsetY());
-            if (inBoard(offset) && (!isShip(offset) || !isSameSide(shipLocation, offset))) {
+            if (inBoard(offset) && !isGameObject(offset) && (!isShip(offset) || !isSameSide(shipLocation, offset))) {
                 return false;
             }
             offset.set(shipLocation);
@@ -172,6 +161,13 @@ public class ArtificialBoard implements Cloneable {
         return true;
     }
 
+    private boolean isGameObject(Point<Integer> location) {
+        return isGameObject(location.x, location.y);
+    }
+
+    private boolean isGameObject(int x, int y) {
+        return !isShip(x, y) && !obstaclesField[y][x];
+    }
     private boolean isSameSide(Point<Integer> ship1, Point<Integer> ship2) {
         return sidesField[ship1.y][ship1.x].isPlayer() && sidesField[ship2.y][ship2.x].isPlayer() ||
                 sidesField[ship1.y][ship1.x].isPlayingSide() && sidesField[ship2.y][ship2.x].isPlayingSide();
@@ -253,14 +249,9 @@ public class ArtificialBoard implements Cloneable {
 
     public Set<Point<Integer>> getAvailableCells(Point<Integer> target) {
         Set<Point<Integer>> availableForMove = getAvailableForMove(target);
-        boolean b = isShipBlocked(target);
         Set<Point<Integer>> availableForAttack = getAvailableForAttack(target);
         availableForAttack.addAll(availableForMove);
         return availableForAttack;
-    }
-
-    public Set<Point<Integer>> getAvailableCells(int x, int y) {
-        return getAvailableCells(new Point<>(x, y));
     }
 
     public boolean inBoard(Point<Integer> target){
@@ -401,30 +392,36 @@ public class ArtificialBoard implements Cloneable {
     }
 
     public boolean isGameOver() {
-        return controller.getEnemyShipLocations().isEmpty() || controller.getPlayerShipLocations().isEmpty();
+        return getAvailableEnemyShipLocations().isEmpty() || getAvailablePlayerShipLocations().isEmpty();
+    }
+
+    public boolean allShipsBlocked(boolean player) {
+        List<Point<Integer>> blockedShips = controller.getBlockedShipLocations();
+        for (Point<Integer> location : player ? controller.getPlayerShipLocations() : controller.getEnemyShipLocations()) {
+            if (!blockedShips.contains(location)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public double calculateReward(Path<Integer> spaceshipPath) {
+        double coef = 0;
         double reward = 0;
         Point<Integer> targetSpaceship = spaceshipPath.getSource();
 
-        List<Point<Integer>> playerShipsAroundTarget = getSpaceshipsAround(spaceshipPath.getTarget(), true);
-        List<Point<Integer>> botShipsAroundTarget = getSpaceshipsAround(spaceshipPath.getTarget(), false);
-        int playerCoef = turn.isPlayer() ? 1 : -1;
-        int enemyCoef = -playerCoef;
-        for (Point<Integer> playerShip : playerShipsAroundTarget) {
-            double ratio = (double) damageField[playerShip.y][playerShip.x] / healthField[targetSpaceship.y][targetSpaceship.x];
-            reward += playerCoef * ratio;
-        }
+        List<Point<Integer>> botShipsAroundTarget = getSpaceshipsAround(spaceshipPath.getTarget());
         for (Point<Integer> botShip : botShipsAroundTarget) {
-            double ratio = (double) healthField[botShip.y][botShip.x] / damageField[botShip.y][botShip.x];
+            double strength = (double) healthField[botShip.y][botShip.x] / damageField[botShip.y][botShip.x];
             if (canAttackTarget(botShip, targetSpaceship)) {
-                reward += enemyCoef * ratio;
+                coef += strength;
             }
         }
         if (isShip(spaceshipPath.getTarget())) {
             Point<Integer> spaceship = spaceshipPath.getTarget();
-            reward += reward * ((double) damageField[spaceship.y][spaceship.x] - healthField[spaceship.y][spaceship.x]);
+            reward = coef * (damageField[spaceship.y][spaceship.x] + healthField[spaceship.y][spaceship.x]);
+        } else {
+            reward = coef;
         }
 
         return reward;
@@ -434,9 +431,9 @@ public class ArtificialBoard implements Cloneable {
          return Math.sqrt((source.y - target.y) * (source.y - target.y) + (source.x - target.x) * (source.x - target.x)) <= firingRadiusField[source.y][source.x];
     }
 
-    private List<Point<Integer>> getSpaceshipsAround(Point<Integer> target, boolean isPlayer) {
+    private List<Point<Integer>> getSpaceshipsAround(Point<Integer> target) {
         List<Point<Integer>> locations = new ArrayList<>();
-        List<Point<Integer>> spaceships = isPlayer ? controller.getPlayerShipLocations() : controller.getEnemyShipLocations();
+        List<Point<Integer>> spaceships = controller.getEnemyShipLocations();
         for (Point<Integer> playerSpaceshipLocation : spaceships) {
             double distance = Math.sqrt((target.y - playerSpaceshipLocation.y)*(target.y - playerSpaceshipLocation.y)
                     + (target.x - playerSpaceshipLocation.x)*(target.x - playerSpaceshipLocation.x));

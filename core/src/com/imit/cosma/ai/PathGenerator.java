@@ -76,41 +76,28 @@ public class PathGenerator {
     public void update(ArtificialBoard board) {
         pathsEnemy.clear();
         pathsPlayer.clear();
-        for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
-            for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
-                if(board.isShip(x, y) && !board.getSide(x, y).isPlayer()){
-                    Set<Point<Integer>> availableCells = board.getAvailableCells(x, y);
-                    for (Point<Integer> point : availableCells) {
-                        pathsEnemy.add(new Path<>(x, y, point.x, point.y));
-                    }
-                }
+        for (Point<Integer> enemyShip : board.getAvailableEnemyShipLocations()) {
+            Set<Point<Integer>> availableCells = board.getAvailableCells(enemyShip);
+            for (Point<Integer> point : availableCells) {
+                pathsEnemy.add(new Path<>(enemyShip, point));
             }
         }
 
-        for(int y = 0; y < Config.getInstance().BOARD_SIZE; y++){
-            for(int x = 0; x < Config.getInstance().BOARD_SIZE; x++){
-                if(board.isShip(x, y) && board.getSide(x, y).isPlayer()){
-                    Set<Point<Integer>> availableCells = board.getAvailableCells(x, y);
-                    for (Point<Integer> point : availableCells) {
-                        pathsPlayer.add(new Path<>(x, y, point.x, point.y));
-                    }
-                }
+        for (Point<Integer> playerShip : board.getAvailablePlayerShipLocations()) {
+            Set<Point<Integer>> availableCells = board.getAvailableCells(playerShip);
+            for (Point<Integer> point : availableCells) {
+                pathsPlayer.add(new Path<>(playerShip, point));
             }
         }
     }
 
     public static Path<Integer> getRandomShipPath(ArtificialBoard board) {
-        board.updateBlockedShips();
         Point<Integer> randomShipLocation = Randomizer.getRandom(board.getTurn().isPlayer()
                 ? board.getAvailablePlayerShipLocations()
                 : board.getAvailableEnemyShipLocations());
         Set<Point<Integer>> availableCells = board.getAvailableForAttack(randomShipLocation);
         if (availableCells.isEmpty()) {
             availableCells = board.getAvailableForMove(randomShipLocation);
-        }
-
-        if (availableCells.isEmpty()) {
-            board.getAvailableCells(randomShipLocation);
         }
 
         Point<Integer> randomTargetLocation = Randomizer.getRandom(new ArrayList<>(availableCells));

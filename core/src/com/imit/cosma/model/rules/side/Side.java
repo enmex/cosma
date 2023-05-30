@@ -39,6 +39,10 @@ public abstract class Side implements Cloneable{
         this.turnType = turnType;
     }
 
+    public void removeAllShips() {
+        shipsNumber = 0;
+    }
+
     @Override
     public abstract Side clone();
 

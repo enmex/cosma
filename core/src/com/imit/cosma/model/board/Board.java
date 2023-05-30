@@ -5,6 +5,7 @@ import static com.imit.cosma.config.Config.getInstance;
 import com.imit.cosma.ai.BotPlayer;
 import com.imit.cosma.config.BoardConfig;
 import com.imit.cosma.config.ShipConfig;
+import com.imit.cosma.model.board.content.BlackHole;
 import com.imit.cosma.model.board.content.DamageKit;
 import com.imit.cosma.model.board.content.GameObject;
 import com.imit.cosma.model.board.content.HealthKit;
@@ -79,7 +80,7 @@ public class Board {
 
         selectedPoint = new Point<>();
 
-        Map<Point<Integer>, ShipConfig> boardConfig = BoardConfig.getInstance().getDevConfig();
+        Map<Point<Integer>, ShipConfig> boardConfig = BoardConfig.getInstance().getProductionConfig();
         for (int y = 0; y < getInstance().BOARD_SIZE; y++) {
             for (int x = 0; x < getInstance().BOARD_SIZE; x++) {
                 cells[y][x] = new Cell();
@@ -411,10 +412,10 @@ public class Board {
     }
 
     public BoardEvent getBoardClearingEvent() {
-        objectController.updateLiveTime();
+        objectController.updateTimeToLive();
         MutualLinkedMap<GameObject, Point<Integer>> objectToLocationMap = new MutualLinkedMap<>();
         for (Point<Integer> objectLocation : getExpiredObjects()) {
-            objectToLocationMap.put((GameObject) getCell(objectLocation).getContent(), objectLocation);
+            objectToLocationMap.put((GameObject) getCell(objectLocation).getContent().clone(), objectLocation);
             setCell(objectLocation, Cell.initWithSpace());
         }
         objectController.clearExpiredGameObjects();
@@ -426,7 +427,8 @@ public class Board {
 
         Point<Integer> blackHoleSpawnPoint = currentContentSpawnPoint.clone();
         Cell cellWithBlackHole = Cell.initWithBlackHole();
-        objectController.addGameObject((GameObject) cellWithBlackHole.getContent(), currentContentSpawnPoint);
+
+        objectController.setContent(new BlackHole(), blackHoleSpawnPoint);
 
         currentPath = new Path<>(blackHoleSpawnPoint, blackHoleSpawnPoint);
         if (isShip(blackHoleSpawnPoint)) {
@@ -437,12 +439,9 @@ public class Board {
                 playerSide.addScore(victimSpaceship.getDamagePoints());
             }
             destroyShip(blackHoleSpawnPoint, cellWithBlackHole);
-            setCell(blackHoleSpawnPoint, cellWithBlackHole);
-
             return new GameObjectSpawnEvent((GameObject) cellWithBlackHole.getContent(), blackHoleSpawnPoint, victimSpaceship);
         } else {
             setCell(blackHoleSpawnPoint, cellWithBlackHole);
-
             return new GameObjectSpawnEvent((GameObject) cellWithBlackHole.getContent(), blackHoleSpawnPoint);
         }
     }
@@ -470,11 +469,8 @@ public class Board {
                     playerSide.addScore(spaceship.getMaxHealthPoints());
                 }
             }
-
             locationToSpaceshipMap.put(target, spaceship);
-
             damageShip(target, damage);
-
             spaceshipLocations.remove(target);
         }
 
@@ -501,9 +497,6 @@ public class Board {
     }
 
     public boolean isGameOver() {
-        if (playerSide.getShipsNumber() == 0) {
-            System.out.println();
-        }
         return playerSide.getShipsNumber() == 0 || enemySide.getShipsNumber() == 0;
     }
 

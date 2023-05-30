@@ -12,9 +12,6 @@ public class Randomizer {
         return new Point<>(x, y);
     }
     public static <T> T getRandom(List<T> list) {
-        if (list.isEmpty()) {
-            System.out.println();
-        }
         return list.get((int) (Math.random() * (list.size() - 1)));
     }
 

@@ -32,7 +32,6 @@ public class MCTree extends DecisionTree {
                 backpropogate(randomChildNode, randomChildNode.getReward());
             }
         }
-        System.out.println();
     }
 
     @Override
@@ -60,10 +59,12 @@ public class MCTree extends DecisionTree {
             MCTreeNode node = current.getChild(path);
 
             if(node == null) {
-                node = new MCTreeNode(current, path, turnType);
-                node.setReward(board);
-                if (board.isGameOver()) {
+                node = new MCTreeNode(current, 1, path, turnType);
+                if (artificialBoard.isGameOver()) {
                     node.setTerminal(true);
+                    node.setReward(Double.POSITIVE_INFINITY);
+                } else {
+                    node.setReward(board);
                 }
                 current.addChild(node);
             }
@@ -81,7 +82,7 @@ public class MCTree extends DecisionTree {
         MCTreeNode node = current.getChild(path);
 
         if(node == null) {
-            node = new MCTreeNode(current, path, turnType);
+            node = new MCTreeNode(current, 0, path, turnType);
             node.setReward(board);
             if (artificialBoard.isGameOver()) {
                 node.setTerminal(true);
@@ -92,13 +93,17 @@ public class MCTree extends DecisionTree {
 
     public void simulate(ArtificialBoard board, MCTreeNode parentNode) {
         ArtificialBoard clonedBoard = board.clone();
-        int totalReward = 0;
         for (int i = 0; i < 50 && !clonedBoard.isGameOver(); i++) {
             Path<Integer> path = PathGenerator.getRandomShipPath(clonedBoard);
-            totalReward += clonedBoard.calculateReward(path);
             clonedBoard.doTurn(path);
         }
-        parentNode.addReward(totalReward);
+        if (clonedBoard.isGameOver()) {
+            parentNode.setReward(Double.POSITIVE_INFINITY);
+            return;
+        }
+        Path<Integer> path = PathGenerator.getRandomShipPath(clonedBoard);
+        double totalReward = clonedBoard.calculateReward(path);
+        parentNode.setReward(totalReward);
     }
 
     @Override
@@ -163,12 +168,12 @@ class MCTreeNode {
         this.turnType = turnType;
     }
 
-    public MCTreeNode(MCTreeNode parent, Path<Integer> path, TurnType turnType) {
+    public MCTreeNode(MCTreeNode parent, int visits, Path<Integer> path, TurnType turnType) {
         children = new ArrayList<>();
         this.path = path;
         this.turnType = turnType;
         this.parent = parent;
-        visits = 1;
+        this.visits = visits;
     }
 
     public void addChild(MCTreeNode child) {
@@ -251,6 +256,10 @@ class MCTreeNode {
 
     public void setTerminal(boolean terminal) {
         this.terminal = terminal;
+    }
+
+    public void setReward(double reward) {
+        this.reward = reward;
     }
 
     public boolean isTerminal() {

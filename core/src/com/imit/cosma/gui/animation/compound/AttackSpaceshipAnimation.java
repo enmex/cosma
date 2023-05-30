@@ -90,7 +90,7 @@ public class AttackSpaceshipAnimation extends CompoundAnimation {
 
             FontAnimation damageInfo = new FontAnimation(
                     enemyScreenLocation,
-                    -weapon.getDamage() + "HP",
+                    weapon.getDamage() + " HP",
                     Color.RED,
                     1f
             );

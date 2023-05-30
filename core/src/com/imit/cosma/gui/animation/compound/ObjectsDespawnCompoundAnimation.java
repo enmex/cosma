@@ -17,7 +17,7 @@ public class ObjectsDespawnCompoundAnimation extends CompoundAnimation {
             SequentialObjectAnimation objectDespawnAnimation = new SequentialObjectAnimation(0, new Path<Float>(originObjectLocation, originObjectLocation));
             objectDespawnAnimation.phases.add(new StaticAnimation(
                     gameObject.getDespawnAnimationPath(),
-                    Animation.PlayMode.NORMAL,
+                    Animation.PlayMode.REVERSED,
                     originObjectLocation,
                     0
             ));

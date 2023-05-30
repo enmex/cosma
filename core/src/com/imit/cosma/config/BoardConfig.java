@@ -16,6 +16,9 @@ public class BoardConfig {
     private static BoardConfig boardConfig;
     private final Map<Point<Integer>, ShipConfig> productionConfig;
     private static Map<Point<Integer>, ShipConfig> devConfig;
+    private static Map<Point<Integer>, ShipConfig> dev2Config;
+
+    private static Map<Point<Integer>, ShipConfig> dev3Config;
 
     private BoardConfig() {
         productionConfig = new HashMap<>();
@@ -128,6 +131,136 @@ public class BoardConfig {
                         Weapon.ION_CANNON
                 )
         );
+        dev2Config = new HashMap<>();
+        dev2Config.put(
+                new Point<>(3, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.DREADNOUGHT,
+                        MoveType.OFFICER,
+                        Weapon.ION_CANNON
+                )
+        );
+        dev2Config.put(
+                new Point<>(1, 6),
+                new ShipConfig(
+                        0,
+                        Skeleton.CORVETTE,
+                        MoveType.KING,
+                        Weapon.ION_CANNON
+                )
+        );
+        dev2Config.put(
+                new Point<>(4, 6),
+                new ShipConfig(
+                        0,
+                        Skeleton.CORVETTE,
+                        MoveType.KING,
+                        Weapon.ION_CANNON
+                )
+        );
+        dev3Config = new HashMap<>();
+        dev3Config.put(
+                new Point<>(0, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.DREADNOUGHT,
+                        MoveType.KING,
+                        Weapon.ION_CANNON,
+                        Weapon.ION_CANNON,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.LASER
+                )
+        );
+        dev3Config.put(
+                new Point<>(1, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.BATTLESHIP,
+                        MoveType.HORSE,
+                        Weapon.ION_CANNON,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.LASER,
+                        Weapon.MACHINE_GUN
+                )
+        );
+        dev3Config.put(
+                new Point<>(2, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.DESTROYER,
+                        MoveType.OFFICER,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.LASER
+                )
+        );
+        dev3Config.put(
+                new Point<>(3, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.CORVETTE,
+                        MoveType.QUEEN,
+                        Weapon.MACHINE_GUN
+                )
+        );
+        dev3Config.put(
+                new Point<>(4, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.CORVETTE,
+                        MoveType.QUEEN,
+                        Weapon.MACHINE_GUN
+                )
+        );
+        dev3Config.put(
+                new Point<>(5, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.DESTROYER,
+                        MoveType.OFFICER,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.LASER
+                )
+        );
+        dev3Config.put(
+                new Point<>(6, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.BATTLESHIP,
+                        MoveType.HORSE,
+                        Weapon.ION_CANNON,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.LASER,
+                        Weapon.MACHINE_GUN
+                )
+        );
+        dev3Config.put(
+                new Point<>(7, 7),
+                new ShipConfig(
+                        1,
+                        Skeleton.DREADNOUGHT,
+                        MoveType.KING,
+                        Weapon.ION_CANNON,
+                        Weapon.ION_CANNON,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.LASER
+                )
+        );
+        dev3Config.put(
+                new Point<>(4, 0),
+                new ShipConfig(
+                        0,
+                        Skeleton.DREADNOUGHT,
+                        MoveType.KING,
+                        Weapon.ION_CANNON,
+                        Weapon.ION_CANNON,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.TORPEDO_LAUNCHER,
+                        Weapon.LASER
+                )
+        );
     }
 
     public static BoardConfig getInstance() {
@@ -143,5 +276,13 @@ public class BoardConfig {
 
     public Map<Point<Integer>, ShipConfig> getDevConfig() {
         return devConfig;
+    }
+
+    public Map<Point<Integer>, ShipConfig> getDev2Config() {
+        return dev2Config;
+    }
+
+    public Map<Point<Integer>, ShipConfig> getDev3Config() {
+        return dev3Config;
     }
 }

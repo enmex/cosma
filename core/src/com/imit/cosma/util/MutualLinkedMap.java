@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class MutualLinkedMap<K, V> {
-    private LinkedList<K> keys;
-    private LinkedList<V> values;
+    private final LinkedList<K> keys;
+    private final LinkedList<V> values;
 
     public MutualLinkedMap() {
         keys = new LinkedList<>();
